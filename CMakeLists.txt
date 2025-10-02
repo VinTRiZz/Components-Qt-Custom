@@ -44,14 +44,14 @@ function(LINK_COMPONENT TARGET_NAME COMPONENT_ROOT_DIR COMPONENT_NAME)
 endfunction()
 
 # Packages
-find_package(QT NAMES Qt5 REQUIRED COMPONENTS Core Gui Widgets Network)
-find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets Network)
+find_package(QT NAMES Qt5 REQUIRED COMPONENTS Core Gui Widgets Charts)
+find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets Charts)
 set(
     TARGET_LINKED_LIBS
     Qt5::Core
     Qt5::Gui
     Qt5::Widgets
-    Qt5::Network
+    Qt5::Charts
 )
 
 # Qt configuration
