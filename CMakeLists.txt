@@ -64,11 +64,12 @@ set(
 add_library(${LIBRARY_NAME} SHARED)
 target_link_libraries(${LIBRARY_NAME} PRIVATE ${TARGET_LINKED_LIBS} )
 
-# LINK_COMPONENT(${LIBRARY_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/depends Logger)
+LINK_COMPONENT(${LIBRARY_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/depends Logger)
 LINK_COMPONENT(${LIBRARY_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/depends Maths)
+LINK_COMPONENT(${LIBRARY_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/depends Common)
 
 # Files
-file(GLOB_RECURSE HEADERS "src/*.hpp" "src/*.hpp")
+file(GLOB_RECURSE HEADERS "src/*.hpp" "src/*.h")
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 file(GLOB_RECURSE UIFILES "src/*.ui")
 target_sources(${LIBRARY_NAME} PRIVATE ${HEADERS} ${SOURCES} ${UIFILES})
@@ -83,3 +84,11 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_options(${LIBRARY_NAME} PRIVATE -O3)
     set_target_properties(${LIBRARY_NAME} PROPERTIES SUFFIX ".so")
 endif()
+
+# Self-Includes
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src")
+    message(FATAL_ERROR "Error configuring library! Not found sources dir: " "${CMAKE_CURRENT_SOURCE_DIR}/src")
+endif()
+
+target_include_directories(${LIBRARY_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src" "${CMAKE_CURRENT_SOURCE_DIR}/include")
+message(STATUS "Configured library: " ${LIBRARY_NAME})
