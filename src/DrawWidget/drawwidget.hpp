@@ -3,7 +3,7 @@
 #include <QWidget>
 #include <memory>
 
-#include "figures.h"
+#include "figures.hpp"
 
 namespace Qt_Custom
 {

@@ -1,9 +1,4 @@
-#ifndef CHARTWIDGET_H
-#define CHARTWIDGET_H
-
-//#define TEST_ON_WORK
-
-#ifndef TEST_ON_WORK
+#pragma once
 
 #include <QWidget>
 #include <QChartGlobal>
@@ -50,7 +45,3 @@ private:
     std::pair<float, float> rangeX;
     std::pair<float, float> rangeY;
 };
-
-#endif // TEST_ON_WORK
-
-#endif // CHARTWIDGET_H

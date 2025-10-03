@@ -46,6 +46,12 @@ endfunction()
 # Packages
 find_package(QT NAMES Qt5 REQUIRED COMPONENTS Core Gui Widgets Charts)
 find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets Charts)
+
+# Qt configuration
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
 set(
     TARGET_LINKED_LIBS
     Qt5::Core
@@ -53,11 +59,6 @@ set(
     Qt5::Widgets
     Qt5::Charts
 )
-
-# Qt configuration
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
 
 # Library target
 add_library(${LIBRARY_NAME} SHARED)
@@ -67,8 +68,9 @@ target_link_libraries(${LIBRARY_NAME} PRIVATE ${TARGET_LINKED_LIBS} )
 LINK_COMPONENT(${LIBRARY_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/depends Maths)
 
 # Files
-file(GLOB_RECURSE HEADERS "src/*.hpp" "src/*.h")
+file(GLOB_RECURSE HEADERS "src/*.hpp" "src/*.hpp")
 file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(GLOB_RECURSE UIFILES "src/*.ui")
 target_sources(${LIBRARY_NAME} PRIVATE ${HEADERS} ${SOURCES} ${UIFILES})
 
 # Suffixes
@@ -81,11 +83,3 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_options(${LIBRARY_NAME} PRIVATE -O3)
     set_target_properties(${LIBRARY_NAME} PROPERTIES SUFFIX ".so")
 endif()
-
-# Includes
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src")
-    message(FATAL_ERROR "Error configuring library! Not found sources dir: " "${CMAKE_CURRENT_SOURCE_DIR}/src")
-endif()
-
-target_include_directories(${LIBRARY_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
-message(STATUS "Configured library: " ${LIBRARY_NAME})

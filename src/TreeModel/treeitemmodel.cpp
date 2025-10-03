@@ -1,6 +1,6 @@
-#include "treeitemmodel.h"
+#include "treeitemmodel.hpp"
 
-#include "treeitem.h"
+#include "treeitem.hpp"
 
 #include <QDebug>
 #include <map>

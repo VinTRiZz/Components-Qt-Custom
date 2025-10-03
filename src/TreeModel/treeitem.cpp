@@ -1,4 +1,4 @@
-#include "treeitem.h"
+#include "treeitem.hpp"
 
 #include <QDebug>
 

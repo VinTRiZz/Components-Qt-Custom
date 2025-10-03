@@ -1,10 +1,8 @@
-#include "chartwidget.h"
+#include "chartwidget.hpp"
 #include "ui_chartwidget.h"
 
-#ifndef TEST_ON_WORK
-
 #include <QtCharts>
-#include "callout.h"
+#include "callout.hpp"
 
 #include <QVBoxLayout>
 
@@ -137,5 +135,3 @@ void ChartWidget::tooltip(QPointF point, bool state)
         m_tooltip->hide();
     }
 }
-
-#endif // TEST_ON_WORK

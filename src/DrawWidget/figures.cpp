@@ -1,4 +1,4 @@
-#include "figures.h"
+#include "figures.hpp"
 
 namespace Qt_Custom
 {

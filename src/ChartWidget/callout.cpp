@@ -26,7 +26,7 @@
 ** $QT_END_LICENSE$
 **
 ****************************************************************************/
-#include "callout.h"
+#include "callout.hpp"
 
 #ifndef TEST_ON_WORK
 #include <QtGui/QPainter>
