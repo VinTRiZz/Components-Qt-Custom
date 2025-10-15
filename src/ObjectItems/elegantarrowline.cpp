@@ -15,7 +15,7 @@ ElegantArrowLine::ElegantArrowLine(QGraphicsItem *parent) :
 {
     setSystemName("Соединение (изящное)");
 
-    setType(ObjectViewItems::OBJECTTYPE_VERTEX_CONNECTION);
+    setType(ObjectViewItems::OBJECTTYPE_ARROWLINE);
 
     setFlag(QGraphicsItem::ItemIsSelectable, true);
     setFlag(QGraphicsItem::ItemClipsToShape, true);
@@ -40,11 +40,6 @@ ElegantArrowLine::ElegantArrowLine(QGraphicsItem *parent) :
     m_line->setBrush(m_penGradient);
     m_line->setPen(QPen(Qt::transparent));
     m_pArrowHeadPolygon->setPen(QPen(Qt::transparent));
-
-    m_labelItem = new LabelItem(this);
-    registerSubitem(m_labelItem);
-    m_labelItem->setZValue(1);
-    m_labelItem->setBorderColor(Qt::black);
 
     ElegantArrowLine::setWeight(1);
 }
@@ -91,11 +86,6 @@ void ElegantArrowLine::setSelectionColor(const QColor& penColor) {
     }
 }
 
-void ElegantArrowLine::setDisplayName(const QString& iText) {
-    m_labelItem->setDisplayName(iText);
-    ItemBase::setDisplayName(iText);
-}
-
 void ElegantArrowLine::setArrowSize(qreal size) {
     m_arrowSize = size;
 }
@@ -108,10 +98,6 @@ void ElegantArrowLine::updatePolygon() {
     m_boundingRect = {};
     m_line->setPath(createLinePath());
     m_lineSelected->setPath(m_line->path());
-
-    auto labelPos = m_line->boundingRect().center();
-    labelPos.setX(labelPos.x() - m_labelItem->boundingRect().width());
-    m_labelItem->setPos(labelPos);
 
     auto straightLine = getLine();
 
@@ -241,11 +227,6 @@ QPainterPath ElegantArrowLine::shape() const {
     res.addPath(m_line->shape());
     res.addPath(m_pArrowHeadPolygon->shape());
     return res;
-}
-
-LabelItem *ElegantArrowLine::getLabel() const
-{
-    return m_labelItem;
 }
 
 void ElegantArrowLine::setLine(const QLineF &line) {

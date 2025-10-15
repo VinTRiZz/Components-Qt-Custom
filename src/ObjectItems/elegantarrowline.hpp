@@ -1,7 +1,6 @@
 #pragma once
 
 #include "lineitem.hpp"
-#include "labelitem.hpp"
 
 namespace ObjectViewItems {
 
@@ -13,8 +12,6 @@ public:
     void setArrowSize(qreal size);
     qreal getArrowSize() const;
 
-    void setDisplayName(const QString& iText) override;
-
     void setGradient1Color(const QColor& penColor);
     void setGradient2Color(const QColor& penColor);
 
@@ -23,8 +20,6 @@ public:
     QRectF boundingRect() const override;
     bool contains(const QPointF& p) const override;
     QPainterPath shape() const override;
-
-    LabelItem* getLabel() const;
 
     void setLine(const QLineF& line) override;
 
@@ -42,7 +37,6 @@ private:
     QGraphicsPathItem* m_line{nullptr};
     QGraphicsPathItem* m_lineSelected{nullptr};
     QGraphicsPolygonItem* m_pArrowHeadPolygon{nullptr};
-    LabelItem* m_labelItem{nullptr};
 
     bool m_prevSelectedState{false};
     qreal m_arrowSize{8};

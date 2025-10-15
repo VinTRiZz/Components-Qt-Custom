@@ -30,11 +30,13 @@ QString ItemBase::getSystemName() const {
     return data(OBJECTFIELD_NAME_SYSTEM).toString();
 }
 
-void ItemBase::setType(ObjectType objType) {
+void ItemBase::setType(ObjectType objType)
+{
     setData(OBJECTFIELD_OBJECTTYPE, objType);
 }
 
-ObjectType ItemBase::getType() const {
+ObjectType ItemBase::getType() const
+{
     return ObjectType(data(OBJECTFIELD_OBJECTTYPE).toInt());
 }
 

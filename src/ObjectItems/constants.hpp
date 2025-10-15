@@ -2,29 +2,7 @@
 
 #include <stdint.h>
 
-#include <QString>
-#include <boost/noncopyable.hpp>
-
 namespace ObjectViewItems {
-
-/**
- * @brief The GraphConversionConfiguration class Структура информации по уровням
- * объектов на сцене
- */
-struct ObjectSceneConfiguration : public boost::noncopyable {
-    // Уровни расположения объектов на сцене по их типу
-    int connectionLineLayer = 10;  //! Уровень линий соединения вершин
-    int vertexLayer = 20;          //! Уровень вершин
-
-    int propertyEditorLayer = 100;  //! Уровень редактора свойств
-
-    double vertexWidth = 100;  //! Ширина и высота вершины
-
-    static ObjectSceneConfiguration& getInstance() {
-        static ObjectSceneConfiguration inst;
-        return inst;
-    }
-};
 
 // СОГЛАШЕНИЕ:
 // ID НЕ ДОЛЖЕН БЫТЬ ОТРИЦАТЕЛЬНЫМ ДЛЯ ОБЫЧНЫХ ЭЛЕМЕНТОВ
@@ -50,6 +28,8 @@ enum ObjectField : int {
     OBJECTFIELD_COLOR_BORDER,      //! Основной цвет (цвет пера)
     OBJECTFIELD_COLOR_BACKGROUND,  //! Фоновый цвет (заполнения в объекте)
     OBJECTFIELD_COLOR_SELECTED,    //! Цвет индикации выбора
+
+    OBJECTFIELD_USERTYPE,   //! Для пользовательских типов
 };
 
 /**
@@ -61,18 +41,8 @@ enum ObjectType : int {
     OBJECTTYPE_MARKER,
     OBJECTTYPE_PICTURE,
     OBJECTTYPE_CANVAS_CENTER,
-    OBJECTTYPE_PROPERTY_EDITOR,
     OBJECTTYPE_ARROWLINE,
-    OBJECTTYPE_VERTEX,
-    OBJECTTYPE_VERTEX_CONNECTION,
 };
-
-/**
- *  @brief Свойства, которые могут встречаться в CustomPropertyJson
- */
-namespace CustomPropertyName {
-const QString PROPERTY_BOUNDINGRECT{"boundingRect"};
-}
 
 /**
  * @brief The LineArrowType enum Возможные виды направления стрелки
