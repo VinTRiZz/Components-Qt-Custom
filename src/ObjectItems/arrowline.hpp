@@ -3,21 +3,19 @@
 #include <QGraphicsLineItem>
 #include <QPen>
 
-#include "itembase.hpp"
+#include "lineitem.hpp"
 #include "constants.hpp"
 
 namespace ObjectViewItems {
 
-class ArrowedLine : public ItemBase {
+class ArrowLine : public LineItem {
 public:
-    explicit ArrowedLine(QGraphicsItem* parent = nullptr);
+    explicit ArrowLine(QGraphicsItem* parent = nullptr);
 
     void setPen(const QPen& drawPen);
     void setSelectedPen(const QPen& drawPen);
 
-    void setLine(const QLineF& iLine);
-    void setLine(const QPointF& p1, const QPointF& p2);
-    QLineF getLine() const;
+    void setLine(const QLineF& iLine) override;
 
     void setArrowType(LineArrowType t);
 

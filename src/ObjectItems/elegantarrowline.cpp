@@ -11,7 +11,7 @@
 namespace ObjectViewItems {
 
 ElegantArrowLine::ElegantArrowLine(QGraphicsItem *parent) :
-    ItemBase(parent)
+    LineItem(parent)
 {
     setSystemName("Соединение (изящное)");
 
@@ -49,48 +49,6 @@ ElegantArrowLine::ElegantArrowLine(QGraphicsItem *parent) :
     ElegantArrowLine::setWeight(1);
 }
 
-
-void ElegantArrowLine::setLine(const QLineF& line) {
-    m_straightLine = line;
-    m_penGradient.setStart(m_straightLine.p1());
-    m_penGradient.setFinalStop(m_straightLine.p2());
-    updatePolygon();
-}
-
-void ElegantArrowLine::setLine(const QPointF& p1, const QPointF& p2) {
-    setLine(QLineF(p1, p2));
-}
-
-QLineF ElegantArrowLine::getLine() const {
-    return m_straightLine;
-}
-
-void ElegantArrowLine::setWeight(double w) {
-    m_weight = w;
-    auto linePen = m_line->pen();
-    linePen.setWidth(m_weight + 1);
-    m_line->setPen(linePen);
-
-    auto lineSelPen = m_lineSelected->pen();
-    lineSelPen.setWidth(linePen.width() + 4);
-    m_lineSelected->setPen(lineSelPen);
-}
-
-double ElegantArrowLine::getWeight() const {
-    return m_weight;
-}
-
-void ElegantArrowLine::setPositionFrom(const QPointF& posFrom) {
-    m_straightLine.setP1(posFrom);
-    m_penGradient.setStart(m_straightLine.p1());
-    updatePolygon();
-}
-
-void ElegantArrowLine::setPositionTo(const QPointF& posTo) {
-    m_straightLine.setP2(posTo);
-    m_penGradient.setFinalStop(m_straightLine.p2());
-    updatePolygon();
-}
 
 void ElegantArrowLine::setGradient1Color(const QColor &penColor)
 {
@@ -155,42 +113,46 @@ void ElegantArrowLine::updatePolygon() {
     labelPos.setX(labelPos.x() - m_labelItem->boundingRect().width());
     m_labelItem->setPos(labelPos);
 
-    bool isP1Lefter = m_straightLine.x2() > m_straightLine.x1();
-    bool isP1Higher = m_straightLine.y2() > m_straightLine.y1();
+    auto straightLine = getLine();
+
+    bool isP1Lefter = straightLine.x2() > straightLine.x1();
+    bool isP1Higher = straightLine.y2() > straightLine.y1();
 
     m_boundingRect.moveTop(
-        (isP1Higher ? m_straightLine.y1() : m_straightLine.y2()) - m_arrowSize);
+        (isP1Higher ? straightLine.y1() : straightLine.y2()) - m_arrowSize);
     m_boundingRect.moveLeft(
-        (isP1Lefter ? m_straightLine.x1() : m_straightLine.x2()) - m_arrowSize);
+        (isP1Lefter ? straightLine.x1() : straightLine.x2()) - m_arrowSize);
     m_boundingRect.setWidth(
-        std::fabs(m_straightLine.x2() - m_straightLine.x1()) + m_arrowSize * 2);
+        std::fabs(straightLine.x2() - straightLine.x1()) + m_arrowSize * 2);
     m_boundingRect.setHeight(
-        std::fabs(m_straightLine.y2() - m_straightLine.y1()) + m_arrowSize * 2);
+        std::fabs(straightLine.y2() - straightLine.y1()) + m_arrowSize * 2);
 }
 
 QPainterPath ElegantArrowLine::createLinePath() {
-    auto pointFrom = m_straightLine.p1();
+    auto straightLine = getLine();
+
+    auto pointFrom = straightLine.p1();
     pointFrom.setY(pointFrom.y() + m_arrowSize);
 
-    auto pointTo = m_straightLine.p2();
+    auto pointTo = straightLine.p2();
     pointTo.setX(pointTo.x() +
                  (pointFrom.x() > pointTo.x() ? m_arrowSize : -m_arrowSize));
     pointTo.setY(pointTo.y() - m_arrowSize);
 
     QPainterPath p;
-    p.moveTo(m_straightLine.p1());
+    p.moveTo(straightLine.p1());
     p.lineTo(pointFrom);
 
-    auto firstControlPoint = m_straightLine.center();
+    auto firstControlPoint = straightLine.center();
     firstControlPoint.setY(pointFrom.y());
 
-    auto secondControlPoint = m_straightLine.center();
+    auto secondControlPoint = straightLine.center();
     secondControlPoint.setY(pointTo.y());
 
-    p.cubicTo(pointFrom, firstControlPoint, m_straightLine.center());
-    p.cubicTo(m_straightLine.center(), secondControlPoint, pointTo);
+    p.cubicTo(pointFrom, firstControlPoint, straightLine.center());
+    p.cubicTo(straightLine.center(), secondControlPoint, pointTo);
 
-    auto arrowLine = QLineF(pointTo, m_straightLine.p2());
+    auto arrowLine = QLineF(pointTo, straightLine.p2());
     if (arrowLine.length() != 0) {
         // Угол линии
         double angle = (arrowLine.angle() + 180) * M_PI / 180.0;
@@ -208,7 +170,7 @@ QPainterPath ElegantArrowLine::createLinePath() {
             arrowLine.p2() + QPointF(sin(angle + PI_2_DELIM_3) * m_arrowSize,
                                      cos(angle + PI_2_DELIM_3) * m_arrowSize);
 
-        p.lineTo(m_straightLine.p2());
+        p.lineTo(straightLine.p2());
         p.lineTo(arrowP2);
         p.lineTo(arrowP3);
         p.lineTo(arrowP1);
@@ -285,6 +247,43 @@ LabelItem *ElegantArrowLine::getLabel() const
 {
     return m_labelItem;
 }
+
+void ElegantArrowLine::setLine(const QLineF &line) {
+    LineItem::setLine(line);
+    m_penGradient.setStart(getLine().p1());
+    m_penGradient.setFinalStop(getLine().p2());
+    updatePolygon();
+}
+
+void ElegantArrowLine::setWeight(double w) {
+    m_weight = w;
+    auto linePen = m_line->pen();
+    linePen.setWidth(m_weight + 1);
+    m_line->setPen(linePen);
+
+    auto lineSelPen = m_lineSelected->pen();
+    lineSelPen.setWidth(linePen.width() + 4);
+    m_lineSelected->setPen(lineSelPen);
+}
+
+double ElegantArrowLine::getWeight() const
+{
+    return m_weight;
+}
+
+
+void ElegantArrowLine::setPositionFrom(const QPointF& posFrom) {
+    LineItem::setPositionFrom(posFrom);
+    m_penGradient.setStart(getLine().p1());
+    updatePolygon();
+}
+
+void ElegantArrowLine::setPositionTo(const QPointF& posTo) {
+    LineItem::setPositionTo(posTo);
+    m_penGradient.setFinalStop(getLine().p2());
+    updatePolygon();
+}
+
 
 
 }

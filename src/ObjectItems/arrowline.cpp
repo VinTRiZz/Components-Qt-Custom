@@ -9,7 +9,7 @@
 
 namespace ObjectViewItems {
 
-ArrowedLine::ArrowedLine(QGraphicsItem* parent) : ItemBase(parent) {
+ArrowLine::ArrowLine(QGraphicsItem* parent) : LineItem(parent) {
     setSystemName("Соединение (радиальное)");
     setType(ObjectViewItems::OBJECTTYPE_ARROWLINE);
     m_line = new QGraphicsLineItem(this);
@@ -22,28 +22,20 @@ ArrowedLine::ArrowedLine(QGraphicsItem* parent) : ItemBase(parent) {
     registerSubitem(m_backwardArrow);
 }
 
-void ArrowedLine::setPen(const QPen& drawPen) {
+void ArrowLine::setPen(const QPen& drawPen) {
     m_drawPen = drawPen;
 }
 
-void ArrowedLine::setSelectedPen(const QPen& drawPen) {
+void ArrowLine::setSelectedPen(const QPen& drawPen) {
     m_drawSelectedPen = drawPen;
 }
 
-void ArrowedLine::setLine(const QLineF& iLine) {
+void ArrowLine::setLine(const QLineF& iLine) {
     m_line->setLine(iLine);
     updateArrows();
 }
 
-void ArrowedLine::setLine(const QPointF& p1, const QPointF& p2) {
-    setLine(QLineF(p1, p2));
-}
-
-QLineF ArrowedLine::getLine() const {
-    return m_line->line();
-}
-
-void ArrowedLine::setArrowType(LineArrowType t)
+void ArrowLine::setArrowType(LineArrowType t)
 {
     m_arrowType = t;
 
@@ -64,16 +56,16 @@ void ArrowedLine::setArrowType(LineArrowType t)
     updateArrows();
 }
 
-void ArrowedLine::setArrowSize(qreal arrowSize) {
+void ArrowLine::setArrowSize(qreal arrowSize) {
     m_arrowSize = arrowSize;
     updateArrows();
 }
 
-qreal ArrowedLine::getArrowSize() const {
+qreal ArrowLine::getArrowSize() const {
     return m_arrowSize;
 }
 
-QPainterPath ArrowedLine::createArrow() const
+QPainterPath ArrowLine::createArrow() const
 {
     QPainterPath p;
     p.lineTo(m_arrowSize / 3.0, 0);
@@ -82,7 +74,7 @@ QPainterPath ArrowedLine::createArrow() const
     return p;
 }
 
-void ArrowedLine::updateArrows()
+void ArrowLine::updateArrows()
 {
     auto forwardPath = createArrow();
     QTransform transf;
@@ -97,7 +89,7 @@ void ArrowedLine::updateArrows()
     m_backwardArrow->setPath(backwardPath);
 }
 
-QVariant ArrowedLine::itemChange(GraphicsItemChange change,
+QVariant ArrowLine::itemChange(GraphicsItemChange change,
                                  const QVariant& value) {
     if (change == ItemSelectedChange) {
         if (value.toBool()) {
