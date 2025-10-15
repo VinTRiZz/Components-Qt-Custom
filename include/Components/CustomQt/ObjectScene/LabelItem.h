@@ -1,1 +1,1 @@
-#include "../../../src/ObjectItems/labelitem.hpp"
+#include "../src/ObjectItems/labelitem.hpp"
