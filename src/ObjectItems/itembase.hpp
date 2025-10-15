@@ -2,7 +2,7 @@
 #define PREDEFINEDOBJECTBASE_H
 
 #include <QBrush>
-#include <QGraphicsItem>
+#include <QGraphicsObject>
 #include <QPen>
 
 #include "constants.hpp"
@@ -12,7 +12,7 @@ namespace ObjectViewItems {
 /**
  * @brief The ItemBase class Основа для каждого класса объекта на сцене
  */
-class ItemBase : public QGraphicsItem {
+class ItemBase : public QGraphicsObject {
 public:
     explicit ItemBase(QGraphicsItem* parent = nullptr);
     ~ItemBase();
@@ -20,12 +20,12 @@ public:
     void unregister();
     QString getSystemName() const;
 
-    void setType(ObjectViewConstants::ObjectType objType);
-    ObjectViewConstants::ObjectType getType() const;
+    void setType(ObjectViewItems::ObjectType objType);
+    ObjectViewItems::ObjectType getType() const;
 
     void setSystemId();
-    virtual void setObjectId(ObjectViewConstants::objectId_t id);
-    virtual ObjectViewConstants::objectId_t getObjectId() const;
+    virtual void setObjectId(ObjectViewItems::objectId_t id);
+    virtual ObjectViewItems::objectId_t getObjectId() const;
 
     virtual void setDisplayName(const QString& text);
     virtual QString getDisplayName() const;

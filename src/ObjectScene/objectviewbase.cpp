@@ -20,7 +20,7 @@ bool ObjectViewBase::getIsInited() const {
 }
 
 bool ObjectViewBase::isIdAvailable(
-    ObjectViewConstants::objectId_t itemId) const {
+    ObjectViewItems::objectId_t itemId) const {
     return m_pCanvasItem->isIdAvailable(itemId);
 }
 
@@ -94,7 +94,7 @@ ObjectViewItems::ItemBase* ObjectViewBase::getParentOfComplex(
         return nullptr;
     }
     auto itemParentIdVariant =
-        pItem->data(ObjectViewConstants::OBJECTFIELD_PARENTITEM_ID);
+        pItem->data(ObjectViewItems::OBJECTFIELD_PARENTITEM_ID);
     if (itemParentIdVariant.isNull()) {
         return dynamic_cast<ObjectViewItems::ItemBase*>(pItem);
     }
@@ -110,7 +110,7 @@ ObjectViewItems::SceneFieldItem* ObjectViewBase::sceneCanvas() const {
 }
 
 void ObjectViewBase::removeSpecialObjects(
-    ObjectViewConstants::ObjectType objT) {
+    ObjectViewItems::ObjectType objT) {
     m_pCanvasItem->removeRegisteredItems(objT);
 }
 
@@ -128,7 +128,7 @@ void ObjectViewBase::addObject(ObjectViewItems::ItemBase* pItem) {
 }
 
 ObjectViewItems::ItemBase* ObjectViewBase::getObject(
-    ObjectViewConstants::objectId_t objectId) const {
+    ObjectViewItems::objectId_t objectId) const {
     auto targetObject = m_pCanvasItem->getItem(objectId);
     if (targetObject == nullptr) {
         return nullptr;
@@ -140,13 +140,13 @@ std::list<ObjectViewItems::ItemBase*> ObjectViewBase::getAllObjects() const {
     return m_pCanvasItem->getRegisteredItems();
 }
 
-std::list<ObjectViewConstants::objectId_t> ObjectViewBase::getAllObjectIds()
+std::list<ObjectViewItems::objectId_t> ObjectViewBase::getAllObjectIds()
     const {
     return m_pCanvasItem->getRegisteredIds();
 }
 
 void ObjectViewBase::removeAllObjects() {}
 
-void ObjectViewBase::removeObject(ObjectViewConstants::objectId_t itemId) {
+void ObjectViewBase::removeObject(ObjectViewItems::objectId_t itemId) {
     m_pCanvasItem->removeRegisteredItemById(itemId);
 }

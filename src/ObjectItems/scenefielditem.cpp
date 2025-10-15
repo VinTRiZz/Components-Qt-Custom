@@ -35,9 +35,9 @@ void SceneFieldItem::registerItem(ItemBase* pItem) {
 }
 
 ItemBase* SceneFieldItem::getItem(
-    ObjectViewConstants::objectId_t targetItemId,
-    ObjectViewConstants::ObjectType targetItemType) const {
-    if (targetItemType == ObjectViewConstants::OBJECTTYPE_NONE) {
+    ObjectViewItems::objectId_t targetItemId,
+    ObjectViewItems::ObjectType targetItemType) const {
+    if (targetItemType == ObjectViewItems::OBJECTTYPE_NONE) {
         for (auto& [itemType, items] : m_registeredItems) {
             for (auto pItem : items) {
                 if (pItem->getObjectId() == targetItemId) {
@@ -63,9 +63,9 @@ std::list<ItemBase*> SceneFieldItem::getRegisteredItems() const {
     return res;
 }
 
-std::list<ObjectViewConstants::objectId_t> SceneFieldItem::getRegisteredIds()
+std::list<ObjectViewItems::objectId_t> SceneFieldItem::getRegisteredIds()
     const {
-    std::list<ObjectViewConstants::objectId_t> res;
+    std::list<ObjectViewItems::objectId_t> res;
     for (auto& [itemType, items] : m_registeredItems) {
         std::transform(items.begin(), items.end(), std::back_inserter(res),
                        [](auto* pItem) { return pItem->getObjectId(); });
@@ -83,7 +83,7 @@ void SceneFieldItem::clearRegisteredItems() {
 }
 
 void SceneFieldItem::removeRegisteredItems(
-    ObjectViewConstants::ObjectType objT) {
+    ObjectViewItems::ObjectType objT) {
     if (m_registeredItems.count(objT) == 0) {
         return;
     }
@@ -117,7 +117,7 @@ void SceneFieldItem::removeRegisteredItem(ItemBase* pItem) {
 }
 
 void SceneFieldItem::removeRegisteredItemById(
-    ObjectViewConstants::objectId_t targetItemId) {
+    ObjectViewItems::objectId_t targetItemId) {
     for (auto& [itemType, items] : m_registeredItems) {
         for (auto pItem : items) {
             if (pItem->getObjectId() == targetItemId) {
@@ -130,7 +130,7 @@ void SceneFieldItem::removeRegisteredItemById(
 }
 
 bool SceneFieldItem::isIdAvailable(
-    ObjectViewConstants::objectId_t itemId) const {
+    ObjectViewItems::objectId_t itemId) const {
     for (auto& [itemType, items] : m_registeredItems) {
         for (auto pItem : items) {
             if (pItem->getObjectId() == itemId) {

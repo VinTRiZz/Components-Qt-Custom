@@ -69,7 +69,7 @@ void InformationObjectView::updateCursorLabel(const QPoint& currentPos) {
             hoverItemName = pHoverItemParent->getSystemName();
         } else {
             hoverItemName =
-                hoverItem->data(ObjectViewConstants::OBJECTFIELD_NAME_SYSTEM)
+                hoverItem->data(ObjectViewItems::OBJECTFIELD_NAME_SYSTEM)
                     .toString();
         }
     }

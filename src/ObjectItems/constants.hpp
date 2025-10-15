@@ -1,12 +1,11 @@
-#ifndef ObjectViewConstants_H
-#define ObjectViewConstants_H
+#pragma once
 
 #include <stdint.h>
 
 #include <QString>
 #include <boost/noncopyable.hpp>
 
-namespace ObjectViewConstants {
+namespace ObjectViewItems {
 
 /**
  * @brief The GraphConversionConfiguration class Структура информации по уровням
@@ -75,6 +74,14 @@ namespace CustomPropertyName {
 const QString PROPERTY_BOUNDINGRECT{"boundingRect"};
 }
 
-}  // namespace ObjectViewConstants
+/**
+ * @brief The LineArrowType enum Возможные виды направления стрелки
+ */
+enum LineArrowType : short {
+    None = 0,
+    Forward = 0b01,
+    Backward = 0b10,
+    Bidirectional = Forward & Backward,
+};
 
-#endif  // ObjectViewConstants_H
+}  // namespace ObjectViewItems

@@ -12,14 +12,14 @@
 
 #include "constants.hpp"
 
-using namespace ObjectViewConstants;
+using namespace ObjectViewItems;
 
 namespace ObjectViewItems {
 
 PictureObjectItem::PictureObjectItem(QGraphicsItem* parent) : ItemBase(parent) {
     setSystemName("Изображение");
 
-    setType(ObjectViewConstants::OBJECTTYPE_PICTURE);
+    setType(ObjectViewItems::OBJECTTYPE_PICTURE);
 
     m_selectedRectItem = new QGraphicsPathItem(this);
     registerSubitem(m_selectedRectItem);
@@ -47,14 +47,14 @@ LabelItem* PictureObjectItem::getLabel() const {
 
 void PictureObjectItem::setImage(const QImage& img, const QString& imageHash) {
     if (img.isNull()) {
-        setData(ObjectViewConstants::OBJECTFIELD_PICTURE_HASH, {});
+        setData(ObjectViewItems::OBJECTFIELD_PICTURE_HASH, {});
         m_vertexImage->setPixmap({});
         m_vertexImage->hide();
         m_vertexEllipse->show();
         return;
     }
 
-    setData(ObjectViewConstants::OBJECTFIELD_PICTURE_HASH, imageHash);
+    setData(ObjectViewItems::OBJECTFIELD_PICTURE_HASH, imageHash);
 
     auto newImage = QPixmap::fromImage(img);
     //    newImage = newImage.scaled(m_vertexEllipse->boundingRect().width(),
@@ -69,7 +69,7 @@ void PictureObjectItem::setImage(const QImage& img, const QString& imageHash) {
 }
 
 QString PictureObjectItem::getImageHash() const {
-    return data(ObjectViewConstants::OBJECTFIELD_PICTURE_HASH).toString();
+    return data(ObjectViewItems::OBJECTFIELD_PICTURE_HASH).toString();
 }
 
 void PictureObjectItem::setDisplayName(const QString& iText) {

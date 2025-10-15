@@ -127,7 +127,7 @@ void InteractiveObjectView::setGrabObject(QGraphicsItem* pItem) {
         return;
     }
     m_grabObjectId =
-        pItem->data(ObjectViewConstants::ObjectField::OBJECTFIELD_ID)
+        pItem->data(ObjectViewItems::ObjectField::OBJECTFIELD_ID)
             .toLongLong();
     m_grabObjectPos = pItem->pos();
 }

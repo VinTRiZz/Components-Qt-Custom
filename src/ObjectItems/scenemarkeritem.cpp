@@ -13,7 +13,7 @@ namespace ObjectViewItems {
 SceneMarkerItem::SceneMarkerItem(ItemBase* parent) : ItemBase(parent) {
     setSystemId();
     setSystemName("Маркер");
-    setType(ObjectViewConstants::OBJECTTYPE_MARKER);
+    setType(ObjectViewItems::OBJECTTYPE_MARKER);
 
     setFlag(ItemIgnoresTransformations, true);
 

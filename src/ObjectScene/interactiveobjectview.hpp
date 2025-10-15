@@ -44,7 +44,7 @@ private:
                    //! вызова контекстного меню
 
     QPointF m_grabObjectPos;  //! Положение объекта до grab
-    std::optional<ObjectViewConstants::objectId_t>
+    std::optional<ObjectViewItems::objectId_t>
         m_grabObjectId;  //! ID объекта, который "прикреплён" к указателю мыши
 
     QPointF m_prevPos;  //! Позиция нажатия на графе

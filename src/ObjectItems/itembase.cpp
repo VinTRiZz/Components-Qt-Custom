@@ -5,7 +5,7 @@
 
 #include "scenefielditem.hpp"
 
-using namespace ObjectViewConstants;
+using namespace ObjectViewItems;
 
 namespace ObjectViewItems {
 
@@ -14,7 +14,7 @@ static objectId_t getSystemId() {
     return --currentId;
 };
 
-ItemBase::ItemBase(QGraphicsItem* parent) : QGraphicsItem(parent) {
+ItemBase::ItemBase(QGraphicsItem* parent) : QGraphicsObject(parent) {
     setSystemName("Неизвестный тип");
 }
 
@@ -70,7 +70,7 @@ void ItemBase::setSystemName(const QString& iText) {
 }
 
 void ItemBase::registerSubitem(QGraphicsItem* pItem) {
-    pItem->setData(ObjectViewConstants::OBJECTFIELD_PARENTITEM_ID,
+    pItem->setData(ObjectViewItems::OBJECTFIELD_PARENTITEM_ID,
                    getObjectId());
 }
 
@@ -86,13 +86,13 @@ QVariant ItemBase::itemChange(GraphicsItemChange change, const QVariant &value)
     {
     case GraphicsItemChange::ItemSelectedHasChanged:
         for  (auto& item : m_subscribedItems[EventType::Selection]) {
-            processEvent(this, EventType::Selection);
+            item->processEvent(this, EventType::Selection);
         }
         break;
 
     case GraphicsItemChange::ItemPositionHasChanged:
         for  (auto& item : m_subscribedItems[EventType::Move]) {
-            processEvent(this, EventType::Move);
+            item->processEvent(this, EventType::Move);
         }
         break;
 

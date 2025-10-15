@@ -20,7 +20,7 @@ public:
     explicit ObjectViewBase(QWidget* parent);
 
     bool getIsInited() const;
-    bool isIdAvailable(ObjectViewConstants::objectId_t itemId) const;
+    bool isIdAvailable(ObjectViewItems::objectId_t itemId) const;
 
     void setGridEnabled(bool isGEnabled);
     bool getIsGridEnabled() const;
@@ -33,12 +33,12 @@ public:
 
     void addObject(ObjectViewItems::ItemBase* pItem);
     ObjectViewItems::ItemBase* getObject(
-        ObjectViewConstants::objectId_t itemId) const;
+        ObjectViewItems::objectId_t itemId) const;
     std::list<ObjectViewItems::ItemBase*> getAllObjects() const;
-    std::list<ObjectViewConstants::objectId_t> getAllObjectIds() const;
+    std::list<ObjectViewItems::objectId_t> getAllObjectIds() const;
     void removeAllObjects();
-    void removeObject(ObjectViewConstants::objectId_t itemId);
-    void removeSpecialObjects(ObjectViewConstants::ObjectType objT);
+    void removeObject(ObjectViewItems::objectId_t itemId);
+    void removeSpecialObjects(ObjectViewItems::ObjectType objT);
 
 public slots:
     void setSceneBrush(const QBrush& sceneBrush);

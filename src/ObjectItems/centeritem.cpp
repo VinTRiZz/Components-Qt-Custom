@@ -7,7 +7,7 @@ namespace ObjectViewItems {
 CenterItem::CenterItem(ItemBase* parent) : ItemBase(parent) {
     setSystemId();
     setSystemName("Центр сцены");
-    setType(ObjectViewConstants::OBJECTTYPE_CANVAS_CENTER);
+    setType(ObjectViewItems::OBJECTTYPE_CANVAS_CENTER);
 
     setFlag(ItemClipsToShape, true);
 
