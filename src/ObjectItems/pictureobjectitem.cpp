@@ -32,29 +32,15 @@ PictureObjectItem::PictureObjectItem(QGraphicsItem* parent) : ItemBase(parent) {
 
     m_vertexEllipse = new QGraphicsEllipseItem(this);
     registerSubitem(m_vertexEllipse);
-
-    m_nameItem = new LabelItem(this);
-    registerSubitem(m_nameItem);
-    m_nameItem->setBorderColor(Qt::black);
-    m_nameItem->setZValue(0);
 }
 
-PictureObjectItem::~PictureObjectItem() {}
-
-LabelItem* PictureObjectItem::getLabel() const {
-    return m_nameItem;
-}
-
-void PictureObjectItem::setImage(const QImage& img, const QString& imageHash) {
+void PictureObjectItem::setImage(const QImage& img) {
     if (img.isNull()) {
-        setData(ObjectViewItems::OBJECTFIELD_PICTURE_HASH, {});
         m_vertexImage->setPixmap({});
         m_vertexImage->hide();
         m_vertexEllipse->show();
         return;
     }
-
-    setData(ObjectViewItems::OBJECTFIELD_PICTURE_HASH, imageHash);
 
     auto newImage = QPixmap::fromImage(img);
     //    newImage = newImage.scaled(m_vertexEllipse->boundingRect().width(),
@@ -63,18 +49,6 @@ void PictureObjectItem::setImage(const QImage& img, const QString& imageHash) {
     m_vertexImage->setPixmap(newImage);
     m_vertexImage->show();
     m_vertexEllipse->hide();
-
-    // Апдейт области
-    setRect(boundingRect());
-}
-
-QString PictureObjectItem::getImageHash() const {
-    return data(ObjectViewItems::OBJECTFIELD_PICTURE_HASH).toString();
-}
-
-void PictureObjectItem::setDisplayName(const QString& iText) {
-    m_nameItem->setDisplayName(iText);
-    ItemBase::setDisplayName(iText);
 
     // Апдейт области
     setRect(boundingRect());
@@ -136,16 +110,12 @@ void PictureObjectItem::setRect(const QRectF& iRect) {
         {(boundingRect().width() - m_vertexImage->boundingRect().width()) / 2.0,
          0});
 
-    // Текст
-    const double labelPadding = 5.0;  // Отступ для визуального разделения
-    m_nameItem->setPos(0, boundingRect().height());
-
     // Выбор
     auto itemRoundRect = itemRect;
     itemRoundRect.moveTo(-selectionPadding / 2.0, -selectionPadding / 2.0);
     itemRoundRect.setWidth(itemRoundRect.width() + selectionPadding);
-    itemRoundRect.setHeight(itemRoundRect.height() + selectionPadding +
-                            m_nameItem->boundingRect().height());
+    itemRoundRect.setHeight(itemRoundRect.height() + selectionPadding);
+
     QPainterPath path;
     path.addRoundedRect(itemRoundRect, 10, 10);
     m_selectedRectItem->setPath(path);
@@ -162,7 +132,6 @@ QPainterPath PictureObjectItem::shape() const {
         res.addPath(m_vertexEllipse->shape());
     }
 
-    res.addPath(m_nameItem->shape());
     return res;
 }
 

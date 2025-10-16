@@ -21,7 +21,6 @@ enum ObjectField : int {
     OBJECTFIELD_NAME_SYSTEM,  //! Имя объекта в системе (изменять только в
                               //! конструкторе)
 
-    OBJECTFIELD_PICTURE_HASH,  //! Хеш картинки для сверки с задаваемым и т.д.
     OBJECTFIELD_DISPLAY_NAME,  //! Короткое имя объекта
     OBJECTFIELD_DESCRIPTION,   //! Описание объекта
 

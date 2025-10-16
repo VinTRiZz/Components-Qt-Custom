@@ -6,21 +6,14 @@
 #include <set>
 
 #include "itembase.hpp"
-#include "labelitem.hpp"
 
 namespace ObjectViewItems {
 
 class PictureObjectItem : public ItemBase {
 public:
     explicit PictureObjectItem(QGraphicsItem* parent = nullptr);
-    ~PictureObjectItem();
 
-    LabelItem* getLabel() const;
-
-    void setImage(const QImage& img, const QString& imageHash);
-    QString getImageHash() const;
-
-    void setDisplayName(const QString& iText) override;
+    void setImage(const QImage& img);
 
     void setBorderColor(const QColor& penColor) override;
     void setBackgroundColor(const QColor& penColor) override;
@@ -37,7 +30,6 @@ private:
     QGraphicsPathItem* m_selectedRectItem{nullptr};
     QGraphicsPixmapItem* m_vertexImage{nullptr};
     QGraphicsEllipseItem* m_vertexEllipse{nullptr};
-    LabelItem* m_nameItem{nullptr};
 
 protected:
     QVariant itemChange(GraphicsItemChange change,
