@@ -24,12 +24,10 @@ CenterItem::CenterItem(ItemBase* parent) : ItemBase(parent) {
                                      maxY / 2.0 - centerSizeY / 2.0,
                                      centerSizeX, centerSizeY));
     m_pCenterEllipse->setBrush(QColor(255, 0, 0, 170));
-    m_pCenterEllipse->setFlag(ItemIgnoresTransformations, true);
     m_pCenterEllipse->setZValue(3);
 
     m_pCenterTargetEllipse = new QGraphicsEllipseItem(this);
     registerSubitem(m_pCenterTargetEllipse);
-    m_pCenterTargetEllipse->setFlag(ItemIgnoresTransformations, true);
     m_pCenterTargetEllipse->setRect(QRectF(maxX * (1 - roundEllipseScale) * 0.5,
                                            maxY * (1 - roundEllipseScale) * 0.5,
                                            maxX * roundEllipseScale,
@@ -38,13 +36,11 @@ CenterItem::CenterItem(ItemBase* parent) : ItemBase(parent) {
 
     m_pCenterVerticalLine = new QGraphicsLineItem(this);
     registerSubitem(m_pCenterVerticalLine);
-    m_pCenterVerticalLine->setFlag(ItemIgnoresTransformations, true);
     m_pCenterVerticalLine->setLine(QLineF(maxX / 2.0, 0, maxX / 2.0, maxY));
     m_pCenterVerticalLine->setZValue(2);
 
     m_pCenterHorizontalLine = new QGraphicsLineItem(this);
     registerSubitem(m_pCenterHorizontalLine);
-    m_pCenterHorizontalLine->setFlag(ItemIgnoresTransformations, true);
     m_pCenterHorizontalLine->setLine(QLineF(0, maxY / 2.0, maxX, maxY / 2.0));
     m_pCenterHorizontalLine->setZValue(2);
 

@@ -2,7 +2,7 @@
 
 #include <QScrollBar>
 
-ObjectView::ObjectView(QWidget* parent) : InformationObjectView(parent) {
+ObjectView::ObjectView(QWidget* parent) : ObjectViewLayers::OVNavigationLayer(parent) {
     setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
 }

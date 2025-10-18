@@ -3,7 +3,7 @@
 
 #include <Components/CustomQt/ObjectScene/CenterItem.h>
 #include <Components/CustomQt/ObjectScene/Constants.h>
-#include <Components/CustomQt/ObjectScene/SceneFieltItem.h>
+#include <Components/CustomQt/ObjectScene/SceneFieldItem.h>
 
 #include <QGraphicsView>
 #include <optional>

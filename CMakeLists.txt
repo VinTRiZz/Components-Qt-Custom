@@ -72,6 +72,7 @@ file(GLOB_RECURSE HEADERS "src/*.hpp" "src/*.h")
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 file(GLOB_RECURSE UIFILES "src/*.ui")
 target_sources(${LIBRARY_NAME} PRIVATE ${HEADERS} ${SOURCES} ${UIFILES})
+source_group("Forms" FILES ${UIFILES})
 
 # Suffixes
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
