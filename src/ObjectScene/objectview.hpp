@@ -1,7 +1,7 @@
 #ifndef OBJECTSCENE_H
 #define OBJECTSCENE_H
 
-#include "ovnavigationlayer.hpp"
+#include "ovinformationlayer.hpp"
 
 namespace Ui {
 class ObjectScene;
@@ -14,7 +14,7 @@ class QMenu;
  * @brief The ObjectScene class Посредник для отображения объектов на
  * QGraphicScene с доп функционалом
  */
-class ObjectView : public ObjectViewLayers::OVNavigationLayer {
+class ObjectView : public ObjectViewLayers::OVInformationLayer {
     Q_OBJECT
 public:
     explicit ObjectView(QWidget* parent = nullptr);

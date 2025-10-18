@@ -4,6 +4,8 @@
 
 #include <QScrollBar>
 
+#include <QVariantAnimation>
+
 namespace ObjectViewLayers {
 
 OVNavigationLayer::OVNavigationLayer(QWidget* parent) :
@@ -13,14 +15,30 @@ OVNavigationLayer::OVNavigationLayer(QWidget* parent) :
 }
 
 void OVNavigationLayer::zoomIn() {
-    customZoom(1.2);
+    auto anim = new QVariantAnimation(this);
+    anim->setStartValue(1.01);
+    anim->setEndValue(1.2);
+    anim->setDuration(100);
+    connect(anim, &QVariantAnimation::valueChanged,
+            this, [this](const QVariant& deltaV){
+        customZoom(deltaV.toDouble());
+    });
+    anim->start(QVariantAnimation::DeleteWhenStopped);
 }
 
 void OVNavigationLayer::zoomOut() {
-    customZoom(0.8);
+    auto anim = new QVariantAnimation(this);
+    anim->setStartValue(0.99);
+    anim->setEndValue(0.8);
+    anim->setDuration(100);
+    connect(anim, &QVariantAnimation::valueChanged,
+            this, [this](const QVariant& deltaV){
+        customZoom(deltaV.toDouble());
+    });
+    anim->start(QVariantAnimation::DeleteWhenStopped);
 }
 
-void OVNavigationLayer::customZoom(double scaleCoeff) {
+void OVNavigationLayer::customZoom(double scaleCoeff) {    
     scale(scaleCoeff, scaleCoeff);
     emit scaleChanged(scaleCoeff);
 }
@@ -29,8 +47,17 @@ double OVNavigationLayer::getCurrentScale() const {
     return transform().m11();
 }
 
+void OVNavigationLayer::setNavigationEnabled(bool isEn)
+{
+    m_isNavigationEnabled = isEn;
+}
+
 
 void OVNavigationLayer::wheelEvent(QWheelEvent* e) {
+    if (!m_isNavigationEnabled) {
+        return;
+    }
+
     auto cursorPos = mapToScene(mapFromGlobal(QCursor::pos()));
     if (e->angleDelta().ry() > 0) {
         zoomOut();
@@ -43,7 +70,10 @@ void OVNavigationLayer::wheelEvent(QWheelEvent* e) {
 }
 
 void OVNavigationLayer::mousePressEvent(QMouseEvent* e) {
-    setCursor(Qt::ArrowCursor);
+    if (!m_isNavigationEnabled) {
+        return;
+    }
+
     m_isHoldingMiddleButton = (e->button() == Qt::MiddleButton);
     if (m_isHoldingMiddleButton) {
         setCursor(Qt::SizeAllCursor);
@@ -52,7 +82,11 @@ void OVNavigationLayer::mousePressEvent(QMouseEvent* e) {
 }
 
 void OVNavigationLayer::mouseMoveEvent(QMouseEvent* e) {
-    if (m_isHoldingMiddleButton) {
+    if (!m_isNavigationEnabled) {
+        return;
+    }
+
+    if (!m_isHoldingMiddleButton) {
         auto deltaPos = e->pos() - mapFromScene(m_prevPos);
         horizontalScrollBar()->setSliderPosition(
             horizontalScrollBar()->sliderPosition() - deltaPos.x());
@@ -62,6 +96,10 @@ void OVNavigationLayer::mouseMoveEvent(QMouseEvent* e) {
 }
 
 void OVNavigationLayer::mouseReleaseEvent(QMouseEvent* e) {
+    if (!m_isNavigationEnabled) {
+        return;
+    }
+
     setCursor(Qt::ArrowCursor);
     m_isHoldingMiddleButton = false;
 }

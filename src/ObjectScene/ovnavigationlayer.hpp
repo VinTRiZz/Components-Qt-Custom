@@ -16,6 +16,8 @@ public:
     double getCurrentScale() const;
 
 public slots:
+    void setNavigationEnabled(bool isEn);
+
     void zoomIn();
     void zoomOut();
     void customZoom(double scaleCoeff);
