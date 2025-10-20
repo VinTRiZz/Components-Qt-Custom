@@ -8,7 +8,7 @@
 namespace ObjectViewLayers {
 
 OVInformationLayer::OVInformationLayer(QWidget *parent) :
-    OVItemGeometryLayer(parent)
+    OVMeasurementLayer(parent)
 {
     m_pCursorLabel = new ObjectViewItems::LabelItem;
     m_pCursorLabel->setFlag(QGraphicsItem::ItemIgnoresTransformations);
@@ -27,8 +27,8 @@ OVInformationLayer::OVInformationLayer(QWidget *parent) :
     font-size: 14px;
     background-color: rgba(200, 240, 210, 80);
     border: 1px solid black;
-    border-bottom-left-radius: 6px;
-    border-bottom-right-radius: 6px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
 )");
     updateInformationLabel();
 
@@ -72,6 +72,21 @@ void OVInformationLayer::updateCursorLabel()
     auto cursorPos = mapToScene(mapFromGlobal(QCursor::pos()));
     m_pCursorLabel->setPos(cursorPos + QPointF(10, 10) / getCurrentScale());
     m_pCursorLabel->setDisplayName(m_cursorValuesPresenter(cursorPos));
+
+    // TODO: Use
+//    auto hoverItem = itemAt(currentPos);
+//    if ((nullptr != hoverItem) &&
+//        (dynamic_cast<ObjectViewItems::SceneMarkerItem*>(hoverItem) ==
+//         nullptr)) {
+//        auto pHoverItemParent = getParentOfComplex(hoverItem);
+//        if (nullptr != pHoverItemParent) {
+//            hoverItemName = pHoverItemParent->getSystemName();
+//        } else {
+//            hoverItemName =
+//                hoverItem->data(ObjectViewItems::OBJECTFIELD_NAME_SYSTEM)
+//                    .toString();
+//        }
+//    }
 }
 
 void OVInformationLayer::updateInformationLabel() {
@@ -89,35 +104,40 @@ void OVInformationLayer::updateInformationLabel() {
 
 void OVInformationLayer::wheelEvent(QWheelEvent *e)
 {
-    OVItemGeometryLayer::wheelEvent(e);
+    OVMeasurementLayer::wheelEvent(e);
 }
 
 void OVInformationLayer::mousePressEvent(QMouseEvent *e)
 {
-    OVItemGeometryLayer::mousePressEvent(e);
+    OVMeasurementLayer::mousePressEvent(e);
 }
 
 void OVInformationLayer::mouseMoveEvent(QMouseEvent *e)
 {
-    OVItemGeometryLayer::mouseMoveEvent(e);
+    OVMeasurementLayer::mouseMoveEvent(e);
     updateCursorLabel();
 }
 
 void OVInformationLayer::mouseReleaseEvent(QMouseEvent *e)
 {
-    OVItemGeometryLayer::mouseReleaseEvent(e);
+    OVMeasurementLayer::mouseReleaseEvent(e);
 }
 
 void OVInformationLayer::enterEvent(QEvent *e)
 {
-    OVItemGeometryLayer::enterEvent(e);
+    OVMeasurementLayer::enterEvent(e);
     m_pCursorLabel->show();
 }
 
 void OVInformationLayer::leaveEvent(QEvent *e)
 {
-    OVItemGeometryLayer::leaveEvent(e);
+    OVMeasurementLayer::leaveEvent(e);
     m_pCursorLabel->hide();
+}
+
+void OVInformationLayer::resizeEvent(QResizeEvent *e) {
+    m_pInformationLabel->move(10, height() - m_pInformationLabel->height());
+    OVMeasurementLayer::resizeEvent(e);
 }
 
 } // namespace ObjectViewLayers

@@ -16,8 +16,8 @@ OVNavigationLayer::OVNavigationLayer(QWidget* parent) :
 
 void OVNavigationLayer::zoomIn() {
     auto anim = new QVariantAnimation(this);
-    anim->setStartValue(1.01);
-    anim->setEndValue(1.2);
+    anim->setStartValue(0.99);
+    anim->setEndValue(0.8);
     anim->setDuration(100);
     connect(anim, &QVariantAnimation::valueChanged,
             this, [this](const QVariant& deltaV){
@@ -28,8 +28,8 @@ void OVNavigationLayer::zoomIn() {
 
 void OVNavigationLayer::zoomOut() {
     auto anim = new QVariantAnimation(this);
-    anim->setStartValue(0.99);
-    anim->setEndValue(0.8);
+    anim->setStartValue(1.01);
+    anim->setEndValue(1.2);
     anim->setDuration(100);
     connect(anim, &QVariantAnimation::valueChanged,
             this, [this](const QVariant& deltaV){

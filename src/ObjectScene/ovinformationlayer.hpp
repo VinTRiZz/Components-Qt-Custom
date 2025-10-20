@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ovitemgeometrylayer.hpp"
+#include "ovmeasurementlayer.hpp"
 
 #include <QLabel>
 
@@ -8,7 +8,7 @@
 
 namespace ObjectViewLayers {
 
-class OVInformationLayer : public OVItemGeometryLayer
+class OVInformationLayer : public OVMeasurementLayer
 {
 public:
     explicit OVInformationLayer(QWidget* parent = nullptr);
@@ -47,6 +47,8 @@ protected:
 
     void enterEvent(QEvent* e) override;
     void leaveEvent(QEvent* e) override;
+
+    void resizeEvent(QResizeEvent* e) override;
 };
 
 } // namespace ObjectViewLayers
