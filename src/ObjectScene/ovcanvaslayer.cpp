@@ -12,6 +12,7 @@ OVCanvasLayer::OVCanvasLayer(QWidget *parent) :
 {
     m_pInternalScene = new OVInternalScene(this);
     setScene(m_pInternalScene);
+    setRenderHint(QPainter::Antialiasing);
 
     m_pCanvasItem = new ObjectViewItems::SceneFieldItem;
     m_pInternalScene->addItem(m_pCanvasItem);

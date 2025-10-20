@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ovmeasurementlayer.hpp"
+#include "ovcontextmenulayer.hpp"
 
 #include <QLabel>
 
@@ -8,7 +8,7 @@
 
 namespace ObjectViewLayers {
 
-class OVInformationLayer : public OVMeasurementLayer
+class OVInformationLayer : public OVContextMenuLayer
 {
 public:
     explicit OVInformationLayer(QWidget* parent = nullptr);

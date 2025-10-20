@@ -8,7 +8,7 @@
 namespace ObjectViewLayers {
 
 OVInformationLayer::OVInformationLayer(QWidget *parent) :
-    OVMeasurementLayer(parent)
+    OVContextMenuLayer(parent)
 {
     m_pCursorLabel = new ObjectViewItems::LabelItem;
     m_pCursorLabel->setFlag(QGraphicsItem::ItemIgnoresTransformations);
@@ -104,40 +104,40 @@ void OVInformationLayer::updateInformationLabel() {
 
 void OVInformationLayer::wheelEvent(QWheelEvent *e)
 {
-    OVMeasurementLayer::wheelEvent(e);
+    OVContextMenuLayer::wheelEvent(e);
 }
 
 void OVInformationLayer::mousePressEvent(QMouseEvent *e)
 {
-    OVMeasurementLayer::mousePressEvent(e);
+    OVContextMenuLayer::mousePressEvent(e);
 }
 
 void OVInformationLayer::mouseMoveEvent(QMouseEvent *e)
 {
-    OVMeasurementLayer::mouseMoveEvent(e);
+    OVContextMenuLayer::mouseMoveEvent(e);
     updateCursorLabel();
 }
 
 void OVInformationLayer::mouseReleaseEvent(QMouseEvent *e)
 {
-    OVMeasurementLayer::mouseReleaseEvent(e);
+    OVContextMenuLayer::mouseReleaseEvent(e);
 }
 
 void OVInformationLayer::enterEvent(QEvent *e)
 {
-    OVMeasurementLayer::enterEvent(e);
+    OVContextMenuLayer::enterEvent(e);
     m_pCursorLabel->show();
 }
 
 void OVInformationLayer::leaveEvent(QEvent *e)
 {
-    OVMeasurementLayer::leaveEvent(e);
+    OVContextMenuLayer::leaveEvent(e);
     m_pCursorLabel->hide();
 }
 
 void OVInformationLayer::resizeEvent(QResizeEvent *e) {
     m_pInformationLabel->move(10, height() - m_pInformationLabel->height());
-    OVMeasurementLayer::resizeEvent(e);
+    OVContextMenuLayer::resizeEvent(e);
 }
 
 } // namespace ObjectViewLayers
