@@ -16,6 +16,22 @@ OVInformationLayer::OVInformationLayer(QWidget *parent) :
     m_pCursorLabel->setZValue(ItemLayers::CursorLabel);
     m_pCursorLabel->setBackgroundColor(Qt::white);
 
+    m_pInformationLabel = new QLabel(this);
+    m_pInformationLabel->setWordWrap(true);
+    m_pInformationLabel->setFixedSize(500, 50);
+
+    // Настройка для отображения
+    m_pInformationLabel->setStyleSheet(
+        R"(
+    color: black;
+    font-size: 14px;
+    background-color: rgba(200, 240, 210, 80);
+    border: 1px solid black;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+)");
+    updateInformationLabel();
+
     setCursorValuesPresenter([](const QPointF& curPoint) -> QString {
         return QString("X: %0\nY: %1").arg(QString::number(curPoint.x()), QString::number(curPoint.y()));
     });
@@ -30,6 +46,22 @@ ObjectViewItems::LabelItem *OVInformationLayer::getCursorLabel() const
     return m_pCursorLabel;
 }
 
+QLabel *OVInformationLayer::getInformationLabel() const
+{
+    return m_pInformationLabel;
+}
+
+void OVInformationLayer::setCurrentToolname(const QString &toolName)
+{
+    m_currentToolName = toolName;
+    updateInformationLabel();
+}
+
+void OVInformationLayer::setInformationFormat(const QString &infoFormat)
+{
+    m_currentInfoFormat = infoFormat;
+}
+
 void OVInformationLayer::setCursorValuesPresenter(const std::function<QString (const QPointF &)> &pres)
 {
     m_cursorValuesPresenter = pres;
@@ -40,6 +72,19 @@ void OVInformationLayer::updateCursorLabel()
     auto cursorPos = mapToScene(mapFromGlobal(QCursor::pos()));
     m_pCursorLabel->setPos(cursorPos + QPointF(10, 10) / getCurrentScale());
     m_pCursorLabel->setDisplayName(m_cursorValuesPresenter(cursorPos));
+}
+
+void OVInformationLayer::updateInformationLabel() {
+    auto isGridEnabled = getScene()->getIsGridEnabled();
+    auto gridSize = getScene()->getGridSize();
+    auto infoText = m_currentInfoFormat.arg(
+                QString::number(getCurrentScale(), 'f', 3),
+                 isGridEnabled ? QString("%0px").arg(gridSize)
+                               : QString("Выкл."),
+                 m_currentToolName.isEmpty() ? QString("Нет")
+                                             : m_currentToolName);
+
+    m_pInformationLabel->setText(infoText);
 }
 
 void OVInformationLayer::wheelEvent(QWheelEvent *e)
