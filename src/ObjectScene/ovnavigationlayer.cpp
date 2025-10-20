@@ -86,7 +86,7 @@ void OVNavigationLayer::mouseMoveEvent(QMouseEvent* e) {
         return;
     }
 
-    if (!m_isHoldingMiddleButton) {
+    if (m_isHoldingMiddleButton) {
         auto deltaPos = e->pos() - mapFromScene(m_prevPos);
         horizontalScrollBar()->setSliderPosition(
             horizontalScrollBar()->sliderPosition() - deltaPos.x());

@@ -65,4 +65,41 @@ ObjectViewItems::CenterItem *OVCanvasLayer::getCenterItem() const
     return m_pCenterItem;
 }
 
+QGraphicsItem *OVCanvasLayer::getTopItem(const QPoint &viewportPos) const
+{
+    auto posItems = items(viewportPos);
+    std::sort(posItems.begin(), posItems.end(), [](auto* pItemL, auto* pItemR){
+        return (pItemL->zValue() < pItemR->zValue());
+    });
+    auto resItem = std::find_if(posItems.begin(), posItems.end(), [this](auto* pItem){
+        return  (pItem->zValue() > ItemLayers::CanvasLayer) &&
+                (pItem->zValue() < ItemLayers::SystemComponentsLayerBegin) &&
+                !isSystemItem(pItem);
+    });
+    if (resItem != posItems.end()) {
+        return *resItem;
+    }
+    return nullptr;
+}
+
+QList<QGraphicsItem *> OVCanvasLayer::getItems(const QPoint &viewportPos, bool sorted) const
+{
+    auto posItems = items(viewportPos);
+    std::sort(posItems.begin(), posItems.end(), [](auto* pItemL, auto* pItemR){
+        return (pItemL->zValue() < pItemR->zValue());
+    });
+    auto removedBeg = std::remove_if(posItems.begin(), posItems.end(), [this](auto* pItem){
+        return  (pItem->zValue() <= ItemLayers::CanvasLayer) &&
+                (pItem->zValue() >= ItemLayers::SystemComponentsLayerBegin) &&
+                isSystemItem(pItem);
+    });
+    posItems.erase(removedBeg, posItems.end());
+    return posItems;
+}
+
+bool OVCanvasLayer::isSystemItem(QGraphicsItem *pItem) const
+{
+    return false;
+}
+
 }
