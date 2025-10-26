@@ -31,7 +31,7 @@ private:
     QString m_displayName;
     QString m_description;
 
-    QColor m_borderColor;
+    QColor m_lineColor;
     QColor m_backgroundColor;
     QColor m_selectionColor;
 
@@ -52,8 +52,8 @@ public:
     void setDescription(const QString& text);
     QString getDescription() const;
 
-    void setBorderColor(const QColor& color);
-    QColor getBorderColor() const;
+    void setLineColor(const QColor& color);
+    QColor getLineColor() const;
 
     void setBackgroundColor(const QColor& color);
     QColor getBackgroundColor() const;

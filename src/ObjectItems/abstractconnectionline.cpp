@@ -92,6 +92,11 @@ void AbstractConnectionLine::setWidth(double w)
     emit graphicalDataChanged();
 }
 
+QPen AbstractConnectionLine::getStylePen() const
+{
+    return m_stylePen;
+}
+
 QPainterPath AbstractConnectionLine::createArrowPath() const
 {
     QPainterPath p;

@@ -52,6 +52,8 @@ public:
     void setStyle(Qt::PenStyle pst);
     void setWidth(double w);
 
+    QPen getStylePen() const;
+
 private:
     QLineF              m_straightLine  {};
     LineDirectionType   m_arrowType     {LineDirectionType::None};

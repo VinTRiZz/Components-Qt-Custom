@@ -25,9 +25,9 @@ void BasicItemInterface::setDescription(const QString &text) { m_description = t
 
 QString BasicItemInterface::getDescription() const { return m_description; }
 
-void BasicItemInterface::setBorderColor(const QColor &color) { m_borderColor = color; processColorChange(); }
+void BasicItemInterface::setLineColor(const QColor &color) { m_lineColor = color; processColorChange(); }
 
-QColor BasicItemInterface::getBorderColor() const { return m_borderColor; }
+QColor BasicItemInterface::getLineColor() const { return m_lineColor; }
 
 void BasicItemInterface::setBackgroundColor(const QColor &color) { m_backgroundColor = color; processColorChange(); }
 

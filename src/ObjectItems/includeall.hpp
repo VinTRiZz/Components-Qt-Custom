@@ -6,3 +6,4 @@
 
 // Lines
 #include "arrowedconnectionline.hpp"
+#include "elegantconnectionline.hpp"
