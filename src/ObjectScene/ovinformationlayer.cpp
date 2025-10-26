@@ -13,7 +13,7 @@ OVInformationLayer::OVInformationLayer(QWidget *parent) :
     m_pCursorLabel = new ObjectViewItems::LabelItem;
     m_pCursorLabel->setFlag(QGraphicsItem::ItemIgnoresTransformations);
     getScene()->addItem(m_pCursorLabel);
-    m_pCursorLabel->setZValue(ItemLayers::CursorLabel);
+    m_pCursorLabel->setZValue(ItemLayers::CursorLabelLayer);
     m_pCursorLabel->setBackgroundColor(Qt::white);
 
     m_pInformationLabel = new QLabel(this);

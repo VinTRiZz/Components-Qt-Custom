@@ -12,7 +12,9 @@ OVCanvasLayer::OVCanvasLayer(QWidget *parent) :
 {
     m_pInternalScene = new OVInternalScene(this);
     setScene(m_pInternalScene);
-    setRenderHint(QPainter::Antialiasing);
+
+    setRenderHint(QPainter::Antialiasing);  // красивые текстуры
+    setViewportUpdateMode(QGraphicsView::FullViewportUpdate);   // Фикс артефактов Foreground
 
     m_pCanvasItem = new ObjectViewItems::SceneFieldItem;
     m_pInternalScene->addItem(m_pCanvasItem);
@@ -23,7 +25,7 @@ OVCanvasLayer::OVCanvasLayer(QWidget *parent) :
 
     m_pCenterItem = new ObjectViewItems::CenterItem(m_pCenterItem);
     m_pInternalScene->addItem(m_pCenterItem);
-    m_pCenterItem->setZValue(ItemLayers::CanvasLayer + 1);
+    m_pCenterItem->setZValue(ItemLayers::CenterItemLayer);
 }
 
 void OVCanvasLayer::setCanvasRect(const QRectF &iRect) {

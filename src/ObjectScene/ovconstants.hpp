@@ -16,7 +16,8 @@ enum ItemLayers : int {
 
     // СОГЛАШЕНИЕ: Все уровни далее -- системные
     SystemComponentsLayerBegin = 1'000'000,
-    CursorLabel,
+    CenterItemLayer,
+    CursorLabelLayer,
 };
 
 }
