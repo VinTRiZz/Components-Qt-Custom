@@ -2,9 +2,6 @@
 
 #include <QGraphicsView>
 
-#include <Components/CustomQt/ObjectItems/SceneFieldItem.h>
-#include <Components/CustomQt/ObjectItems/CenterItem.h>
-
 namespace OVLayers {
 
 class OVInternalScene;
@@ -29,8 +26,7 @@ public:
     QRectF getCanvasRect() const;
 
     OVInternalScene* getScene() const;
-    ObjectItems::SceneFieldItem* getCanvas() const;
-    ObjectItems::CenterItem* getCenterItem() const;
+    QGraphicsRectItem* getCanvas() const;
 
     QGraphicsItem*          getTopItem(const QPoint& viewportPos) const;
     QList<QGraphicsItem*>   getItems(const QPoint& viewportPos, bool sorted = true) const;
@@ -59,8 +55,7 @@ protected:
 
 private:
     OVInternalScene* m_pInternalScene {nullptr};
-    ObjectItems::SceneFieldItem* m_pCanvasItem {nullptr};
-    ObjectItems::CenterItem *m_pCenterItem {nullptr};
+    QGraphicsRectItem* m_pCanvasItem {nullptr};
 
     bool m_isNavigationEnabled {true}; //! Флаг включения навигации
 

@@ -22,10 +22,9 @@ protected:
     void mouseReleaseEvent(QMouseEvent* e) override;
 
 private:
-    bool m_isGeometryChangingEnabled {false};
+    bool m_isInteractionEnabled {false};
 
-    QGraphicsPathItem*  m_pSystemGrabHeadItem {nullptr};
-    QGraphicsItem*      m_pCurrentGrabItem {nullptr};
+    QGraphicsItem*  m_pCurrentGrabItem {nullptr};
 };
 
 } // namespace ObjectItems

@@ -9,6 +9,8 @@
 
 #include <QVariantAnimation>
 
+#include <QGraphicsRectItem>
+
 namespace OVLayers {
 
 OVCanvasLayer::OVCanvasLayer(QWidget *parent) :
@@ -28,21 +30,16 @@ OVCanvasLayer::OVCanvasLayer(QWidget *parent) :
     horizontalScrollBar()->installEventFilter(this);
     verticalScrollBar()->installEventFilter(this);
 
-    m_pCanvasItem = new ObjectItems::SceneFieldItem;
+    m_pCanvasItem = new QGraphicsRectItem;
     m_pInternalScene->addItem(m_pCanvasItem);
     m_pCanvasItem->setBrush(DEFAULT_CANVASCOLOR);
     m_pCanvasItem->setPen(QPen(DEFALT_CANVASBORDERCOLOR, 2));
     m_pCanvasItem->setZValue(ItemLayers::CanvasLayer);
     m_pCanvasItem->show();
-
-    m_pCenterItem = new ObjectItems::CenterItem(m_pCenterItem);
-    m_pInternalScene->addItem(m_pCenterItem);
-    m_pCenterItem->setZValue(ItemLayers::CenterItemLayer);
 }
 
 void OVCanvasLayer::setCanvasRect(const QRectF &iRect) {
-    m_pCanvasItem->setFieldRect(iRect);
-    m_pCenterItem->setPos(getCanvasRect().center() - m_pCenterItem->boundingRect().center());
+    m_pCanvasItem->setRect(iRect);
     resetTransform();
 
     QRectF viewRect = mapToScene(viewport()->rect()).boundingRect();
@@ -62,7 +59,7 @@ void OVCanvasLayer::setCanvasRect(const QRectF &iRect) {
 
 QRectF OVCanvasLayer::getCanvasRect() const
 {
-    return m_pCanvasItem->getFieldRect();
+    return m_pCanvasItem->rect();
 }
 
 OVInternalScene *OVCanvasLayer::getScene() const
@@ -70,14 +67,9 @@ OVInternalScene *OVCanvasLayer::getScene() const
     return m_pInternalScene;
 }
 
-ObjectItems::SceneFieldItem *OVCanvasLayer::getCanvas() const
+QGraphicsRectItem *OVCanvasLayer::getCanvas() const
 {
     return m_pCanvasItem;
-}
-
-ObjectItems::CenterItem *OVCanvasLayer::getCenterItem() const
-{
-    return m_pCenterItem;
 }
 
 QGraphicsItem *OVCanvasLayer::getTopItem(const QPoint &viewportPos) const

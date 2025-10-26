@@ -12,11 +12,11 @@ OVInformationLayer::OVInformationLayer(QWidget *parent) :
 {
     initContextMenu();
 
-    m_pCursorLabel = new ObjectItems::LabelItem;
-    m_pCursorLabel->setFlag(QGraphicsItem::ItemIgnoresTransformations);
-    getScene()->addItem(m_pCursorLabel);
-    m_pCursorLabel->setZValue(ItemLayers::CursorLabelLayer);
-    m_pCursorLabel->setBackgroundColor(Qt::white);
+//    m_pCursorLabel = new ObjectItems::LabelItem;
+//    m_pCursorLabel->setFlag(QGraphicsItem::ItemIgnoresTransformations);
+//    getScene()->addItem(m_pCursorLabel);
+//    m_pCursorLabel->setZValue(ItemLayers::CursorLabelLayer);
+//    m_pCursorLabel->setBackgroundColor(Qt::white);
 
     m_pInformationLabel = new QLabel(this);
     m_pInformationLabel->setWordWrap(true);
@@ -43,10 +43,10 @@ OVInformationLayer::OVInformationLayer(QWidget *parent) :
             this, &OVInformationLayer::updateCursorLabel);
 }
 
-ObjectItems::LabelItem *OVInformationLayer::getCursorLabel() const
-{
-    return m_pCursorLabel;
-}
+//ObjectItems::LabelItem *OVInformationLayer::getCursorLabel() const
+//{
+//    return m_pCursorLabel;
+//}
 
 QLabel *OVInformationLayer::getInformationLabel() const
 {
@@ -72,8 +72,8 @@ void OVInformationLayer::setCursorValuesPresenter(const std::function<QString (c
 void OVInformationLayer::updateCursorLabel()
 {
     auto cursorPos = mapToScene(mapFromGlobal(QCursor::pos()));
-    m_pCursorLabel->setPos(cursorPos + QPointF(10, 10) / getCurrentScale());
-    m_pCursorLabel->setDisplayName(m_cursorValuesPresenter(cursorPos));
+//    m_pCursorLabel->setPos(cursorPos + QPointF(10, 10) / getCurrentScale());
+//    m_pCursorLabel->setDisplayName(m_cursorValuesPresenter(cursorPos));
 
     // TODO: Use
 //    auto hoverItem = itemAt(currentPos);
@@ -113,13 +113,13 @@ void OVInformationLayer::mouseMoveEvent(QMouseEvent *e)
 void OVInformationLayer::enterEvent(QEvent *e)
 {
     OVMeasurementLayer::enterEvent(e);
-    m_pCursorLabel->show();
+//    m_pCursorLabel->show();
 }
 
 void OVInformationLayer::leaveEvent(QEvent *e)
 {
     OVMeasurementLayer::leaveEvent(e);
-    m_pCursorLabel->hide();
+//    m_pCursorLabel->hide();
 }
 
 void OVInformationLayer::resizeEvent(QResizeEvent *e) {

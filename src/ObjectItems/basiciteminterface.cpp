@@ -1,0 +1,42 @@
+#include "basiciteminterface.hpp"
+
+namespace ObjectItems {
+
+objectId_t BasicItemInterface::createSystemId() {
+    static objectId_t currentId{-1};
+    return --currentId;
+}
+
+bool BasicItemInterface::isSystemObject() const { return m_id < 0; }
+
+void BasicItemInterface::setObjectId(objectId_t id) { m_id = id; processIdChange(); }
+
+void BasicItemInterface::setSystemId() { setObjectId(createSystemId()); }
+
+objectId_t BasicItemInterface::getObjectId() const { return m_id; }
+
+QString BasicItemInterface::getSystemName() const { return m_systemName; }
+
+void BasicItemInterface::setDisplayName(const QString &text) { m_displayName = text; processDataChange(); }
+
+QString BasicItemInterface::getDisplayName() const { return m_displayName; }
+
+void BasicItemInterface::setDescription(const QString &text) { m_description = text; processDataChange(); }
+
+QString BasicItemInterface::getDescription() const { return m_description; }
+
+void BasicItemInterface::setBorderColor(const QColor &color) { m_borderColor = color; processColorChange(); }
+
+QColor BasicItemInterface::getBorderColor() const { return m_borderColor; }
+
+void BasicItemInterface::setBackgroundColor(const QColor &color) { m_backgroundColor = color; processColorChange(); }
+
+QColor BasicItemInterface::getBackgroundColor() const { return m_backgroundColor; }
+
+void BasicItemInterface::setSelectionColor(const QColor &color) { m_selectionColor = color; processColorChange(); }
+
+QColor BasicItemInterface::getSelectionColor() const { return m_selectionColor; }
+
+void BasicItemInterface::setSystemName(const QString &iText) { m_systemName = iText; }
+
+}

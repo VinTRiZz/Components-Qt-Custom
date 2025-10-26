@@ -1,5 +1,4 @@
-#ifndef PREDEFINEDOBJECTBASE_H
-#define PREDEFINEDOBJECTBASE_H
+#pragma once
 
 #include <QBrush>
 #include <QGraphicsObject>
@@ -74,5 +73,3 @@ protected:
 };
 
 }  // namespace ObjectItems
-
-#endif  // PREDEFINEDOBJECTBASE_H

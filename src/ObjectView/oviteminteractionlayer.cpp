@@ -7,14 +7,12 @@ namespace OVLayers {
 OVItemInteractionLayer::OVItemInteractionLayer(QWidget* parent) :
     OVCanvasLayer(parent)
 {
-    m_pSystemGrabHeadItem = new QGraphicsPathItem;
-    getScene()->addItem(m_pSystemGrabHeadItem);
-    m_pSystemGrabHeadItem->show();
+
 }
 
 void OVItemInteractionLayer::setGeometryChangingEnabled(bool isEn)
 {
-    m_isGeometryChangingEnabled = isEn;
+    m_isInteractionEnabled = isEn;
 }
 
 void OVItemInteractionLayer::wheelEvent(QWheelEvent *e)
