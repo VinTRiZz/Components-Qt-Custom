@@ -19,16 +19,18 @@ void OVItemInteractionLayer::setGeometryChangingEnabled(bool isEn)
 
 void OVItemInteractionLayer::wheelEvent(QWheelEvent *e)
 {
-
+    OVCanvasLayer::wheelEvent(e);
 }
 
 void OVItemInteractionLayer::mousePressEvent(QMouseEvent *e)
 {
-
+    OVCanvasLayer::mousePressEvent(e);
 }
 
 void OVItemInteractionLayer::mouseMoveEvent(QMouseEvent *e)
 {
+    OVCanvasLayer::mouseMoveEvent(e);
+
 //    auto pObject = getGrabObject();
 //    if (nullptr != pObject) {
 //        if (getIsGridEnabled()) {
@@ -56,7 +58,7 @@ void OVItemInteractionLayer::mouseMoveEvent(QMouseEvent *e)
 
 void OVItemInteractionLayer::mouseReleaseEvent(QMouseEvent *e)
 {
-
+    OVCanvasLayer::mouseReleaseEvent(e);
 }
 
 } // namespace ObjectViewItems

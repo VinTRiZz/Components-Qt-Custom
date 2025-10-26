@@ -3,7 +3,7 @@
 namespace ObjectViewLayers {
 
 OVMeasurementLayer::OVMeasurementLayer(QWidget* parent) :
-    OVItemGeometryLayer(parent)
+    OVItemInteractionLayer(parent)
 {
 
 }

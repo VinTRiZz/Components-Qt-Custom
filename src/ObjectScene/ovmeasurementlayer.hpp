@@ -1,10 +1,10 @@
 #pragma once
 
-#include "ovitemgeometrylayer.hpp"
+#include "oviteminteractionlayer.hpp"
 
 namespace ObjectViewLayers {
 
-class OVMeasurementLayer : public OVItemGeometryLayer
+class OVMeasurementLayer : public OVItemInteractionLayer
 {
 public:
     explicit OVMeasurementLayer(QWidget* parent = nullptr);
