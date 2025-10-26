@@ -4,7 +4,7 @@
 
 // OV -- сокращение от ObjectsView
 
-namespace ObjectViewLayers {
+namespace OVLayers {
 
 class OVInternalScene : public QGraphicsScene
 {

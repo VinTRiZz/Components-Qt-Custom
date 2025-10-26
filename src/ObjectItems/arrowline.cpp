@@ -7,11 +7,11 @@
 #include <QPainter>
 #include <QPen>
 
-namespace ObjectViewItems {
+namespace ObjectItems {
 
 ArrowLine::ArrowLine(QGraphicsItem* parent) : LineItem(parent) {
     setSystemName("Соединение (радиальное)");
-    setType(ObjectViewItems::OBJECTTYPE_ARROWLINE);
+    setType(ObjectItems::OBJECTTYPE_ARROWLINE);
     m_line = new QGraphicsLineItem(this);
     registerSubitem(m_line);
 
@@ -102,4 +102,4 @@ QVariant ArrowLine::itemChange(GraphicsItemChange change,
     return ItemBase::itemChange(change, value);
 }
 
-}  // namespace ObjectViewItems
+}  // namespace ObjectItems

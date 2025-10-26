@@ -1,6 +1,6 @@
 #include "ovmeasurementlayer.hpp"
 
-namespace ObjectViewLayers {
+namespace OVLayers {
 
 OVMeasurementLayer::OVMeasurementLayer(QWidget* parent) :
     OVItemInteractionLayer(parent)
@@ -8,4 +8,4 @@ OVMeasurementLayer::OVMeasurementLayer(QWidget* parent) :
 
 }
 
-} // namespace ObjectViewLayers
+} // namespace OVLayers

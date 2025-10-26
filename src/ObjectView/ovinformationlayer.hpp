@@ -1,19 +1,23 @@
 #pragma once
 
+#include "ovmeasurementlayer.hpp"
 #include "ovcontextmenulayer.hpp"
 
 #include <QLabel>
 
-#include <Components/CustomQt/ObjectScene/LabelItem.h>
+#include <Components/CustomQt/ObjectItems/LabelItem.h>
 
-namespace ObjectViewLayers {
+namespace OVLayers {
 
-class OVInformationLayer : public OVContextMenuLayer
+class OVInformationLayer :
+        public OVMeasurementLayer,
+        public OVContextMenuLayer<OVInformationLayer>
 {
+    Q_OBJECT
 public:
     explicit OVInformationLayer(QWidget* parent = nullptr);
 
-    ObjectViewItems::LabelItem* getCursorLabel() const;
+    ObjectItems::LabelItem* getCursorLabel() const;
     QLabel* getInformationLabel() const;
 
     void setCurrentToolname(const QString& toolName);
@@ -25,7 +29,7 @@ public:
     void setCursorValuesPresenter(const std::function<QString(const QPointF&)>& pres);
 
 private:
-    ObjectViewItems::LabelItem* m_pCursorLabel{
+    ObjectItems::LabelItem* m_pCursorLabel{
         nullptr};  //! Объект, который показывает информацию у курсора
 
     QLabel* m_pInformationLabel{nullptr};
@@ -39,17 +43,15 @@ private slots:
     void updateInformationLabel();
 
 protected:
-    void wheelEvent(QWheelEvent* e) override;
-
-    void mousePressEvent(QMouseEvent* e) override;
     void mouseMoveEvent(QMouseEvent* e) override;
-    void mouseReleaseEvent(QMouseEvent* e) override;
 
     void enterEvent(QEvent* e) override;
     void leaveEvent(QEvent* e) override;
 
     void resizeEvent(QResizeEvent* e) override;
+
+    void contextMenuEvent(QContextMenuEvent* e) override;
 };
 
-} // namespace ObjectViewLayers
+} // namespace OVLayers
 

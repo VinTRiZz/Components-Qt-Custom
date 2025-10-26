@@ -68,7 +68,7 @@ LINK_COMPONENT(${LIBRARY_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/.. Maths)
 LINK_COMPONENT(${LIBRARY_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/.. Common)
 
 # Files
-file(GLOB_RECURSE HEADERS "src/*.hpp" "src/*.h")
+file(GLOB_RECURSE HEADERS "src/*.hpp" "src/*.h" "src/*.tcc")
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 file(GLOB_RECURSE UIFILES "src/*.ui")
 target_sources(${LIBRARY_NAME} PRIVATE ${HEADERS} ${SOURCES} ${UIFILES})

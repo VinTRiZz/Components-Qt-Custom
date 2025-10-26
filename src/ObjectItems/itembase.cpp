@@ -5,9 +5,9 @@
 
 #include "scenefielditem.hpp"
 
-using namespace ObjectViewItems;
+using namespace ObjectItems;
 
-namespace ObjectViewItems {
+namespace ObjectItems {
 
 static objectId_t getSystemId() {
     static objectId_t currentId{-1};
@@ -27,17 +27,17 @@ void ItemBase::unregister() {
 }
 
 QString ItemBase::getSystemName() const {
-    return data(OBJECTFIELD_NAME_SYSTEM).toString();
+    return data(OBJECTDATAROLE_NAME_SYSTEM).toString();
 }
 
 void ItemBase::setType(ObjectType objType)
 {
-    setData(OBJECTFIELD_OBJECTTYPE, objType);
+    setData(OBJECTDATAROLE_OBJECTTYPE, objType);
 }
 
 ObjectType ItemBase::getType() const
 {
-    return ObjectType(data(OBJECTFIELD_OBJECTTYPE).toInt());
+    return ObjectType(data(OBJECTDATAROLE_OBJECTTYPE).toInt());
 }
 
 void ItemBase::setSystemId() {
@@ -45,7 +45,7 @@ void ItemBase::setSystemId() {
 }
 
 void ItemBase::setObjectId(objectId_t id) {
-    setData(OBJECTFIELD_ID, id);
+    setData(OBJECTDATAROLE_ID, id);
 
     for (auto pChild : childItems()) {
         registerSubitem(pChild);
@@ -53,10 +53,10 @@ void ItemBase::setObjectId(objectId_t id) {
 }
 
 objectId_t ItemBase::getObjectId() const {
-    if (!data(OBJECTFIELD_PARENTITEM_ID).isNull()) {
-        return data(OBJECTFIELD_PARENTITEM_ID).toLongLong();
+    if (!data(OBJECTDATAROLE_PARENTITEM_ID).isNull()) {
+        return data(OBJECTDATAROLE_PARENTITEM_ID).toLongLong();
     }
-    return data(OBJECTFIELD_ID).toLongLong();
+    return data(OBJECTDATAROLE_ID).toLongLong();
 }
 
 void ItemBase::paint([[maybe_unused]] QPainter* painter,
@@ -68,11 +68,11 @@ void ItemBase::setBoundingRect(const QRectF& bRect) {
 }
 
 void ItemBase::setSystemName(const QString& iText) {
-    setData(OBJECTFIELD_NAME_SYSTEM, iText);
+    setData(OBJECTDATAROLE_NAME_SYSTEM, iText);
 }
 
 void ItemBase::registerSubitem(QGraphicsItem* pItem) {
-    pItem->setData(ObjectViewItems::OBJECTFIELD_PARENTITEM_ID,
+    pItem->setData(ObjectItems::OBJECTDATAROLE_PARENTITEM_ID,
                    getObjectId());
 }
 
@@ -106,43 +106,43 @@ QVariant ItemBase::itemChange(GraphicsItemChange change, const QVariant &value)
 }
 
 void ItemBase::setDisplayName(const QString& text) {
-    setData(OBJECTFIELD_DISPLAY_NAME, text);
+    setData(OBJECTDATAROLE_DISPLAY_NAME, text);
 }
 
 QString ItemBase::getDisplayName() const {
-    return data(OBJECTFIELD_DISPLAY_NAME).toString();
+    return data(OBJECTDATAROLE_DISPLAY_NAME).toString();
 }
 
 void ItemBase::setDescription(const QString& text) {
-    setData(OBJECTFIELD_DESCRIPTION, text);
+    setData(OBJECTDATAROLE_DESCRIPTION, text);
 }
 
 QString ItemBase::getDescription() const {
-    return data(OBJECTFIELD_DESCRIPTION).toString();
+    return data(OBJECTDATAROLE_DESCRIPTION).toString();
 }
 
 void ItemBase::setBorderColor(const QColor& penColor) {
-    setData(OBJECTFIELD_COLOR_BORDER, penColor);
+    setData(OBJECTDATAROLE_COLOR_BORDER, penColor);
 }
 
 QColor ItemBase::getBorderColor() const {
-    return QColor(data(OBJECTFIELD_COLOR_BORDER).toString());
+    return QColor(data(OBJECTDATAROLE_COLOR_BORDER).toString());
 }
 
 void ItemBase::setBackgroundColor(const QColor& penColor) {
-    setData(OBJECTFIELD_COLOR_BACKGROUND, penColor);
+    setData(OBJECTDATAROLE_COLOR_BACKGROUND, penColor);
 }
 
 QColor ItemBase::getBackgroundColor() const {
-    return QColor(data(OBJECTFIELD_COLOR_BACKGROUND).toString());
+    return QColor(data(OBJECTDATAROLE_COLOR_BACKGROUND).toString());
 }
 
 void ItemBase::setSelectionColor(const QColor& penColor) {
-    setData(OBJECTFIELD_COLOR_SELECTED, penColor);
+    setData(OBJECTDATAROLE_COLOR_SELECTED, penColor);
 }
 
 QColor ItemBase::getSelectionColor() const {
-    return QColor(data(OBJECTFIELD_COLOR_SELECTED).toString());
+    return QColor(data(OBJECTDATAROLE_COLOR_SELECTED).toString());
 }
 
 QRectF ItemBase::boundingRect() const {
@@ -193,4 +193,4 @@ std::list<ItemBase *> ItemBase::getSubscribed(EventType etype)
     return m_subscribedItems[etype];
 }
 
-}  // namespace ObjectViewItems
+}  // namespace ObjectItems

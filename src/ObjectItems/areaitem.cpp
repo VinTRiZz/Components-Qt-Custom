@@ -1,6 +1,6 @@
 #include "areaitem.hpp"
 
-namespace ObjectViewItems
+namespace ObjectItems
 {
 
 AreaItem::AreaItem()

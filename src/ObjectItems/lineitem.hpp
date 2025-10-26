@@ -3,7 +3,7 @@
 #include "itembase.hpp"
 
 
-namespace ObjectViewItems {
+namespace ObjectItems {
 
 class LineItem : public ItemBase
 {

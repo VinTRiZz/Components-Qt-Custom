@@ -8,14 +8,14 @@
 #include <QPainterPath>
 #include <QStyleOptionGraphicsItem>
 
-namespace ObjectViewItems {
+namespace ObjectItems {
 
 ElegantArrowLine::ElegantArrowLine(QGraphicsItem *parent) :
     LineItem(parent)
 {
     setSystemName("Соединение (изящное)");
 
-    setType(ObjectViewItems::OBJECTTYPE_ARROWLINE);
+    setType(ObjectItems::OBJECTTYPE_ARROWLINE);
 
     setFlag(QGraphicsItem::ItemIsSelectable, true);
     setFlag(QGraphicsItem::ItemClipsToShape, true);

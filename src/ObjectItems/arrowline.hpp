@@ -6,7 +6,7 @@
 #include "lineitem.hpp"
 #include "constants.hpp"
 
-namespace ObjectViewItems {
+namespace ObjectItems {
 
 class ArrowLine : public LineItem {
 public:
@@ -50,4 +50,4 @@ protected:
                         const QVariant& value) override;
 };
 
-}  // namespace ObjectViewItems
+}  // namespace ObjectItems

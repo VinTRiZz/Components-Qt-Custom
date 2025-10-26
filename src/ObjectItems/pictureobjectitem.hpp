@@ -7,7 +7,7 @@
 
 #include "itembase.hpp"
 
-namespace ObjectViewItems {
+namespace ObjectItems {
 
 class PictureObjectItem : public ItemBase {
 public:
@@ -36,6 +36,6 @@ protected:
                         const QVariant& value) override;
 };
 
-}  // namespace ObjectViewItems
+}  // namespace ObjectItems
 
 #endif  // PICTUREOBJECTITEM_H

@@ -1,6 +1,6 @@
 #include "lineitem.hpp"
 
-namespace ObjectViewItems {
+namespace ObjectItems {
 
 LineItem::LineItem(QGraphicsItem *parent) :
     ItemBase(parent)

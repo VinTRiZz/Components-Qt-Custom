@@ -7,7 +7,7 @@
 
 #include "itembase.hpp"
 
-namespace ObjectViewItems {
+namespace ObjectItems {
 
 class SceneFieldItem : public ItemBase {
 public:
@@ -21,25 +21,25 @@ public:
 
     void registerItem(ItemBase* pItem);
     ItemBase* getItem(
-        ObjectViewItems::objectId_t targetItemId,
-        ObjectViewItems::ObjectType targetItemType =
-            ObjectViewItems::ObjectType::OBJECTTYPE_NONE) const;
+        ObjectItems::objectId_t targetItemId,
+        ObjectItems::ObjectType targetItemType =
+            ObjectItems::ObjectType::OBJECTTYPE_NONE) const;
     std::list<ItemBase*> getRegisteredItems() const;
-    std::list<ObjectViewItems::objectId_t> getRegisteredIds() const;
+    std::list<ObjectItems::objectId_t> getRegisteredIds() const;
     void clearRegisteredItems();
 
-    void removeRegisteredItems(ObjectViewItems::ObjectType objT);
+    void removeRegisteredItems(ObjectItems::ObjectType objT);
     void removeRegisteredItem(ItemBase* pItem);
-    void removeRegisteredItemById(ObjectViewItems::objectId_t targetItemId);
+    void removeRegisteredItemById(ObjectItems::objectId_t targetItemId);
 
-    bool isIdAvailable(ObjectViewItems::objectId_t itemId) const;
+    bool isIdAvailable(ObjectItems::objectId_t itemId) const;
 
 private:
     QGraphicsRectItem* m_canvasRect{nullptr};
-    std::map<ObjectViewItems::ObjectType, std::list<ItemBase*>>
+    std::map<ObjectItems::ObjectType, std::list<ItemBase*>>
         m_registeredItems;
 };
 
-}  // namespace ObjectViewItems
+}  // namespace ObjectItems
 
 #endif  // DYNAMICAREAITEM_H

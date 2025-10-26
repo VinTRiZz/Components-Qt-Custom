@@ -6,7 +6,7 @@
 #include "itembase.hpp"
 #include "scenemarkeritem.hpp"
 
-namespace ObjectViewItems {
+namespace ObjectItems {
 
 class CenterItem : public ItemBase {
 public:
@@ -25,6 +25,6 @@ private:
     QGraphicsLineItem* m_pCenterHorizontalLine{nullptr};
 };
 
-}  // namespace ObjectViewItems
+}  // namespace ObjectItems
 
 #endif  // CENTERITEM_H

@@ -2,7 +2,7 @@
 
 #include <Components/Logger/Logger.h>
 
-namespace ObjectViewItems {
+namespace ObjectItems {
 
 SceneFieldItem::SceneFieldItem(QGraphicsItem* parent) : ItemBase(parent) {
     setSystemName("Плоскость сцены");
@@ -35,9 +35,9 @@ void SceneFieldItem::registerItem(ItemBase* pItem) {
 }
 
 ItemBase* SceneFieldItem::getItem(
-    ObjectViewItems::objectId_t targetItemId,
-    ObjectViewItems::ObjectType targetItemType) const {
-    if (targetItemType == ObjectViewItems::OBJECTTYPE_NONE) {
+    ObjectItems::objectId_t targetItemId,
+    ObjectItems::ObjectType targetItemType) const {
+    if (targetItemType == ObjectItems::OBJECTTYPE_NONE) {
         for (auto& [itemType, items] : m_registeredItems) {
             for (auto pItem : items) {
                 if (pItem->getObjectId() == targetItemId) {
@@ -63,9 +63,9 @@ std::list<ItemBase*> SceneFieldItem::getRegisteredItems() const {
     return res;
 }
 
-std::list<ObjectViewItems::objectId_t> SceneFieldItem::getRegisteredIds()
+std::list<ObjectItems::objectId_t> SceneFieldItem::getRegisteredIds()
     const {
-    std::list<ObjectViewItems::objectId_t> res;
+    std::list<ObjectItems::objectId_t> res;
     for (auto& [itemType, items] : m_registeredItems) {
         std::transform(items.begin(), items.end(), std::back_inserter(res),
                        [](auto* pItem) { return pItem->getObjectId(); });
@@ -83,7 +83,7 @@ void SceneFieldItem::clearRegisteredItems() {
 }
 
 void SceneFieldItem::removeRegisteredItems(
-    ObjectViewItems::ObjectType objT) {
+    ObjectItems::ObjectType objT) {
     if (m_registeredItems.count(objT) == 0) {
         return;
     }
@@ -117,7 +117,7 @@ void SceneFieldItem::removeRegisteredItem(ItemBase* pItem) {
 }
 
 void SceneFieldItem::removeRegisteredItemById(
-    ObjectViewItems::objectId_t targetItemId) {
+    ObjectItems::objectId_t targetItemId) {
     for (auto& [itemType, items] : m_registeredItems) {
         for (auto pItem : items) {
             if (pItem->getObjectId() == targetItemId) {
@@ -130,7 +130,7 @@ void SceneFieldItem::removeRegisteredItemById(
 }
 
 bool SceneFieldItem::isIdAvailable(
-    ObjectViewItems::objectId_t itemId) const {
+    ObjectItems::objectId_t itemId) const {
     for (auto& [itemType, items] : m_registeredItems) {
         for (auto pItem : items) {
             if (pItem->getObjectId() == itemId) {
@@ -141,4 +141,4 @@ bool SceneFieldItem::isIdAvailable(
     return true;
 }
 
-}  // namespace ObjectViewItems
+}  // namespace ObjectItems

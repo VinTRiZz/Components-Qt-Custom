@@ -7,7 +7,7 @@
 
 #include "constants.hpp"
 
-namespace ObjectViewItems {
+namespace ObjectItems {
 
 /**
  * @brief The ItemBase class Основа для каждого класса объекта на сцене
@@ -20,12 +20,12 @@ public:
     void unregister();
     QString getSystemName() const;
 
-    void setType(ObjectViewItems::ObjectType objType);
-    ObjectViewItems::ObjectType getType() const;
+    void setType(ObjectItems::ObjectType objType);
+    ObjectItems::ObjectType getType() const;
 
     void setSystemId();
-    virtual void setObjectId(ObjectViewItems::objectId_t id);
-    virtual ObjectViewItems::objectId_t getObjectId() const;
+    virtual void setObjectId(ObjectItems::objectId_t id);
+    virtual ObjectItems::objectId_t getObjectId() const;
 
     virtual void setDisplayName(const QString& text);
     virtual QString getDisplayName() const;
@@ -73,6 +73,6 @@ protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 };
 
-}  // namespace ObjectViewItems
+}  // namespace ObjectItems
 
 #endif  // PREDEFINEDOBJECTBASE_H

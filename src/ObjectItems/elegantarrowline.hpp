@@ -2,7 +2,7 @@
 
 #include "lineitem.hpp"
 
-namespace ObjectViewItems {
+namespace ObjectItems {
 
 class ElegantArrowLine : public LineItem
 {

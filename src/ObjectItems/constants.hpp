@@ -2,7 +2,9 @@
 
 #include <stdint.h>
 
-namespace ObjectViewItems {
+#include <QtCore>
+
+namespace ObjectItems {
 
 // СОГЛАШЕНИЕ:
 // ID НЕ ДОЛЖЕН БЫТЬ ОТРИЦАТЕЛЬНЫМ ДЛЯ ОБЫЧНЫХ ЭЛЕМЕНТОВ
@@ -10,25 +12,25 @@ namespace ObjectViewItems {
 using objectId_t = long long;
 
 /**
- * @brief The ObjectField enum Определяет, какие данные могут быть в объекте
+ * @brief The ObjectDataRole enum Определяет, какие данные могут быть в объекте
  */
-enum ObjectField : int {
-    OBJECTFIELD_PARENTITEM_ID = 0,  //! Для комплексных объектов
-    OBJECTFIELD_ID,                 //! Короткое имя объекта для отображения
-    OBJECTFIELD_OBJECTTYPE,  //! Специальное поле для идентификации типа объекта
+enum ObjectDataRole : int {
+    OBJECTDATAROLE_ID = Qt::UserRole + 1000,   //! Короткое имя объекта для отображения
+    OBJECTDATAROLE_PARENTITEM_ID,  //! Для комплексных объектов
+    OBJECTDATAROLE_OBJECTTYPE,  //! Специальное поле для идентификации типа объекта
                              //! (желательно к использованию при сложной логике)
 
-    OBJECTFIELD_NAME_SYSTEM,  //! Имя объекта в системе (изменять только в
+    OBJECTDATAROLE_NAME_SYSTEM,  //! Имя объекта в системе (изменять только в
                               //! конструкторе)
 
-    OBJECTFIELD_DISPLAY_NAME,  //! Короткое имя объекта
-    OBJECTFIELD_DESCRIPTION,   //! Описание объекта
+    OBJECTDATAROLE_DISPLAY_NAME,  //! Короткое имя объекта
+    OBJECTDATAROLE_DESCRIPTION,   //! Описание объекта
 
-    OBJECTFIELD_COLOR_BORDER,      //! Основной цвет (цвет пера)
-    OBJECTFIELD_COLOR_BACKGROUND,  //! Фоновый цвет (заполнения в объекте)
-    OBJECTFIELD_COLOR_SELECTED,    //! Цвет индикации выбора
+    OBJECTDATAROLE_COLOR_BORDER,      //! Основной цвет (цвет пера)
+    OBJECTDATAROLE_COLOR_BACKGROUND,  //! Фоновый цвет (заполнения в объекте)
+    OBJECTDATAROLE_COLOR_SELECTED,    //! Цвет индикации выбора
 
-    OBJECTFIELD_USERTYPE,   //! Для пользовательских типов
+    OBJECTDATAROLE_USERTYPE,   //! Для пользовательских типов
 };
 
 /**
@@ -53,4 +55,4 @@ enum LineArrowType : short {
     Bidirectional = Forward & Backward,
 };
 
-}  // namespace ObjectViewItems
+}  // namespace ObjectItems

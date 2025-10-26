@@ -5,7 +5,7 @@
 #include <QTextDocument>
 #include <QTextOption>
 
-namespace ObjectViewItems {
+namespace ObjectItems {
 
 LabelItem::LabelItem(QGraphicsItem* parent) : ItemBase(parent) {
     setSystemName("Текст");
@@ -69,4 +69,4 @@ QRectF LabelItem::boundingRect() const {
     return bRect;
 }
 
-}  // namespace ObjectViewItems
+}  // namespace ObjectItems

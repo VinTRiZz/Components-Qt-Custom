@@ -8,12 +8,12 @@
 
 #include "constants.hpp"
 
-namespace ObjectViewItems {
+namespace ObjectItems {
 
 SceneMarkerItem::SceneMarkerItem(ItemBase* parent) : ItemBase(parent) {
     setSystemId();
     setSystemName("Маркер");
-    setType(ObjectViewItems::OBJECTTYPE_MARKER);
+    setType(ObjectItems::OBJECTTYPE_MARKER);
 
     setFlag(ItemIgnoresTransformations, true);
 
@@ -96,4 +96,4 @@ QVariant SceneMarkerItem::itemChange(GraphicsItemChange change,
     return ItemBase::itemChange(change, value);
 }
 
-}  // namespace ObjectViewItems
+}  // namespace ObjectItems

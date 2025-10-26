@@ -12,14 +12,14 @@
 
 #include "constants.hpp"
 
-using namespace ObjectViewItems;
+using namespace ObjectItems;
 
-namespace ObjectViewItems {
+namespace ObjectItems {
 
 PictureObjectItem::PictureObjectItem(QGraphicsItem* parent) : ItemBase(parent) {
     setSystemName("Изображение");
 
-    setType(ObjectViewItems::OBJECTTYPE_PICTURE);
+    setType(ObjectItems::OBJECTTYPE_PICTURE);
 
     m_selectedRectItem = new QGraphicsPathItem(this);
     registerSubitem(m_selectedRectItem);
@@ -148,4 +148,4 @@ QVariant PictureObjectItem::itemChange(GraphicsItemChange change,
     return ItemBase::itemChange(change, value);
 }
 
-}  // namespace ObjectViewItems
+}  // namespace ObjectItems

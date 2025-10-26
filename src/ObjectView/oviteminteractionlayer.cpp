@@ -2,7 +2,7 @@
 
 #include "ovinternalscene.hpp"
 
-namespace ObjectViewLayers {
+namespace OVLayers {
 
 OVItemInteractionLayer::OVItemInteractionLayer(QWidget* parent) :
     OVCanvasLayer(parent)
@@ -61,4 +61,4 @@ void OVItemInteractionLayer::mouseReleaseEvent(QMouseEvent *e)
     OVCanvasLayer::mouseReleaseEvent(e);
 }
 
-} // namespace ObjectViewItems
+} // namespace ObjectItems

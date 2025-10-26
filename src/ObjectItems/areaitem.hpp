@@ -5,7 +5,7 @@
 
 #include <boost/container/small_vector.hpp>
 
-namespace ObjectViewItems
+namespace ObjectItems
 {
 
 class AreaItem : public ItemBase

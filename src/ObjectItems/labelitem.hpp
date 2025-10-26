@@ -5,7 +5,7 @@
 
 #include "itembase.hpp"
 
-namespace ObjectViewItems {
+namespace ObjectItems {
 
 class LabelItem : public ItemBase {
 public:
@@ -26,6 +26,6 @@ private:
     QGraphicsTextItem* m_vertexText{nullptr};
 };
 
-}  // namespace ObjectViewItems
+}  // namespace ObjectItems
 
 #endif  // LABELITEM_H

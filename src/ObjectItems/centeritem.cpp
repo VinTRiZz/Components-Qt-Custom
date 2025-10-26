@@ -2,12 +2,12 @@
 
 #include <Components/Logger/Logger.h>
 
-namespace ObjectViewItems {
+namespace ObjectItems {
 
 CenterItem::CenterItem(ItemBase* parent) : ItemBase(parent) {
     setSystemId();
     setSystemName("Центр сцены");
-    setType(ObjectViewItems::OBJECTTYPE_CANVAS_CENTER);
+    setType(ObjectItems::OBJECTTYPE_CANVAS_CENTER);
 
     setFlag(ItemClipsToShape, true);
 
@@ -58,4 +58,4 @@ QPainterPath CenterItem::shape() const {
     return res;
 }
 
-}  // namespace ObjectViewItems
+}  // namespace ObjectItems

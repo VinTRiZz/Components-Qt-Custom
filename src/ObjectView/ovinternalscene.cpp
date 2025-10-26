@@ -6,7 +6,7 @@
 
 #include "ovconstants.hpp"
 
-namespace ObjectViewLayers {
+namespace OVLayers {
 
 OVInternalScene::OVInternalScene(QObject *parent)
     : QGraphicsScene{parent}

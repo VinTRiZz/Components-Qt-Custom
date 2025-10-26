@@ -5,12 +5,14 @@
 #include "ovinternalscene.hpp"
 #include "ovconstants.hpp"
 
-namespace ObjectViewLayers {
+namespace OVLayers {
 
 OVInformationLayer::OVInformationLayer(QWidget *parent) :
-    OVContextMenuLayer(parent)
+    OVMeasurementLayer(parent)
 {
-    m_pCursorLabel = new ObjectViewItems::LabelItem;
+    initContextMenu();
+
+    m_pCursorLabel = new ObjectItems::LabelItem;
     m_pCursorLabel->setFlag(QGraphicsItem::ItemIgnoresTransformations);
     getScene()->addItem(m_pCursorLabel);
     m_pCursorLabel->setZValue(ItemLayers::CursorLabelLayer);
@@ -41,7 +43,7 @@ OVInformationLayer::OVInformationLayer(QWidget *parent) :
             this, &OVInformationLayer::updateCursorLabel);
 }
 
-ObjectViewItems::LabelItem *OVInformationLayer::getCursorLabel() const
+ObjectItems::LabelItem *OVInformationLayer::getCursorLabel() const
 {
     return m_pCursorLabel;
 }
@@ -76,14 +78,14 @@ void OVInformationLayer::updateCursorLabel()
     // TODO: Use
 //    auto hoverItem = itemAt(currentPos);
 //    if ((nullptr != hoverItem) &&
-//        (dynamic_cast<ObjectViewItems::SceneMarkerItem*>(hoverItem) ==
+//        (dynamic_cast<ObjectItems::SceneMarkerItem*>(hoverItem) ==
 //         nullptr)) {
 //        auto pHoverItemParent = getParentOfComplex(hoverItem);
 //        if (nullptr != pHoverItemParent) {
 //            hoverItemName = pHoverItemParent->getSystemName();
 //        } else {
 //            hoverItemName =
-//                hoverItem->data(ObjectViewItems::OBJECTFIELD_NAME_SYSTEM)
+//                hoverItem->data(ObjectItems::OBJECTDATAROLE_NAME_SYSTEM)
 //                    .toString();
 //        }
 //    }
@@ -102,42 +104,33 @@ void OVInformationLayer::updateInformationLabel() {
     m_pInformationLabel->setText(infoText);
 }
 
-void OVInformationLayer::wheelEvent(QWheelEvent *e)
-{
-    OVContextMenuLayer::wheelEvent(e);
-}
-
-void OVInformationLayer::mousePressEvent(QMouseEvent *e)
-{
-    OVContextMenuLayer::mousePressEvent(e);
-}
-
 void OVInformationLayer::mouseMoveEvent(QMouseEvent *e)
 {
-    OVContextMenuLayer::mouseMoveEvent(e);
+    OVMeasurementLayer::mouseMoveEvent(e);
     updateCursorLabel();
-}
-
-void OVInformationLayer::mouseReleaseEvent(QMouseEvent *e)
-{
-    OVContextMenuLayer::mouseReleaseEvent(e);
 }
 
 void OVInformationLayer::enterEvent(QEvent *e)
 {
-    OVContextMenuLayer::enterEvent(e);
+    OVMeasurementLayer::enterEvent(e);
     m_pCursorLabel->show();
 }
 
 void OVInformationLayer::leaveEvent(QEvent *e)
 {
-    OVContextMenuLayer::leaveEvent(e);
+    OVMeasurementLayer::leaveEvent(e);
     m_pCursorLabel->hide();
 }
 
 void OVInformationLayer::resizeEvent(QResizeEvent *e) {
+    OVMeasurementLayer::resizeEvent(e);
     m_pInformationLabel->move(10, height() - m_pInformationLabel->height());
-    OVContextMenuLayer::resizeEvent(e);
 }
 
-} // namespace ObjectViewLayers
+void OVInformationLayer::contextMenuEvent(QContextMenuEvent *e)
+{
+    OVMeasurementLayer::contextMenuEvent(e);
+    OVContextMenuLayer::executeContextMenu(e);
+}
+
+} // namespace OVLayers

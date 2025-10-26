@@ -9,7 +9,7 @@
 
 #include <QVariantAnimation>
 
-namespace ObjectViewLayers {
+namespace OVLayers {
 
 OVCanvasLayer::OVCanvasLayer(QWidget *parent) :
     QGraphicsView(parent)
@@ -20,20 +20,24 @@ OVCanvasLayer::OVCanvasLayer(QWidget *parent) :
     setRenderHint(QPainter::Antialiasing);  // красивые текстуры
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);   // Фикс артефактов Foreground
 
-    m_pCanvasItem = new ObjectViewItems::SceneFieldItem;
+    // Скрываем скроллбары
+    setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
+
+    // Отключаем скролл обычной вьюшки чтобы зумить
+    horizontalScrollBar()->installEventFilter(this);
+    verticalScrollBar()->installEventFilter(this);
+
+    m_pCanvasItem = new ObjectItems::SceneFieldItem;
     m_pInternalScene->addItem(m_pCanvasItem);
     m_pCanvasItem->setBrush(DEFAULT_CANVASCOLOR);
     m_pCanvasItem->setPen(QPen(DEFALT_CANVASBORDERCOLOR, 2));
     m_pCanvasItem->setZValue(ItemLayers::CanvasLayer);
     m_pCanvasItem->show();
 
-    m_pCenterItem = new ObjectViewItems::CenterItem(m_pCenterItem);
+    m_pCenterItem = new ObjectItems::CenterItem(m_pCenterItem);
     m_pInternalScene->addItem(m_pCenterItem);
     m_pCenterItem->setZValue(ItemLayers::CenterItemLayer);
-
-    // Отключаем скролл обычной вьюшки
-    horizontalScrollBar()->installEventFilter(this);
-    verticalScrollBar()->installEventFilter(this);
 }
 
 void OVCanvasLayer::setCanvasRect(const QRectF &iRect) {
@@ -66,12 +70,12 @@ OVInternalScene *OVCanvasLayer::getScene() const
     return m_pInternalScene;
 }
 
-ObjectViewItems::SceneFieldItem *OVCanvasLayer::getCanvas() const
+ObjectItems::SceneFieldItem *OVCanvasLayer::getCanvas() const
 {
     return m_pCanvasItem;
 }
 
-ObjectViewItems::CenterItem *OVCanvasLayer::getCenterItem() const
+ObjectItems::CenterItem *OVCanvasLayer::getCenterItem() const
 {
     return m_pCenterItem;
 }
@@ -83,9 +87,7 @@ QGraphicsItem *OVCanvasLayer::getTopItem(const QPoint &viewportPos) const
         return (pItemL->zValue() < pItemR->zValue());
     });
     auto resItem = std::find_if(posItems.begin(), posItems.end(), [this](auto* pItem){
-        return  (pItem->zValue() > ItemLayers::CanvasLayer) &&
-                (pItem->zValue() < ItemLayers::SystemComponentsLayerBegin) &&
-                !isSystemItem(pItem);
+        return !isSystemItem(pItem);
     });
     if (resItem != posItems.end()) {
         return *resItem;
@@ -100,9 +102,7 @@ QList<QGraphicsItem *> OVCanvasLayer::getItems(const QPoint &viewportPos, bool s
         return (pItemL->zValue() < pItemR->zValue());
     });
     auto removedBeg = std::remove_if(posItems.begin(), posItems.end(), [this](auto* pItem){
-        return  (pItem->zValue() <= ItemLayers::CanvasLayer) &&
-                (pItem->zValue() >= ItemLayers::SystemComponentsLayerBegin) &&
-                isSystemItem(pItem);
+        return isSystemItem(pItem);
     });
     posItems.erase(removedBeg, posItems.end());
     return posItems;
@@ -110,7 +110,8 @@ QList<QGraphicsItem *> OVCanvasLayer::getItems(const QPoint &viewportPos, bool s
 
 bool OVCanvasLayer::isSystemItem(QGraphicsItem *pItem) const
 {
-    return false;
+    return  (pItem->zValue() > ItemLayers::CanvasLayer) &&
+            (pItem->zValue() < ItemLayers::SystemComponentsLayerBegin);
 }
 
 void OVCanvasLayer::zoomIn() {

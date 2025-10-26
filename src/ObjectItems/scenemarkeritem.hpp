@@ -3,7 +3,7 @@
 
 #include "itembase.hpp"
 
-namespace ObjectViewItems {
+namespace ObjectItems {
 
 class SceneMarkerItem : public ItemBase {
 public:
@@ -29,6 +29,6 @@ protected:
                         const QVariant& value) override;
 };
 
-}  // namespace ObjectViewItems
+}  // namespace ObjectItems
 
 #endif  // SCENEMARKERITEM_H
