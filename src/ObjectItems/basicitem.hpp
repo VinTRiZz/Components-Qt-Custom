@@ -17,8 +17,8 @@ public:
     ~BasicItem();
 
     // Для отладки
-    void setCenterVisible(bool isCenterVisible = true);
-    void setBoundingRectVisible(bool isBRectVisible = true);
+    void debug_setCenterVisible(bool isCenterVisible = true);
+    void debug_setBoundingRectVisible(bool isBRectVisible = true);
 
     QRectF boundingRect() const override;
 
@@ -31,15 +31,18 @@ signals:
     void itemDeleted();
 
 private:
-    bool m_isCenterVisible {false};
     QRectF m_boundingRect;
 
+    // ОТЛАДКА
+    bool m_isCenterVisible {false};
+    bool m_isBoundingRectVisible {false};
+
+    // ОТЛАДКА
     bool m_isCenterRectUpdated {false};
     QRect m_centerRect;
     QRect m_centerRoundRect;
 
-    bool m_isBoundingRectVisible {false};
-
+    // ОТЛАДКА
     QRect createDebugRect(double rectScale = 1) const;
 
 protected:

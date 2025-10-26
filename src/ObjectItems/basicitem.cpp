@@ -21,13 +21,13 @@ BasicItem::~BasicItem()
 
 }
 
-void BasicItem::setCenterVisible(bool isCenterVisible)
+void BasicItem::debug_setCenterVisible(bool isCenterVisible)
 {
     m_isCenterVisible = isCenterVisible;
     update(boundingRect());
 }
 
-void BasicItem::setBoundingRectVisible(bool isBRectVisible)
+void BasicItem::debug_setBoundingRectVisible(bool isBRectVisible)
 {
     m_isBoundingRectVisible = isBRectVisible;
     update(boundingRect());
