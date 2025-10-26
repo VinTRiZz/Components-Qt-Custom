@@ -26,6 +26,7 @@ class BasicItemInterface
 private:
     ObjectItems::objectId_t m_id { NULL_OBJECT_ID };
 
+    int m_systemType {0}; // для наследников и логики
     QString m_systemName {"Unknown item"};
 
     QString m_displayName;
@@ -43,6 +44,9 @@ public:
     void setItemId(ObjectItems::objectId_t id);
     void setSystemId();
     ObjectItems::objectId_t getItemId() const;
+
+    void setObjectType(int typ);
+    int getObjectType() const;
 
     QString getSystemName() const;
 
