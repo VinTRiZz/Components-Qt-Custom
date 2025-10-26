@@ -22,6 +22,7 @@ public:
     void debug_setCenterVisible(bool isCenterVisible = true);
     void debug_setBoundingRectVisible(bool isBRectVisible = true);
 
+    QPainterPath shape() const override;
     QRectF boundingRect() const override;
 
 signals:
@@ -32,10 +33,12 @@ signals:
     void itemCreated();
     void itemDeleted();
 
+    void itemSelected();
+    void itemDeselected();
+
+    void itemMoved();
 
 private:
-    QRectF m_boundingRect;
-
     // ОТЛАДКА
     bool m_isCenterVisible {false};
     bool m_isBoundingRectVisible {false};
@@ -51,8 +54,6 @@ private:
     void updateSubitemsParent();
 
 protected:
-    void setBoundingRect(const QRectF& bRect);
-
     // QGraphicsItem interface
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option,
                QWidget* widget) override;

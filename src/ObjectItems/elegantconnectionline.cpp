@@ -2,6 +2,8 @@
 
 #include <math.h>
 
+#include <Components/Logger/Logger.h>
+
 namespace ObjectItems {
 
 ElegantConnectionLine::ElegantConnectionLine(QGraphicsItem *parent) :
@@ -11,15 +13,33 @@ ElegantConnectionLine::ElegantConnectionLine(QGraphicsItem *parent) :
 
     createSubitem(m_line);
     m_line->setZValue(1);
-
     createSubitem(m_lineSelected);
+    m_lineSelected->hide();
 
     createSubitem(m_forwardArrow);
-    m_forwardArrow->setZValue(1);
+    m_forwardArrow->setZValue(2);
+    m_forwardArrow->setBrush(getLineColor());
+    m_forwardArrow->setPen(getStylePen());
     m_forwardArrow->setRotation(180);
 
     createSubitem(m_backwardArrow);
-    m_backwardArrow->setZValue(1);
+    m_backwardArrow->setZValue(2);
+    m_backwardArrow->setBrush(getLineColor());
+    m_backwardArrow->setPen(getStylePen());
+
+    connect(this, &BasicItem::itemSelected,
+            this, [this](){
+        m_lineSelected->show();
+        m_forwardArrow->setPen(m_lineSelected->pen());
+        m_backwardArrow->setPen(m_lineSelected->pen());
+    });
+
+    connect(this, &BasicItem::itemDeselected,
+            this, [this](){
+        m_lineSelected->hide();
+        m_forwardArrow->setPen(getStylePen());
+        m_backwardArrow->setPen(getStylePen());
+    });
 
     connect(this, &BasicItem::graphicalDataChanged,
             this, [this](){
@@ -45,8 +65,6 @@ ElegantConnectionLine::ElegantConnectionLine(QGraphicsItem *parent) :
 
             // Drawing
             m_forwardArrow->show();
-            m_forwardArrow->setBrush(getLineColor());
-            m_forwardArrow->setPen(getStylePen());
         } else {
             m_forwardArrow->hide();
         }
@@ -61,8 +79,6 @@ ElegantConnectionLine::ElegantConnectionLine(QGraphicsItem *parent) :
 
             // Drawing
             m_backwardArrow->show();
-            m_backwardArrow->setBrush(getLineColor());
-            m_backwardArrow->setPen(getStylePen());
         } else {
             m_backwardArrow->hide();
         }

@@ -35,14 +35,24 @@ void BasicItem::debug_setBoundingRectVisible(bool isBRectVisible)
     update(boundingRect());
 }
 
+QPainterPath BasicItem::shape() const
+{
+    QPainterPath path;
+    for (QGraphicsItem* child : childItems()) {
+        path.addPath(child->mapToParent(child->shape()));
+    }
+    return path;
+}
+
 QRectF BasicItem::boundingRect() const
 {
-    return m_boundingRect;
+    return shape().boundingRect();
 }
 
 QRect BasicItem::createDebugRect(double rectScale) const
 {
-    const int rectSize = std::round(std::max(25.0, std::max(m_boundingRect.width(), m_boundingRect.height())));
+    auto bRect = boundingRect();
+    const int rectSize = std::round(std::max(25.0, std::max(bRect.width(), bRect.height())));
 
     QRect targetRect;
     targetRect.setWidth(rectSize);
@@ -53,44 +63,38 @@ QRect BasicItem::createDebugRect(double rectScale) const
     return scaleTransf.mapRect(targetRect);
 }
 
-void BasicItem::setBoundingRect(const QRectF &bRect)
-{
-    m_boundingRect = bRect;
-    emit graphicalDataChanged();
-}
-
 void BasicItem::paint(
         QPainter *painter,
         const QStyleOptionGraphicsItem *option,
         QWidget *widget)
 {
     if (m_isBoundingRectVisible) [[unlikely]] {
-        painter->fillRect(m_boundingRect, Qt::darkMagenta);
+        auto bRect = boundingRect();
+        painter->fillRect(bRect, Qt::darkMagenta);
         QTransform scaleTransf;
         scaleTransf.scale(0.5, 0.5);
-        scaleTransf.translate(m_boundingRect.center().x(), m_boundingRect.center().y());
-        painter->fillRect(scaleTransf.mapRect(m_boundingRect), Qt::white);
+        scaleTransf.translate(bRect.center().x(), bRect.center().y());
+        painter->fillRect(scaleTransf.mapRect(bRect), Qt::white);
     }
 
     if (m_isCenterVisible) [[unlikely]] {
         if (!m_isCenterRectUpdated) {
             m_centerRect = createDebugRect();
-            m_centerRect.moveCenter(m_boundingRect.center().toPoint());
+            m_centerRect.moveCenter(boundingRect().center().toPoint());
             m_centerRoundRect = createDebugRect(2);
             m_centerRoundRect.moveCenter(m_centerRect.center());
         }
         painter->fillRect(m_centerRoundRect, Qt::darkMagenta);
         painter->fillRect(m_centerRect, Qt::darkGray);
-
-        QFont pFont;
-        pFont.setPointSize(6);
-        painter->setFont(pFont);
-        painter->setPen(Qt::black);
     }
 
     if (m_isBoundingRectVisible || m_isCenterVisible) [[unlikely]] {
         auto textRect = createDebugRect(2);
-        textRect.moveCenter(m_boundingRect.center().toPoint());
+        textRect.moveCenter(boundingRect().center().toPoint());
+        QFont pFont;
+        pFont.setPointSize(6);
+        painter->setFont(pFont);
+        painter->setPen(Qt::black);
         painter->drawText(textRect,
                           Qt::AlignHCenter | Qt::AlignVCenter | Qt::TextWordWrap,
                           getSystemName());
@@ -99,10 +103,28 @@ void BasicItem::paint(
 
 QVariant BasicItem::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    if (change == ItemPositionChange) {
+    auto res = QGraphicsItem::itemChange(change, value);
+
+    switch (change)
+    {
+    case ItemPositionChange:
         m_isCenterRectUpdated = false;
+        emit itemMoved();
+        break;
+
+    case ItemSelectedHasChanged:
+        if (value.toBool()) {
+            emit itemSelected();
+        } else {
+            emit itemDeselected();
+        }
+        break;
+
+    default:
+        break;
     }
-    return QGraphicsItem::itemChange(change, value);
+
+    return res;
 }
 
 

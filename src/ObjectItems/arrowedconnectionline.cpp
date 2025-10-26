@@ -10,17 +10,46 @@ ArrowedConnectionLine::ArrowedConnectionLine(QGraphicsItem* parent) :
     setSystemName("Arrowed connection line");
 
     createSubitem(m_line);
+    m_line->setZValue(1);
+    createSubitem(m_lineSelected);
+    m_lineSelected->hide();
 
     createSubitem(m_forwardArrow);
-    m_forwardArrow->setZValue(1);
+    m_forwardArrow->setZValue(2);
+    m_forwardArrow->setBrush(getLineColor());
+    m_forwardArrow->setPen(getStylePen());
 
     createSubitem(m_backwardArrow);
-    m_backwardArrow->setZValue(1);
+    m_backwardArrow->setZValue(2);
+    m_backwardArrow->setBrush(getLineColor());
+    m_backwardArrow->setPen(getStylePen());
+
+    connect(this, &BasicItem::itemSelected,
+            this, [this](){
+        m_lineSelected->show();
+        m_forwardArrow->setPen(m_lineSelected->pen());
+        m_backwardArrow->setPen(m_lineSelected->pen());
+    });
+
+    connect(this, &BasicItem::itemDeselected,
+            this, [this](){
+        m_lineSelected->hide();
+        m_forwardArrow->setPen(getStylePen());
+        m_backwardArrow->setPen(getStylePen());
+    });
 
     connect(this, &BasicItem::graphicalDataChanged,
             this, [this](){
-        m_line->setLine(getLine());
-        m_line->setPen(getStylePen());
+        auto line = getLine();
+
+        auto stylePen = getStylePen();
+        m_line->setLine(line);
+        m_line->setPen(stylePen);
+
+        stylePen.setWidth(stylePen.width() + 2);
+        stylePen.setColor(getSelectionColor());
+        m_lineSelected->setLine(line);
+        m_lineSelected->setPen(stylePen);
 
         auto lineDirection = getDirection();
         if (lineDirection & LineDirectionType::Forward) {

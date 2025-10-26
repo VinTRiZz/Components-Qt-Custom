@@ -11,6 +11,7 @@ public:
 
 private:
     QGraphicsLineItem* m_line{nullptr};
+    QGraphicsLineItem* m_lineSelected{nullptr};
     QGraphicsPathItem* m_forwardArrow {nullptr};
     QGraphicsPathItem* m_backwardArrow {nullptr};
 };

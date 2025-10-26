@@ -31,9 +31,9 @@ private:
     QString m_displayName;
     QString m_description;
 
-    QColor m_lineColor;
-    QColor m_backgroundColor;
-    QColor m_selectionColor;
+    QColor m_lineColor          {Qt::black};
+    QColor m_backgroundColor    {Qt::transparent};
+    QColor m_selectionColor     {180, 180, 130};
 
     static objectId_t createSystemId();;
 

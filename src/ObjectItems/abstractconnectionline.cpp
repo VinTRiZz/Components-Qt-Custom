@@ -10,6 +10,8 @@ AbstractConnectionLine::AbstractConnectionLine(QGraphicsItem* parent) :
     BasicItem(parent)
 {
     setSystemName("Connection line");
+
+    setFlag(QGraphicsItem::ItemClipsChildrenToShape, false);
 }
 
 void AbstractConnectionLine::setDirection(LineDirectionType arrType)
