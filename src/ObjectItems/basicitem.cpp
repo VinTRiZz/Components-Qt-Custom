@@ -134,6 +134,11 @@ void BasicItem::processIdChange()
     setData(ObjectDataRole::OBJECTDATAROLE_ID, getItemId());
 }
 
+void BasicItem::processDisplayNameChange()
+{
+    emit displayNameChanged();
+}
+
 void BasicItem::processInternalDataChange()
 {
     emit internalDataChanged();

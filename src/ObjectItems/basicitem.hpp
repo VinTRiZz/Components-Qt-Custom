@@ -27,6 +27,7 @@ public:
 
 signals:
     void idChanged();
+    void displayNameChanged();
     void internalDataChanged();
     void graphicalDataChanged();
 
@@ -68,6 +69,7 @@ protected:
     // BasicItemInterface interface
 private:
     void processIdChange() override;
+    void processDisplayNameChange() override;
     void processInternalDataChange() override;
     void processColorChange() override;
 };

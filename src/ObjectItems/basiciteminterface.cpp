@@ -17,7 +17,7 @@ objectId_t BasicItemInterface::getItemId() const { return m_id; }
 
 QString BasicItemInterface::getSystemName() const { return m_systemName; }
 
-void BasicItemInterface::setDisplayName(const QString &text) { m_displayName = text; processInternalDataChange(); }
+void BasicItemInterface::setDisplayName(const QString &text) { m_displayName = text; processDisplayNameChange(); }
 
 QString BasicItemInterface::getDisplayName() const { return m_displayName; }
 

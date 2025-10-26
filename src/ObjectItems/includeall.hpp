@@ -7,3 +7,6 @@
 // Lines
 #include "arrowedconnectionline.hpp"
 #include "elegantconnectionline.hpp"
+
+// Text
+#include "textlabel.hpp"

@@ -63,6 +63,7 @@ public:
 
 protected:
     virtual void processIdChange() = 0;
+    virtual void processDisplayNameChange() = 0;
     virtual void processInternalDataChange() = 0;
     virtual void processColorChange() = 0;
 
