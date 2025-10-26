@@ -12,7 +12,7 @@ TextLabel::TextLabel(QGraphicsItem* parent) :
 
     connect(this, &BasicItem::displayNameChanged,
             this, [this](){
-        m_contrastRect->setRect(boundingRect());
+        m_contrastRect->setRect(getTextItem()->boundingRect());
     });
 
     connect(this, &BasicItem::graphicalDataChanged,

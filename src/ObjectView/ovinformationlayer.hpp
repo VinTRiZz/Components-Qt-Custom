@@ -5,6 +5,10 @@
 
 #include <QLabel>
 
+namespace ObjectItems {
+class TextLabel;
+}
+
 namespace OVLayers {
 
 class OVInformationLayer :
@@ -15,7 +19,7 @@ class OVInformationLayer :
 public:
     explicit OVInformationLayer(QWidget* parent = nullptr);
 
-//    ObjectItems::LabelItem* getCursorLabel() const;
+    ObjectItems::TextLabel* getCursorLabel() const;
     QLabel* getInformationLabel() const;
 
     void setCurrentToolname(const QString& toolName);
@@ -27,8 +31,8 @@ public:
     void setCursorValuesPresenter(const std::function<QString(const QPointF&)>& pres);
 
 private:
-//    ObjectItems::LabelItem* m_pCursorLabel{
-//        nullptr};  //! Объект, который показывает информацию у курсора
+    ObjectItems::TextLabel* m_pCursorLabel{
+        nullptr};  //! Объект, который показывает информацию у курсора
 
     QLabel* m_pInformationLabel{nullptr};
     QString m_currentToolName;

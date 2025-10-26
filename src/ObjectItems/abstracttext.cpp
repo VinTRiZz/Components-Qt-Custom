@@ -11,22 +11,7 @@ AbstractText::AbstractText(QGraphicsItem* parent) :
     BasicItem(parent)
 {
     createSubitem(m_textItem);
-
     m_textItem->setZValue(100); // Чтобы не перекрывали в будущем
-
-    // Шрифты
-    auto font = m_textItem->font();
-    font.setPixelSize(14);
-    font.setStyle(QFont::StyleItalic);
-    setFont(font);
-    m_textItem->setDefaultTextColor(Qt::black);
-
-    auto doc = m_textItem->document();
-    auto option = doc->defaultTextOption();
-    option.setAlignment(Qt::AlignCenter);
-    doc->setDefaultTextOption(option);
-
-    m_textItem->setTextWidth(100);
 
     connect(this, &BasicItem::displayNameChanged,
             this, [this](){
@@ -37,11 +22,29 @@ AbstractText::AbstractText(QGraphicsItem* parent) :
             this, [this](){
         m_textItem->setDefaultTextColor(getLineColor());
     });
+
+    // Шрифты
+    auto font = m_textItem->font();
+    font.setPixelSize(14);
+    font.setStyle(QFont::StyleItalic);
+    setFont(font);
+    setTextAlignment(Qt::AlignCenter);
+
+    setLineColor(Qt::black);
+    m_textItem->setTextWidth(100);
 }
 
 void AbstractText::setFont(const QFont &f)
 {
     m_textItem->setFont(f);
+}
+
+void AbstractText::setTextAlignment(int algn)
+{
+    auto doc = m_textItem->document();
+    auto option = doc->defaultTextOption();
+    option.setAlignment(Qt::AlignmentFlag(algn));
+    doc->setDefaultTextOption(option);
 }
 
 QGraphicsTextItem *AbstractText::getTextItem() const
