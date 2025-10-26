@@ -139,6 +139,16 @@ double OVCanvasLayer::getCurrentScale() const {
     return transform().m11();
 }
 
+void OVCanvasLayer::addItem(QGraphicsItem *pItem)
+{
+    getScene()->addItem(pItem);
+}
+
+void OVCanvasLayer::removeItem(QGraphicsItem *pItem)
+{
+    getScene()->removeItem(pItem);
+}
+
 void OVCanvasLayer::setNavigationEnabled(bool isEn)
 {
     m_isNavigationEnabled = isEn;

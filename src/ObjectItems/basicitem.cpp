@@ -13,7 +13,9 @@ BasicItem::BasicItem(QGraphicsItem *parent) :
     QGraphicsItem(parent),
     BasicItemInterface()
 {
-
+    connect(this, &QObject::destroyed,
+            this, &BasicItem::itemDeleted);
+    emit itemCreated();
 }
 
 BasicItem::~BasicItem()
@@ -54,6 +56,7 @@ QRect BasicItem::createDebugRect(double rectScale) const
 void BasicItem::setBoundingRect(const QRectF &bRect)
 {
     m_boundingRect = bRect;
+    emit graphicalDataChanged();
 }
 
 void BasicItem::paint(
@@ -106,16 +109,17 @@ QVariant BasicItem::itemChange(GraphicsItemChange change, const QVariant &value)
 void BasicItem::processIdChange()
 {
     emit idChanged();
+    setData(ObjectDataRole::OBJECTDATAROLE_ID, getItemId());
 }
 
-void BasicItem::processDataChange()
+void BasicItem::processInternalDataChange()
 {
-    emit dataChanged();
+    emit internalDataChanged();
 }
 
 void BasicItem::processColorChange()
 {
-    emit colorChanged();
+    emit graphicalDataChanged();
 }
 
 }

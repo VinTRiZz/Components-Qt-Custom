@@ -9,19 +9,19 @@ objectId_t BasicItemInterface::createSystemId() {
 
 bool BasicItemInterface::isSystemObject() const { return m_id < 0; }
 
-void BasicItemInterface::setObjectId(objectId_t id) { m_id = id; processIdChange(); }
+void BasicItemInterface::setItemId(objectId_t id) { m_id = id; processIdChange(); }
 
-void BasicItemInterface::setSystemId() { setObjectId(createSystemId()); }
+void BasicItemInterface::setSystemId() { setItemId(createSystemId()); }
 
-objectId_t BasicItemInterface::getObjectId() const { return m_id; }
+objectId_t BasicItemInterface::getItemId() const { return m_id; }
 
 QString BasicItemInterface::getSystemName() const { return m_systemName; }
 
-void BasicItemInterface::setDisplayName(const QString &text) { m_displayName = text; processDataChange(); }
+void BasicItemInterface::setDisplayName(const QString &text) { m_displayName = text; processInternalDataChange(); }
 
 QString BasicItemInterface::getDisplayName() const { return m_displayName; }
 
-void BasicItemInterface::setDescription(const QString &text) { m_description = text; processDataChange(); }
+void BasicItemInterface::setDescription(const QString &text) { m_description = text; processInternalDataChange(); }
 
 QString BasicItemInterface::getDescription() const { return m_description; }
 

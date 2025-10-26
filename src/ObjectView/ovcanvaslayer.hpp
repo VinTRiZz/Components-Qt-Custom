@@ -33,6 +33,10 @@ public:
 
     double getCurrentScale() const;
 
+    // Дублирование интерфейса сцены
+    void addItem(QGraphicsItem* pItem);
+    void removeItem(QGraphicsItem* pItem);
+
 public slots:
     void setNavigationEnabled(bool isEn);
 

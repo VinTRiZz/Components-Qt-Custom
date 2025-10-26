@@ -16,18 +16,6 @@ const objectId_t NULL_OBJECT_ID { 0 };
 enum ObjectDataRole : int {
     OBJECTDATAROLE_ID = Qt::UserRole + 1000,   //! Короткое имя объекта для отображения
     OBJECTDATAROLE_PARENTITEM_ID,  //! Для комплексных объектов
-    OBJECTDATAROLE_OBJECTTYPE,  //! Специальное поле для идентификации типа объекта
-                             //! (желательно к использованию при сложной логике)
-
-    OBJECTDATAROLE_NAME_SYSTEM,  //! Имя объекта в системе (изменять только в
-                              //! конструкторе)
-
-    OBJECTDATAROLE_DISPLAY_NAME,  //! Короткое имя объекта
-    OBJECTDATAROLE_DESCRIPTION,   //! Описание объекта
-
-    OBJECTDATAROLE_COLOR_BORDER,      //! Основной цвет (цвет пера)
-    OBJECTDATAROLE_COLOR_BACKGROUND,  //! Фоновый цвет (заполнения в объекте)
-    OBJECTDATAROLE_COLOR_SELECTED,    //! Цвет индикации выбора
 
     // СОГЛАШЕНИЕ: Все кастомные типы должны быть после USERTYPE
     OBJECTDATAROLE_USERTYPE,   //! Для пользовательских типов
@@ -52,9 +40,9 @@ private:
 public:
     bool isSystemObject() const;
 
-    void setObjectId(ObjectItems::objectId_t id);
+    void setItemId(ObjectItems::objectId_t id);
     void setSystemId();
-    ObjectItems::objectId_t getObjectId() const;
+    ObjectItems::objectId_t getItemId() const;
 
     QString getSystemName() const;
 
@@ -75,7 +63,7 @@ public:
 
 protected:
     virtual void processIdChange() = 0;
-    virtual void processDataChange() = 0;
+    virtual void processInternalDataChange() = 0;
     virtual void processColorChange() = 0;
 
     void setSystemName(const QString& iText);

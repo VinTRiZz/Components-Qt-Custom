@@ -6,6 +6,8 @@
 
 namespace ObjectItems {
 
+
+
 class BasicItem :
         public QObject,
         public QGraphicsItem,
@@ -24,11 +26,12 @@ public:
 
 signals:
     void idChanged();
-    void dataChanged();
-    void colorChanged();
+    void internalDataChanged();
+    void graphicalDataChanged();
 
     void itemCreated();
     void itemDeleted();
+
 
 private:
     QRectF m_boundingRect;
@@ -45,6 +48,8 @@ private:
     // ОТЛАДКА
     QRect createDebugRect(double rectScale = 1) const;
 
+    void updateSubitemsParent();
+
 protected:
     void setBoundingRect(const QRectF& bRect);
 
@@ -53,9 +58,16 @@ protected:
                QWidget* widget) override;
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
+    template <typename T>
+    std::enable_if_t<std::is_base_of_v<QGraphicsItem, T>, void> createSubitem(T*& pItem) {
+        pItem = new T(this);
+        pItem->setData(ObjectDataRole::OBJECTDATAROLE_PARENTITEM_ID, getItemId());
+    }
+
     // BasicItemInterface interface
+private:
     void processIdChange() override;
-    void processDataChange() override;
+    void processInternalDataChange() override;
     void processColorChange() override;
 };
 
