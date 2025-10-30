@@ -5,6 +5,8 @@
 
 #include <math.h>
 
+#include <QDebug>
+
 namespace ObjectItems
 {
 
@@ -23,18 +25,6 @@ BasicItem::~BasicItem()
 
 }
 
-void BasicItem::debug_setCenterVisible(bool isCenterVisible)
-{
-    m_isCenterVisible = isCenterVisible;
-    update(boundingRect());
-}
-
-void BasicItem::debug_setBoundingRectVisible(bool isBRectVisible)
-{
-    m_isBoundingRectVisible = isBRectVisible;
-    update(boundingRect());
-}
-
 QPainterPath BasicItem::shape() const
 {
     QPainterPath path;
@@ -49,56 +39,12 @@ QRectF BasicItem::boundingRect() const
     return shape().boundingRect();
 }
 
-QRect BasicItem::createDebugRect(double rectScale) const
-{
-    auto bRect = boundingRect();
-    const int rectSize = std::round(std::max(25.0, std::max(bRect.width(), bRect.height())));
-
-    QRect targetRect;
-    targetRect.setWidth(rectSize);
-    targetRect.setHeight(rectSize);
-
-    QTransform scaleTransf;
-    scaleTransf.scale(rectScale, rectScale);
-    return scaleTransf.mapRect(targetRect);
-}
-
 void BasicItem::paint(
         QPainter *painter,
         const QStyleOptionGraphicsItem *option,
         QWidget *widget)
 {
-    if (m_isBoundingRectVisible) [[unlikely]] {
-        auto bRect = boundingRect();
-        painter->fillRect(bRect, Qt::darkMagenta);
-        QTransform scaleTransf;
-        scaleTransf.scale(0.5, 0.5);
-        scaleTransf.translate(bRect.center().x(), bRect.center().y());
-        painter->fillRect(scaleTransf.mapRect(bRect), Qt::white);
-    }
 
-    if (m_isCenterVisible) [[unlikely]] {
-        if (!m_isCenterRectUpdated) {
-            m_centerRect = createDebugRect();
-            m_centerRect.moveCenter(boundingRect().center().toPoint());
-            m_centerRoundRect = createDebugRect(2);
-            m_centerRoundRect.moveCenter(m_centerRect.center());
-        }
-        painter->fillRect(m_centerRoundRect, Qt::darkMagenta);
-        painter->fillRect(m_centerRect, Qt::darkGray);
-    }
-
-    if (m_isBoundingRectVisible || m_isCenterVisible) [[unlikely]] {
-        auto textRect = createDebugRect(2);
-        textRect.moveCenter(boundingRect().center().toPoint());
-        QFont pFont;
-        pFont.setPointSize(6);
-        painter->setFont(pFont);
-        painter->setPen(Qt::black);
-        painter->drawText(textRect,
-                          Qt::AlignHCenter | Qt::AlignVCenter | Qt::TextWordWrap,
-                          getSystemName());
-    }
 }
 
 QVariant BasicItem::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -108,7 +54,6 @@ QVariant BasicItem::itemChange(GraphicsItemChange change, const QVariant &value)
     switch (change)
     {
     case ItemPositionChange:
-        m_isCenterRectUpdated = false;
         emit itemMoved();
         break;
 
@@ -125,6 +70,12 @@ QVariant BasicItem::itemChange(GraphicsItemChange change, const QVariant &value)
     }
 
     return res;
+}
+
+void BasicItem::registerSubitem(QGraphicsItem *pItem)
+{
+    pItem->setParentItem(this);
+    pItem->setData(ObjectDataRole::OBJECTDATAROLE_PARENTITEM_ID, getItemId());
 }
 
 
@@ -147,6 +98,73 @@ void BasicItem::processInternalDataChange()
 void BasicItem::processColorChange()
 {
     emit graphicalDataChanged();
+}
+
+DebugMaster::DebugMaster(BasicItem *pTargetItem) :
+    m_targetItem{pTargetItem}
+{
+    m_targetItem->createSubitem(m_debugRectItem);
+    m_debugRectItem->setZValue(1'000'000);
+    m_debugRectItem->setBrush(QBrush(Qt::magenta, Qt::DiagCrossPattern));
+    m_debugRectItem->setPen(QPen(Qt::red, 2, Qt::DotLine));
+    m_debugRectItem->hide();
+
+    m_targetItem->createSubitem(m_debugSizeRectItem);
+    m_debugSizeRectItem->setZValue(1'001'000);
+    m_debugSizeRectItem->setBrush(QBrush(Qt::darkMagenta, Qt::DiagCrossPattern));
+    m_debugSizeRectItem->setPen(QPen(Qt::green, 4, Qt::SolidLine));
+    m_debugSizeRectItem->hide();
+
+    m_targetItem->createSubitem(m_debugCustomRectItem);
+    m_debugCustomRectItem->setZValue(1'000'001);
+    m_debugCustomRectItem->setBrush(QBrush(Qt::darkCyan, Qt::BDiagPattern));
+    m_debugCustomRectItem->setPen(QPen(Qt::darkCyan, 3, Qt::DashDotDotLine));
+    m_debugCustomRectItem->hide();
+}
+
+DebugMaster::~DebugMaster()
+{
+
+}
+
+BasicItem *DebugMaster::getTargetItem() const
+{
+    return m_targetItem;
+}
+
+void DebugMaster::debug_setCustomRectVisible(const QRectF &rect, bool isCRectVisible)
+{
+    m_debugCustomRectItem->setRect(rect);
+    if (isCRectVisible) {
+        m_debugCustomRectItem->show();
+    } else {
+        m_debugCustomRectItem->setRect({});
+        m_debugCustomRectItem->hide();
+    }
+}
+
+void DebugMaster::debug_setCenterVisible(bool isCenterVisible)
+{
+    if (isCenterVisible) {
+        QTransform scaleTrasnf;
+        scaleTrasnf.scale(0.2, 0.2);
+        m_debugSizeRectItem->setRect(scaleTrasnf.mapRect(m_targetItem->boundingRect()));
+        m_debugSizeRectItem->show();
+    } else {
+        m_debugSizeRectItem->setRect({});
+        m_debugSizeRectItem->hide();
+    }
+}
+
+void DebugMaster::debug_setBoundingRectVisible(bool isBRectVisible)
+{
+    if (isBRectVisible) {
+        m_debugRectItem->setRect(m_targetItem->boundingRect());
+        m_debugRectItem->show();
+    } else {
+        m_debugRectItem->setRect({});
+        m_debugRectItem->hide();
+    }
 }
 
 }

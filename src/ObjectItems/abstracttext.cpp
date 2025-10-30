@@ -39,12 +39,24 @@ void AbstractText::setFont(const QFont &f)
     m_textItem->setFont(f);
 }
 
+QFont AbstractText::getFont() const
+{
+    return m_textItem->font();
+}
+
 void AbstractText::setTextAlignment(int algn)
 {
     auto doc = m_textItem->document();
     auto option = doc->defaultTextOption();
     option.setAlignment(Qt::AlignmentFlag(algn));
     doc->setDefaultTextOption(option);
+}
+
+void AbstractText::setTextSizePt(double textSizePt)
+{
+    auto font = getFont();
+    font.setPointSizeF(textSizePt);
+    setFont(font);
 }
 
 QGraphicsTextItem *AbstractText::getTextItem() const

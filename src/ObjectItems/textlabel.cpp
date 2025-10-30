@@ -22,4 +22,9 @@ TextLabel::TextLabel(QGraphicsItem* parent) :
     });
 }
 
+void TextLabel::setContrastRectVisible(bool isCREctVisible)
+{
+    m_contrastRect->setVisible(isCREctVisible);
+}
+
 } // namespace ObjectItems

@@ -6,8 +6,6 @@
 
 namespace ObjectItems {
 
-
-
 class BasicItem :
         public QObject,
         public QGraphicsItem,
@@ -17,10 +15,6 @@ class BasicItem :
 public:
     explicit BasicItem(QGraphicsItem* parent = nullptr);
     ~BasicItem();
-
-    // Для отладки
-    void debug_setCenterVisible(bool isCenterVisible = true);
-    void debug_setBoundingRectVisible(bool isBRectVisible = true);
 
     QPainterPath shape() const override;
     QRectF boundingRect() const override;
@@ -39,21 +33,6 @@ signals:
 
     void itemMoved();
 
-private:
-    // ОТЛАДКА
-    bool m_isCenterVisible {false};
-    bool m_isBoundingRectVisible {false};
-
-    // ОТЛАДКА
-    bool m_isCenterRectUpdated {false};
-    QRect m_centerRect;
-    QRect m_centerRoundRect;
-
-    // ОТЛАДКА
-    QRect createDebugRect(double rectScale = 1) const;
-
-    void updateSubitemsParent();
-
 protected:
     // QGraphicsItem interface
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option,
@@ -63,8 +42,10 @@ protected:
     template <typename T>
     std::enable_if_t<std::is_base_of_v<QGraphicsItem, T>, void> createSubitem(T*& pItem) {
         pItem = new T(this);
-        pItem->setData(ObjectDataRole::OBJECTDATAROLE_PARENTITEM_ID, getItemId());
+        registerSubitem(pItem);
     }
+
+    void registerSubitem(QGraphicsItem* pItem);
 
     // BasicItemInterface interface
 private:
@@ -72,6 +53,26 @@ private:
     void processDisplayNameChange() override;
     void processInternalDataChange() override;
     void processColorChange() override;
+
+    friend class DebugMaster;
+};
+
+class DebugMaster {
+    BasicItem* m_targetItem {nullptr};
+public:
+    DebugMaster(BasicItem* pTargetItem);
+    ~DebugMaster();
+
+    BasicItem* getTargetItem() const;
+
+    void debug_setCustomRectVisible(const QRectF& rect, bool isCRectVisible = true);
+    void debug_setCenterVisible(bool isCenterVisible = true);
+    void debug_setBoundingRectVisible(bool isBRectVisible = true);
+
+private:
+    QGraphicsRectItem* m_debugCustomRectItem {nullptr};
+    QGraphicsRectItem* m_debugRectItem {nullptr};
+    QGraphicsRectItem* m_debugSizeRectItem {nullptr};
 };
 
 }
