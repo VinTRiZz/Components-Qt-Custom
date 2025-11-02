@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Components/CustomQt/ObjectView/ObjectItems.h>
 #include <QGraphicsView>
 
 namespace OVLayers {
@@ -28,8 +29,9 @@ public:
     OVInternalScene* getScene() const;
     QGraphicsRectItem* getCanvas() const;
 
+    ObjectItems::BasicItem* getObject(const QPoint& viewportPos) const;
     QGraphicsItem*          getTopItem(const QPoint& viewportPos) const;
-    QList<QGraphicsItem*>   getItems(const QPoint& viewportPos, bool sorted = true) const;
+    QList<QGraphicsItem*>   getItems(const QPoint& viewportPos, bool sorted = false) const;
 
     double getCurrentScale() const;
 

@@ -24,7 +24,7 @@ OVInternalScene::~OVInternalScene()
 void OVInternalScene::setGridEnabled(bool enabled) {
     m_isGridEnabled = enabled;
     update();
-    emit gridSetEnabled(enabled);
+    emit gridEnabled(enabled);
 }
 
 bool OVInternalScene::getIsGridEnabled() const {

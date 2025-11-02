@@ -24,7 +24,7 @@ public:
 
 signals:
     void gridSizeChanged(int newGridSize);
-    void gridSetEnabled(bool isGEnabled);
+    void gridEnabled(bool isGEnabled);
 
 protected:
     void drawForeground(QPainter* painter, const QRectF& rect) override;

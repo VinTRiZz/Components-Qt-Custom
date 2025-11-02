@@ -10,53 +10,9 @@ OVItemInteractionLayer::OVItemInteractionLayer(QWidget* parent) :
 
 }
 
-void OVItemInteractionLayer::setGeometryChangingEnabled(bool isEn)
+void OVItemInteractionLayer::setInteractionEnabled(bool isEn)
 {
     m_isInteractionEnabled = isEn;
-}
-
-void OVItemInteractionLayer::wheelEvent(QWheelEvent *e)
-{
-    OVCanvasLayer::wheelEvent(e);
-}
-
-void OVItemInteractionLayer::mousePressEvent(QMouseEvent *e)
-{
-    OVCanvasLayer::mousePressEvent(e);
-}
-
-void OVItemInteractionLayer::mouseMoveEvent(QMouseEvent *e)
-{
-    OVCanvasLayer::mouseMoveEvent(e);
-
-//    auto pObject = getGrabObject();
-//    if (nullptr != pObject) {
-//        if (getIsGridEnabled()) {
-//            int gridSizeHalf = std::round(getGridSize() / 2.0);
-
-//            QPointF magnetPos;
-//            if (auto magnetX = int(currentPos.x()) % gridSizeHalf;
-//                magnetX != 0) {
-//                magnetPos.setX(std::round(currentPos.x() / gridSizeHalf) *
-//                               gridSizeHalf);
-//            }
-
-//            if (auto magnetY = int(currentPos.y()) % gridSizeHalf;
-//                magnetY != 0) {
-//                magnetPos.setY(std::round(currentPos.y() / gridSizeHalf) *
-//                               gridSizeHalf);
-//            }
-
-//            pObject->setPos(magnetPos - pObject->boundingRect().center());
-//        } else {
-//            pObject->setPos(currentPos - pObject->boundingRect().center());
-//        }
-//    }
-}
-
-void OVItemInteractionLayer::mouseReleaseEvent(QMouseEvent *e)
-{
-    OVCanvasLayer::mouseReleaseEvent(e);
 }
 
 } // namespace ObjectItems

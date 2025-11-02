@@ -13,13 +13,7 @@ public:
     explicit OVItemInteractionLayer(QWidget* parent = nullptr);
 
 public slots:
-    void setGeometryChangingEnabled(bool isEn);
-
-protected:
-    void wheelEvent(QWheelEvent* e) override;
-    void mousePressEvent(QMouseEvent* e) override;
-    void mouseMoveEvent(QMouseEvent* e) override;
-    void mouseReleaseEvent(QMouseEvent* e) override;
+    void setInteractionEnabled(bool isEn);
 
 private:
     bool m_isInteractionEnabled {false};

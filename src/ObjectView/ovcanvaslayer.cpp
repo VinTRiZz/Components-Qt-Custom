@@ -11,6 +11,8 @@
 
 #include <QGraphicsRectItem>
 
+#include <Components/Logger/Logger.h>
+
 namespace OVLayers {
 
 OVCanvasLayer::OVCanvasLayer(QWidget *parent) :
@@ -72,27 +74,33 @@ QGraphicsRectItem *OVCanvasLayer::getCanvas() const
     return m_pCanvasItem;
 }
 
+ObjectItems::BasicItem *OVCanvasLayer::getObject(const QPoint &viewportPos) const
+{
+    auto topItem = getTopItem(viewportPos);
+    if (nullptr == topItem) {
+        return nullptr;
+    }
+    auto parentObjectItem = topItem->data(ObjectItems::ObjectDataRole::OBJECTDATAROLE_PARENTITEM_ID);
+    if (parentObjectItem.isNull()) {
+        return dynamic_cast<ObjectItems::BasicItem*>(topItem);
+    }
+    return qvariant_cast<ObjectItems::BasicItem*>(parentObjectItem);
+}
+
 QGraphicsItem *OVCanvasLayer::getTopItem(const QPoint &viewportPos) const
 {
-    auto posItems = items(viewportPos);
-    std::sort(posItems.begin(), posItems.end(), [](auto* pItemL, auto* pItemR){
-        return (pItemL->zValue() < pItemR->zValue());
-    });
-    auto resItem = std::find_if(posItems.begin(), posItems.end(), [this](auto* pItem){
-        return !isSystemItem(pItem);
-    });
-    if (resItem != posItems.end()) {
-        return *resItem;
-    }
-    return nullptr;
+    auto posItems = getItems(viewportPos, true);
+    return (posItems.empty() ? nullptr : posItems.front());
 }
 
 QList<QGraphicsItem *> OVCanvasLayer::getItems(const QPoint &viewportPos, bool sorted) const
 {
     auto posItems = items(viewportPos);
-    std::sort(posItems.begin(), posItems.end(), [](auto* pItemL, auto* pItemR){
-        return (pItemL->zValue() < pItemR->zValue());
-    });
+    if (sorted) {
+        std::sort(posItems.begin(), posItems.end(), [](auto* pItemL, auto* pItemR){
+            return (pItemL->zValue() > pItemR->zValue());
+        });
+    }
     auto removedBeg = std::remove_if(posItems.begin(), posItems.end(), [this](auto* pItem){
         return isSystemItem(pItem);
     });
@@ -102,14 +110,14 @@ QList<QGraphicsItem *> OVCanvasLayer::getItems(const QPoint &viewportPos, bool s
 
 bool OVCanvasLayer::isSystemItem(QGraphicsItem *pItem) const
 {
-    return  (pItem->zValue() > ItemLayers::CanvasLayer) &&
-            (pItem->zValue() < ItemLayers::SystemComponentsLayerBegin);
+    return  (pItem->zValue() <= ItemLayers::CanvasLayer) &&
+            (pItem->zValue() >= ItemLayers::SystemComponentsLayerBegin);
 }
 
 void OVCanvasLayer::zoomIn() {
     auto anim = new QVariantAnimation(this);
     anim->setStartValue(0.99);
-    anim->setEndValue(0.8);
+    anim->setEndValue(0.9);
     anim->setDuration(100);
     connect(anim, &QVariantAnimation::valueChanged,
             this, [this](const QVariant& deltaV){
@@ -121,7 +129,7 @@ void OVCanvasLayer::zoomIn() {
 void OVCanvasLayer::zoomOut() {
     auto anim = new QVariantAnimation(this);
     anim->setStartValue(1.01);
-    anim->setEndValue(1.2);
+    anim->setEndValue(1.1);
     anim->setDuration(100);
     connect(anim, &QVariantAnimation::valueChanged,
             this, [this](const QVariant& deltaV){
@@ -132,7 +140,8 @@ void OVCanvasLayer::zoomOut() {
 
 void OVCanvasLayer::customZoom(double scaleCoeff) {
     scale(scaleCoeff, scaleCoeff);
-    emit scaleChanged(scaleCoeff);
+    setSceneRect(getCanvas()->rect()); // Чтобы не было багов
+    emit scaleChanged(getCurrentScale());
 }
 
 double OVCanvasLayer::getCurrentScale() const {

@@ -18,7 +18,7 @@ OVInformationLayer::OVInformationLayer(QWidget *parent) :
     m_pCursorLabel->setFlag(QGraphicsItem::ItemIgnoresTransformations);
     getScene()->addItem(m_pCursorLabel);
     m_pCursorLabel->setZValue(ItemLayers::CursorLabelLayer);
-    m_pCursorLabel->setBackgroundColor(Qt::white);
+    m_pCursorLabel->setBackgroundBrush(Qt::white);
 
     m_pInformationLabel = new QLabel(this);
     m_pInformationLabel->setWordWrap(true);
@@ -36,13 +36,33 @@ OVInformationLayer::OVInformationLayer(QWidget *parent) :
 )");
     updateInformationLabel();
 
-    setCursorValuesPresenter([](const QPointF& curPoint) -> QString {
-        return QString("X: %0\nY: %1").arg(QString::number(curPoint.x()), QString::number(curPoint.y()));
+    setCursorValuesPresenter([this](const QPointF& curPoint) -> QString {
+        auto pObject = getObject(mapFromScene(curPoint));
+        QString objectType {};
+        QString objectName {};
+        if (pObject != nullptr) {
+            objectType = pObject->getSystemName();
+            objectName = pObject->getDisplayName();
+            m_pCursorLabel->setMaxSymbolCount(250);
+        } else {
+            m_pCursorLabel->setMaxSymbolCount(100);
+        }
+
+        return QString("X: %0\nY: %1%2%3").arg(
+                    QString::number(curPoint.x()),
+                    QString::number(curPoint.y()),
+                    objectType.isNull() ? QString() : "\nObject type: " + objectType,
+                    objectName.isNull() ? QString() : "\nObject name: " + objectName
+                    );
     });
 
     // Апдейт для скейлов
     connect(this, &OVCanvasLayer::scaleChanged,
             this, &OVInformationLayer::updateCursorLabel);
+    connect(this, &OVCanvasLayer::scaleChanged,
+            this, &OVInformationLayer::updateInformationLabel);
+    connect(getScene(), &OVInternalScene::gridEnabled,
+            this, &OVInformationLayer::updateInformationLabel);
 }
 
 ObjectItems::TextLabel *OVInformationLayer::getCursorLabel() const
@@ -76,21 +96,6 @@ void OVInformationLayer::updateCursorLabel()
     auto cursorPos = mapToScene(mapFromGlobal(QCursor::pos()));
     m_pCursorLabel->setPos(cursorPos + QPointF(15, 15) / getCurrentScale());
     m_pCursorLabel->setDisplayName(m_cursorValuesPresenter(cursorPos));
-
-    // TODO: Use
-//    auto hoverItem = itemAt(currentPos);
-//    if ((nullptr != hoverItem) &&
-//        (dynamic_cast<ObjectItems::SceneMarkerItem*>(hoverItem) ==
-//         nullptr)) {
-//        auto pHoverItemParent = getParentOfComplex(hoverItem);
-//        if (nullptr != pHoverItemParent) {
-//            hoverItemName = pHoverItemParent->getSystemName();
-//        } else {
-//            hoverItemName =
-//                hoverItem->data(ObjectItems::OBJECTDATAROLE_NAME_SYSTEM)
-//                    .toString();
-//        }
-//    }
 }
 
 void OVInformationLayer::updateInformationLabel() {

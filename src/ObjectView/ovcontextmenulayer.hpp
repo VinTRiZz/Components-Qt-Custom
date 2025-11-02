@@ -43,6 +43,12 @@ public:
         });
         m_opacityAction->setCheckable(true);
         m_opacityAction->setEnabled(false);
+
+        m_mainContextMenu.addAction("Вернуться в центр", [this](){
+            auto pThis = static_cast<BaseView*>(this);
+            pThis->resetTransform();
+            pThis->centerOn(pThis->getCanvas()->boundingRect().center());
+        });
     }
 
 private:
