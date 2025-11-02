@@ -17,8 +17,8 @@ TextLabel::TextLabel(QGraphicsItem* parent) :
 
     connect(this, &BasicItem::graphicalDataChanged,
             this, [this](){
-        m_contrastRect->setPen(getLineColor());
-        m_contrastRect->setBrush(getBackgroundColor());
+        m_contrastRect->setPen(getLinePen());
+        m_contrastRect->setBrush(getBackgroundBrush());
     });
 }
 

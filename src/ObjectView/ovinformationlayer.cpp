@@ -56,7 +56,6 @@ OVInformationLayer::OVInformationLayer(QWidget *parent) :
                     );
     });
 
-    // Апдейт для скейлов
     connect(this, &OVCanvasLayer::scaleChanged,
             this, &OVInformationLayer::updateCursorLabel);
     connect(this, &OVCanvasLayer::scaleChanged,

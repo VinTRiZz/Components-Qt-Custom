@@ -3,6 +3,8 @@
 #include <Components/CustomQt/ObjectView/ObjectItems.h>
 #include <QGraphicsView>
 
+#include "ovconstants.hpp"
+
 namespace OVLayers {
 
 class OVInternalScene;

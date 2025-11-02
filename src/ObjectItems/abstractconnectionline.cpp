@@ -14,6 +14,24 @@ AbstractConnectionLine::AbstractConnectionLine(QGraphicsItem* parent) :
     setFlag(QGraphicsItem::ItemClipsChildrenToShape, false);
 }
 
+void AbstractConnectionLine::subscribeForMoves(BasicItem *pItem, bool isFrom, const QPointF &offsetPos)
+{
+    connect(pItem, &BasicItem::itemMovedOnScene,
+            this, [this, pItem, offsetPos, isFrom](){
+        auto targetPos = mapFromScene(pItem->mapToScene(pItem->pos())) + offsetPos;
+        if (isFrom) {
+            setPositionFrom(targetPos);
+        } else {
+            setPositionTo(targetPos);
+        }
+    });
+}
+
+void AbstractConnectionLine::unsubscribeForMoves(BasicItem *pItem)
+{
+    disconnect(pItem, &BasicItem::itemMovedOnScene, this, nullptr);
+}
+
 void AbstractConnectionLine::setDirection(LineDirectionType arrType)
 {
     m_arrowType = arrType;
@@ -41,25 +59,40 @@ void AbstractConnectionLine::setArrowHeight(double arHeight)
     m_arrowSize.setHeight(arHeight);
     m_arrowSize.setWidth(arHeight / 2.0 * std::sin(arrowAngle));
 
+    m_isArrowSizeChanged = true;
     emit graphicalDataChanged();
 }
 
-QSizeF AbstractConnectionLine::getArrowSize() const
+QSizeF AbstractConnectionLine::getArrowHeight() const
 {
     return m_arrowSize;
 }
 
-void AbstractConnectionLine::setLine(const QLineF& line) {
+void AbstractConnectionLine::setArrowAngle(LineAngleType lineAngle)
+{
+    m_arrowAngle = lineAngle;
+    setArrowHeight(getArrowHeight().height());
+}
+
+LineAngleType AbstractConnectionLine::getArrowAngle() const
+{
+    return m_arrowAngle;
+}
+
+QLineF AbstractConnectionLine::getLine() const
+{
+    return m_straightLine;
+}
+
+void AbstractConnectionLine::setLine(const QLineF &line)
+{
     m_straightLine = line;
     emit graphicalDataChanged();
 }
 
-void AbstractConnectionLine::setLine(const QPointF& p1, const QPointF& p2) {
-    setLine(QLineF(p1, p2));
-}
-
-QLineF AbstractConnectionLine::getLine() const {
-    return m_straightLine;
+void AbstractConnectionLine::setLine(const QPointF &p1, const QPointF &p2)
+{
+    setLine({p1, p2});
 }
 
 void AbstractConnectionLine::setPositionFrom(const QPointF &posFrom)
@@ -82,30 +115,18 @@ QPointF AbstractConnectionLine::getPositionTo() const
     return m_straightLine.p2();
 }
 
-void AbstractConnectionLine::setStyle(Qt::PenStyle pst)
-{
-    m_stylePen.setStyle(pst);
-    emit graphicalDataChanged();
-}
-
-void AbstractConnectionLine::setWidth(double w)
-{
-    m_stylePen.setWidth(w);
-    emit graphicalDataChanged();
-}
-
-QPen AbstractConnectionLine::getStylePen() const
-{
-    return m_stylePen;
-}
-
 QPainterPath AbstractConnectionLine::createArrowPath() const
 {
+    if (!m_isArrowSizeChanged) {
+        return m_cachedArrowpath;
+    }
     QPainterPath p;
     p.lineTo(-m_arrowSize.width(), 0);
     p.lineTo(0, -m_arrowSize.height());
     p.lineTo(m_arrowSize.width(), 0);
     p.lineTo(0, 0);
+    m_cachedArrowpath = p;
+    m_isArrowSizeChanged = false;
     return p;
 }
 

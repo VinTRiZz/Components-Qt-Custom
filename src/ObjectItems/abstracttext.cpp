@@ -20,7 +20,7 @@ AbstractText::AbstractText(QGraphicsItem* parent) :
 
     connect(this, &BasicItem::graphicalDataChanged,
             this, [this](){
-        m_textItem->setDefaultTextColor(getLineColor());
+        m_textItem->setDefaultTextColor(getLinePen().color());
     });
 
     // Шрифты
@@ -30,7 +30,7 @@ AbstractText::AbstractText(QGraphicsItem* parent) :
     setFont(font);
     setTextAlignment(Qt::AlignCenter);
 
-    setLineColor(Qt::black);
+    setLinePen({Qt::black});
     m_textItem->setTextWidth(100);
 }
 
@@ -42,6 +42,11 @@ void AbstractText::setFont(const QFont &f)
 QFont AbstractText::getFont() const
 {
     return m_textItem->font();
+}
+
+void AbstractText::setMaxSymbolCount(int maxSymbolCount)
+{
+    m_textItem->setTextWidth(maxSymbolCount);
 }
 
 void AbstractText::setTextAlignment(int algn)

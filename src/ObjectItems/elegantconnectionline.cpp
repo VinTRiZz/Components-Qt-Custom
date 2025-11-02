@@ -18,14 +18,14 @@ ElegantConnectionLine::ElegantConnectionLine(QGraphicsItem *parent) :
 
     createSubitem(m_forwardArrow);
     m_forwardArrow->setZValue(2);
-    m_forwardArrow->setBrush(getLineColor());
-    m_forwardArrow->setPen(getStylePen());
+    m_forwardArrow->setBrush(getBackgroundBrush());
+    m_forwardArrow->setPen(getLinePen());
     m_forwardArrow->setRotation(180);
 
     createSubitem(m_backwardArrow);
     m_backwardArrow->setZValue(2);
-    m_backwardArrow->setBrush(getLineColor());
-    m_backwardArrow->setPen(getStylePen());
+    m_backwardArrow->setBrush(getBackgroundBrush());
+    m_backwardArrow->setPen(getLinePen());
 
     connect(this, &BasicItem::itemSelected,
             this, [this](){
@@ -37,21 +37,20 @@ ElegantConnectionLine::ElegantConnectionLine(QGraphicsItem *parent) :
     connect(this, &BasicItem::itemDeselected,
             this, [this](){
         m_lineSelected->hide();
-        m_forwardArrow->setPen(getStylePen());
-        m_backwardArrow->setPen(getStylePen());
+        m_forwardArrow->setPen(getLinePen());
+        m_backwardArrow->setPen(getLinePen());
     });
 
     connect(this, &BasicItem::graphicalDataChanged,
             this, [this](){
-        auto linePen = getStylePen();
+        auto linePen = getLinePen();
 
         m_line->setPath(createLinePath());
         m_line->setPen(linePen);
-        m_line->setBrush(getLineColor());
+        m_line->setBrush(getBackgroundBrush());
 
         m_lineSelected->setPath(m_line->path());
-        linePen.setWidth(linePen.width() + 2);
-        linePen.setColor(getSelectionColor());
+        linePen = getSelectionPen();
         m_lineSelected->setPen(linePen);
 
         auto lineDirection = getDirection();
@@ -87,7 +86,7 @@ ElegantConnectionLine::ElegantConnectionLine(QGraphicsItem *parent) :
 
 QPainterPath ElegantConnectionLine::createLinePath() const
 {
-    auto arrowHeight = getArrowSize().height();
+    auto arrowHeight = getArrowHeight().height();
 
     auto pointFrom = getPositionFrom();
     pointFrom.setY(pointFrom.y() + arrowHeight);
@@ -112,7 +111,7 @@ QPainterPath ElegantConnectionLine::createLinePath() const
 
     // Для правильной области определения
     QPainterPathStroker stroker;
-    stroker.setWidth(getStylePen().widthF());
+    stroker.setWidth(getLinePen().widthF());
     stroker.setCapStyle(Qt::RoundCap);
     stroker.setJoinStyle(Qt::RoundJoin);
 

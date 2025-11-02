@@ -12,6 +12,7 @@ public:
     void setFont(const QFont& f);
     QFont getFont() const;
 
+    void setMaxSymbolCount(int maxSymbolCount);
     void setTextAlignment(int algn);
     void setTextSizePt(double textSizePt);
 

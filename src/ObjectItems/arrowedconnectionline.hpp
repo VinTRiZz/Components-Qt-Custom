@@ -11,9 +11,14 @@ public:
 
 private:
     QGraphicsLineItem* m_line{nullptr};
-    QGraphicsLineItem* m_lineSelected{nullptr};
     QGraphicsPathItem* m_forwardArrow {nullptr};
     QGraphicsPathItem* m_backwardArrow {nullptr};
+
+    void updateLines();
+
+protected:
+    void hoverEnterEvent(QGraphicsSceneHoverEvent* e) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent* e) override;
 };
 
 } // namespace ObjectItems

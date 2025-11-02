@@ -4,6 +4,8 @@
 
 #include "basiciteminterface.hpp"
 
+#include "debugmaster.hpp"
+
 namespace ObjectItems {
 
 class BasicItem :
@@ -25,13 +27,12 @@ signals:
     void internalDataChanged();
     void graphicalDataChanged();
 
-    void itemCreated();
-    void itemDeleted();
-
     void itemSelected();
     void itemDeselected();
 
+    void itemClicked();
     void itemMoved();
+    void itemMovedOnScene();
 
 protected:
     // QGraphicsItem interface
@@ -39,13 +40,31 @@ protected:
                QWidget* widget) override;
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
-    template <typename T>
-    std::enable_if_t<std::is_base_of_v<QGraphicsItem, T>, void> createSubitem(T*& pItem) {
-        pItem = new T(this);
+    template <typename ItemTypeT, typename...InitArgs>
+    std::enable_if_t<std::is_base_of_v<QGraphicsItem, ItemTypeT>, void> createSubitem(ItemTypeT*& pItem, InitArgs&&...args) {
+        pItem = new ItemTypeT(args..., this);
         registerSubitem(pItem);
+
+        if constexpr (std::is_base_of_v<BasicItem, ItemTypeT>) {
+            QObject::connect(this, &BasicItem::graphicalDataChanged,
+                             pItem, [this, pItem](){
+                pItem->setLinePen(getLinePen());
+                pItem->setHoverPen(getHoverPen());
+                pItem->setSelectionPen(getSelectionPen());
+            });
+        }
     }
 
     void registerSubitem(QGraphicsItem* pItem);
+
+    void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
+
+    void hoverEnterEvent(QGraphicsSceneHoverEvent* e) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent* e) override;
+
+    bool getIsHovered() const;
+    QPen getCurrentPen() const;
+    QBrush getCurrentBrush() const;
 
     // BasicItemInterface interface
 private:
@@ -54,25 +73,10 @@ private:
     void processInternalDataChange() override;
     void processColorChange() override;
 
+    bool m_isClickedOnMe {false};
+    bool m_isHovered {false};
+
     friend class DebugMaster;
-};
-
-class DebugMaster {
-    BasicItem* m_targetItem {nullptr};
-public:
-    DebugMaster(BasicItem* pTargetItem);
-    ~DebugMaster();
-
-    BasicItem* getTargetItem() const;
-
-    void debug_setCustomRectVisible(const QRectF& rect, bool isCRectVisible = true);
-    void debug_setCenterVisible(bool isCenterVisible = true);
-    void debug_setBoundingRectVisible(bool isBRectVisible = true);
-
-private:
-    QGraphicsRectItem* m_debugCustomRectItem {nullptr};
-    QGraphicsRectItem* m_debugRectItem {nullptr};
-    QGraphicsRectItem* m_debugSizeRectItem {nullptr};
 };
 
 }

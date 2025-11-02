@@ -5,6 +5,9 @@
 
 #include <math.h>
 
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneHoverEvent>
+
 #include <QDebug>
 
 namespace ObjectItems
@@ -15,9 +18,9 @@ BasicItem::BasicItem(QGraphicsItem *parent) :
     QGraphicsItem(parent),
     BasicItemInterface()
 {
-    connect(this, &QObject::destroyed,
-            this, &BasicItem::itemDeleted);
-    emit itemCreated();
+    setFlag(ItemSendsScenePositionChanges, true);
+    setFlag(ItemHasNoContents, true);
+    setSystemName("Unknown");
 }
 
 BasicItem::~BasicItem()
@@ -53,8 +56,12 @@ QVariant BasicItem::itemChange(GraphicsItemChange change, const QVariant &value)
 
     switch (change)
     {
-    case ItemPositionChange:
+    case ItemPositionHasChanged:
         emit itemMoved();
+        break;
+
+    case ItemScenePositionHasChanged:
+        emit itemMovedOnScene();
         break;
 
     case ItemSelectedHasChanged:
@@ -75,14 +82,84 @@ QVariant BasicItem::itemChange(GraphicsItemChange change, const QVariant &value)
 void BasicItem::registerSubitem(QGraphicsItem *pItem)
 {
     pItem->setParentItem(this);
-    pItem->setData(ObjectDataRole::OBJECTDATAROLE_PARENTITEM_ID, getItemId());
+    pItem->setData(ObjectDataRole::OBJECTDATAROLE_PARENTITEM_ID, QVariant::fromValue(this));
+
+    auto pCon = new QMetaObject::Connection{};
+    *pCon = QObject::connect(this, &BasicItem::idChanged,
+                     this, [this, pItem, pCon](){
+        if (!pItem) {
+            QObject::disconnect(*pCon); // Если тут сегфолт или ещё что, извините
+            delete pCon;
+            return;
+        }
+        auto parentId = QVariant::fromValue(this);
+
+        std::function<void(QGraphicsItem*)> updatePid = [&updatePid, this, parentId](QGraphicsItem* pItem){
+            for (auto* pChild : pItem->childItems()) {
+                if (dynamic_cast<BasicItem*>(pChild) != nullptr) {
+                    continue;
+                }
+                updatePid(pChild);
+            }
+            pItem->setData(ObjectDataRole::OBJECTDATAROLE_PARENTITEM_ID, parentId);
+
+            auto complexParentId = data(ObjectDataRole::OBJECTDATAROLE_COMPLEX_PARENTITEM_ID);
+            if (complexParentId.isNull()) {
+                pItem->setData(ObjectDataRole::OBJECTDATAROLE_PARENTITEM_ID, parentId);
+            }
+        };
+
+        pItem->setData(ObjectDataRole::OBJECTDATAROLE_PARENTITEM_ID, parentId);
+        auto complexParentId = data(ObjectDataRole::OBJECTDATAROLE_COMPLEX_PARENTITEM_ID);
+        if (complexParentId.isNull()) {
+            complexParentId = QVariant::fromValue(this);
+        }
+        pItem->setData(ObjectDataRole::OBJECTDATAROLE_COMPLEX_PARENTITEM_ID, complexParentId);
+
+        // Апдейт дочерних НЕ объектов
+        for (auto* pChild : childItems()) {
+            updatePid(pChild);
+        }
+    });
 }
 
+void BasicItem::mousePressEvent(QGraphicsSceneMouseEvent *e)
+{
+    emit itemClicked();
+    QGraphicsItem::mousePressEvent(e);
+}
+
+void BasicItem::hoverEnterEvent(QGraphicsSceneHoverEvent *e)
+{
+    m_isHovered = true;
+    QGraphicsItem::hoverEnterEvent(e);
+}
+
+void BasicItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *e)
+{
+    m_isHovered = false;
+    QGraphicsItem::hoverLeaveEvent(e);
+}
+
+bool BasicItem::getIsHovered() const
+{
+    return m_isHovered;
+}
+
+QPen BasicItem::getCurrentPen() const
+{
+    return getIsHovered() ? getHoverPen() : (isSelected() ? getSelectionPen() : getLinePen());
+}
+
+QBrush BasicItem::getCurrentBrush() const
+{
+    return getIsHovered() ? getBackgroundHoverBrush() : (isSelected() ? getBackgroundSelectionBrush() : getBackgroundBrush());
+}
 
 void BasicItem::processIdChange()
 {
-    emit idChanged();
     setData(ObjectDataRole::OBJECTDATAROLE_ID, getItemId());
+    emit idChanged();
 }
 
 void BasicItem::processDisplayNameChange()
@@ -98,73 +175,6 @@ void BasicItem::processInternalDataChange()
 void BasicItem::processColorChange()
 {
     emit graphicalDataChanged();
-}
-
-DebugMaster::DebugMaster(BasicItem *pTargetItem) :
-    m_targetItem{pTargetItem}
-{
-    m_targetItem->createSubitem(m_debugRectItem);
-    m_debugRectItem->setZValue(1'000'000);
-    m_debugRectItem->setBrush(QBrush(Qt::magenta, Qt::DiagCrossPattern));
-    m_debugRectItem->setPen(QPen(Qt::red, 2, Qt::DotLine));
-    m_debugRectItem->hide();
-
-    m_targetItem->createSubitem(m_debugSizeRectItem);
-    m_debugSizeRectItem->setZValue(1'001'000);
-    m_debugSizeRectItem->setBrush(QBrush(Qt::darkMagenta, Qt::DiagCrossPattern));
-    m_debugSizeRectItem->setPen(QPen(Qt::green, 4, Qt::SolidLine));
-    m_debugSizeRectItem->hide();
-
-    m_targetItem->createSubitem(m_debugCustomRectItem);
-    m_debugCustomRectItem->setZValue(1'000'001);
-    m_debugCustomRectItem->setBrush(QBrush(Qt::darkCyan, Qt::BDiagPattern));
-    m_debugCustomRectItem->setPen(QPen(Qt::darkCyan, 3, Qt::DashDotDotLine));
-    m_debugCustomRectItem->hide();
-}
-
-DebugMaster::~DebugMaster()
-{
-
-}
-
-BasicItem *DebugMaster::getTargetItem() const
-{
-    return m_targetItem;
-}
-
-void DebugMaster::debug_setCustomRectVisible(const QRectF &rect, bool isCRectVisible)
-{
-    m_debugCustomRectItem->setRect(rect);
-    if (isCRectVisible) {
-        m_debugCustomRectItem->show();
-    } else {
-        m_debugCustomRectItem->setRect({});
-        m_debugCustomRectItem->hide();
-    }
-}
-
-void DebugMaster::debug_setCenterVisible(bool isCenterVisible)
-{
-    if (isCenterVisible) {
-        QTransform scaleTrasnf;
-        scaleTrasnf.scale(0.2, 0.2);
-        m_debugSizeRectItem->setRect(scaleTrasnf.mapRect(m_targetItem->boundingRect()));
-        m_debugSizeRectItem->show();
-    } else {
-        m_debugSizeRectItem->setRect({});
-        m_debugSizeRectItem->hide();
-    }
-}
-
-void DebugMaster::debug_setBoundingRectVisible(bool isBRectVisible)
-{
-    if (isBRectVisible) {
-        m_debugRectItem->setRect(m_targetItem->boundingRect());
-        m_debugRectItem->show();
-    } else {
-        m_debugRectItem->setRect({});
-        m_debugRectItem->hide();
-    }
 }
 
 }

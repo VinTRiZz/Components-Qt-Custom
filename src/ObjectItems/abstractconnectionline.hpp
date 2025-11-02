@@ -33,11 +33,17 @@ class AbstractConnectionLine : public BasicItem
 public:
     explicit AbstractConnectionLine(QGraphicsItem *parent = nullptr);
 
+    void subscribeForMoves(BasicItem* pItem, bool isFrom = true, const QPointF& offsetPos = {});
+    void unsubscribeForMoves(BasicItem* pItem);
+
     void setDirection(LineDirectionType arrType);
     LineDirectionType getDirection() const;
 
     void setArrowHeight(double arHeight);
-    QSizeF getArrowSize() const;
+    QSizeF getArrowHeight() const;
+
+    void setArrowAngle(LineAngleType lineAngle);
+    LineAngleType getArrowAngle() const;
 
     void setLine(const QLineF& line);
     void setLine(const QPointF& p1, const QPointF& p2);
@@ -49,17 +55,14 @@ public:
     void setPositionTo(const QPointF& posTo);
     QPointF getPositionTo() const;
 
-    void setStyle(Qt::PenStyle pst);
-    void setWidth(double w);
-
-    QPen getStylePen() const;
-
 private:
     QLineF              m_straightLine  {};
     LineDirectionType   m_arrowType     {LineDirectionType::None};
     LineAngleType       m_arrowAngle    {LineAngleType::A_30};
     QSizeF              m_arrowSize     {10, 10};
-    QPen                m_stylePen      {Qt::black, 1, Qt::SolidLine, Qt::RoundCap};
+
+    mutable bool m_isArrowSizeChanged {true};
+    mutable QPainterPath m_cachedArrowpath;
 
 protected:
     QPainterPath createArrowPath() const; // Направлена вверх после создания

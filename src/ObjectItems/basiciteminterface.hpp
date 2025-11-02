@@ -2,6 +2,9 @@
 
 #include <QGraphicsItem>
 
+#include <QPen>
+#include <QBrush>
+
 namespace ObjectItems {
 
 // СОГЛАШЕНИЕ:
@@ -16,6 +19,7 @@ const objectId_t NULL_OBJECT_ID { 0 };
 enum ObjectDataRole : int {
     OBJECTDATAROLE_ID = Qt::UserRole + 1000,   //! Короткое имя объекта для отображения
     OBJECTDATAROLE_PARENTITEM_ID,  //! Для комплексных объектов
+    OBJECTDATAROLE_COMPLEX_PARENTITEM_ID,  //! Для объектов из комплексных объектов
 
     // СОГЛАШЕНИЕ: Все кастомные типы должны быть после USERTYPE
     OBJECTDATAROLE_USERTYPE,   //! Для пользовательских типов
@@ -32,9 +36,12 @@ private:
     QString m_displayName;
     QString m_description;
 
-    QColor m_lineColor          {Qt::black};
-    QColor m_backgroundColor    {Qt::transparent};
-    QColor m_selectionColor     {180, 180, 130};
+    QPen m_linePen                      {Qt::black};
+    QPen m_lineHoverPen                 {Qt::black};
+    QPen m_selectionPen                 {QColor(180, 180, 130)};
+    QBrush m_backgroundBrush            {Qt::transparent};
+    QBrush m_backgroundHoverBrush       {Qt::transparent};
+    QBrush m_backgroundSelectionBrush   {Qt::transparent};
 
     static objectId_t createSystemId();;
 
@@ -56,14 +63,23 @@ public:
     void setDescription(const QString& text);
     QString getDescription() const;
 
-    void setLineColor(const QColor& color);
-    QColor getLineColor() const;
+    void setLinePen(const QPen& penC);
+    QPen getLinePen() const;
 
-    void setBackgroundColor(const QColor& color);
-    QColor getBackgroundColor() const;
+    void setHoverPen(const QPen& penC);
+    QPen getHoverPen() const;
 
-    void setSelectionColor(const QColor& color);
-    QColor getSelectionColor() const;
+    void setSelectionPen(const QPen& penC);
+    QPen getSelectionPen() const;
+
+    void setBackgroundBrush(const QBrush& brushC);
+    QBrush getBackgroundBrush() const;
+
+    void setBackgroundSelectionBrush(const QBrush& brushC);
+    QBrush getBackgroundSelectionBrush() const;
+
+    void setBackgroundHoverBrush(const QBrush& brushC);
+    QBrush getBackgroundHoverBrush() const;
 
 protected:
     virtual void processIdChange() = 0;

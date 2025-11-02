@@ -29,17 +29,29 @@ void BasicItemInterface::setDescription(const QString &text) { m_description = t
 
 QString BasicItemInterface::getDescription() const { return m_description; }
 
-void BasicItemInterface::setLineColor(const QColor &color) { m_lineColor = color; processColorChange(); }
+void BasicItemInterface::setLinePen(const QPen &penC) { m_linePen = penC; processColorChange(); }
 
-QColor BasicItemInterface::getLineColor() const { return m_lineColor; }
+QPen BasicItemInterface::getLinePen() const { return m_linePen; }
 
-void BasicItemInterface::setBackgroundColor(const QColor &color) { m_backgroundColor = color; processColorChange(); }
+void BasicItemInterface::setHoverPen(const QPen &penC) { m_lineHoverPen = penC; processColorChange(); }
 
-QColor BasicItemInterface::getBackgroundColor() const { return m_backgroundColor; }
+QPen BasicItemInterface::getHoverPen() const { return m_lineHoverPen; }
 
-void BasicItemInterface::setSelectionColor(const QColor &color) { m_selectionColor = color; processColorChange(); }
+void BasicItemInterface::setSelectionPen(const QPen &penC) { m_selectionPen = penC; processColorChange(); }
 
-QColor BasicItemInterface::getSelectionColor() const { return m_selectionColor; }
+QPen BasicItemInterface::getSelectionPen() const { return m_selectionPen; }
+
+void BasicItemInterface::setBackgroundBrush(const QBrush &brushC) { m_backgroundBrush = brushC; processColorChange(); }
+
+QBrush BasicItemInterface::getBackgroundBrush() const { return m_backgroundBrush; }
+
+void BasicItemInterface::setBackgroundSelectionBrush(const QBrush &brushC) { m_backgroundSelectionBrush = brushC; processColorChange(); }
+
+QBrush BasicItemInterface::getBackgroundSelectionBrush() const { return m_backgroundSelectionBrush; }
+
+void BasicItemInterface::setBackgroundHoverBrush(const QBrush &brushC) { m_backgroundHoverBrush = brushC; processColorChange(); }
+
+QBrush BasicItemInterface::getBackgroundHoverBrush() const { return m_backgroundHoverBrush; }
 
 void BasicItemInterface::setSystemName(const QString &iText) { m_systemName = iText; }
 
