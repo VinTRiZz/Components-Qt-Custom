@@ -42,6 +42,11 @@ void GroupItem::clearCommentedItems()
     updateBoundingPolygon();
 }
 
+QPolygonF GroupItem::getBoundingPolygon() const
+{
+    return m_bPolygon->polygon();
+}
+
 void GroupItem::updateBoundingPolygon()
 {
     std::vector<Maths::Point> points;
@@ -81,6 +86,7 @@ void GroupItem::updateBoundingPolygon()
     }
 
     m_bPolygon->setPolygon(boundingPoly);
+    emit graphicalDataChanged();
 }
 
 

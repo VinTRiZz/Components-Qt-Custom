@@ -15,6 +15,8 @@ public:
     void addCommentedItem(BasicItem* item);
     void clearCommentedItems();
 
+    QPolygonF getBoundingPolygon() const;
+
 private:
     void updateBoundingPolygon();
 

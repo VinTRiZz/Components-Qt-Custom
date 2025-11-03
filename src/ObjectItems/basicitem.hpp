@@ -40,12 +40,13 @@ protected:
                QWidget* widget) override;
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
-    template <typename ItemTypeT, typename...InitArgs>
+    // Require connect -- указывает, надо ли соединять айтем с изменением QPen / QBrush
+    template <bool requireConnect = true, typename ItemTypeT, typename...InitArgs>
     std::enable_if_t<std::is_base_of_v<QGraphicsItem, ItemTypeT>, void> createSubitem(ItemTypeT*& pItem, InitArgs&&...args) {
         pItem = new ItemTypeT(args..., this);
         registerSubitem(pItem);
 
-        if constexpr (std::is_base_of_v<BasicItem, ItemTypeT>) {
+        if constexpr (std::is_base_of_v<BasicItem, ItemTypeT> && requireConnect) {
             QObject::connect(this, &BasicItem::graphicalDataChanged,
                              pItem, [this, pItem](){
                 pItem->setLinePen(getLinePen());
