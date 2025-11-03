@@ -13,6 +13,7 @@ public:
     // Установка комментируемых элементов
     void setCommentedItems(const QList<BasicItem*>& items);
     void addCommentedItem(BasicItem* item);
+    void removeCommentedItem(BasicItem* item);
     void clearCommentedItems();
 
     QPolygonF getBoundingPolygon() const;

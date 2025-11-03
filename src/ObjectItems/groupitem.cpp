@@ -24,6 +24,14 @@ GroupItem::GroupItem(QGraphicsItem* parent)
 
 void GroupItem::setCommentedItems(const QList<BasicItem*>& items)
 {
+    QList<BasicItem*> diffItems;
+    std::set_difference(items.begin(), items.end(),
+                        m_commentedItems.begin(), m_commentedItems.end(),
+                        std::back_inserter(diffItems));
+    for (auto* pItem : diffItems) {
+        connect(pItem, &BasicItem::itemMovedOnScene,
+                   this, &GroupItem::updateBoundingPolygon);
+    }
     m_commentedItems = items;
     updateBoundingPolygon();
 }
@@ -32,13 +40,24 @@ void GroupItem::addCommentedItem(BasicItem* item)
 {
     if (item && !m_commentedItems.contains(item)) {
         m_commentedItems.append(item);
+        connect(item, &BasicItem::itemMovedOnScene,
+                   this, &GroupItem::updateBoundingPolygon);
         updateBoundingPolygon();
     }
 }
 
+void GroupItem::removeCommentedItem(BasicItem *item)
+{
+    disconnect(item, &BasicItem::itemMovedOnScene,
+               this, nullptr);
+    m_commentedItems.removeOne(item);
+}
+
 void GroupItem::clearCommentedItems()
 {
-    m_commentedItems.clear();
+    while (m_commentedItems.size()) {
+        removeCommentedItem(m_commentedItems.front());
+    }
     updateBoundingPolygon();
 }
 
