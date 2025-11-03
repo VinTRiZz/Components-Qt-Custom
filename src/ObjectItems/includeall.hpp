@@ -7,6 +7,7 @@
 // Util
 #include "anchoritem.hpp"
 #include "commentaryitem.hpp"
+#include "markeritem.hpp"
 
 // Lines
 #include "arrowedconnectionline.hpp"

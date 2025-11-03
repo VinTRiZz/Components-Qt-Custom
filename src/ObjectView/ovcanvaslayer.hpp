@@ -50,6 +50,7 @@ public slots:
 
 signals:
     void scaleChanged(double);
+    void visibleRectMoved();
 
 protected:
     virtual bool isSystemItem(QGraphicsItem* pItem) const;

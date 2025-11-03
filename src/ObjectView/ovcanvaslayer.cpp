@@ -209,6 +209,7 @@ void OVCanvasLayer::mouseMoveEvent(QMouseEvent* e) {
             horizontalScrollBar()->sliderPosition() - deltaPos.x());
         verticalScrollBar()->setSliderPosition(
             verticalScrollBar()->sliderPosition() - deltaPos.y());
+        emit visibleRectMoved();
     }
 }
 

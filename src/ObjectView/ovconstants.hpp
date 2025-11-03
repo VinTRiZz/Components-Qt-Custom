@@ -18,6 +18,7 @@ enum ItemLayers : int {
     SystemComponentsLayerBegin = 1'000'000,
     AnchorItemLayer,
 
+    MarkerItemLayer,
     CursorLabelLayer,
     GrabItemLayer,
 };
