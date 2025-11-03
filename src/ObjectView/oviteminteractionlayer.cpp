@@ -13,8 +13,6 @@ OVItemInteractionLayer::OVItemInteractionLayer(QWidget* parent) :
     m_grabberItem->setZValue(ItemLayers::GrabItemLayer);
     m_grabberItem->show();
 
-    ObjectItems::DebugMaster::showCenter(m_grabberItem);
-
     connect(this, &OVCanvasLayer::scaleChanged,
             this, &OVItemInteractionLayer::updateGrabberPosition);
 }
@@ -86,7 +84,7 @@ void OVItemInteractionLayer::updateGrabberPosition()
 
 void OVItemInteractionLayer::mouseMoveEvent(QMouseEvent *e)
 {
-    updateGrabberPosition();
+    updateGrabberPosition();    
     OVCanvasLayer::mouseMoveEvent(e);
 }
 

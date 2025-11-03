@@ -28,6 +28,8 @@ private:
     std::map<QGraphicsItem*, QMetaObject::Connection> m_grabbedItemConnections;
     ObjectItems::BasicItem* m_grabberItem {nullptr};
 
+    QGraphicsPathItem* m_highlightItem {nullptr};
+
 private slots:
     void updateGrabberPosition();
 

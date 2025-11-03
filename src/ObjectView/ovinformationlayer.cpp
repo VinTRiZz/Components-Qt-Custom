@@ -24,6 +24,9 @@ OVInformationLayer::OVInformationLayer(QWidget *parent) :
     m_pInformationLabel->setWordWrap(true);
     m_pInformationLabel->setFixedSize(500, 50);
 
+    m_highlightItem = new QGraphicsPathItem(getCanvas());
+    m_highlightItem->setPen(QColor(180, 180, 90));
+
     // Настройка для отображения
     m_pInformationLabel->setStyleSheet(
         R"(
@@ -57,9 +60,11 @@ OVInformationLayer::OVInformationLayer(QWidget *parent) :
     });
 
     connect(this, &OVCanvasLayer::scaleChanged,
-            this, &OVInformationLayer::updateCursorLabel);
-    connect(this, &OVCanvasLayer::scaleChanged,
-            this, &OVInformationLayer::updateInformationLabel);
+            this, [this](){
+        updateInformationLabel();
+        updateCursorLabel();
+        updateHighlight();
+    });
     connect(getScene(), &OVInternalScene::gridEnabled,
             this, &OVInformationLayer::updateInformationLabel);
 }
@@ -90,14 +95,42 @@ void OVInformationLayer::setCursorValuesPresenter(const std::function<QString (c
     m_cursorValuesPresenter = pres;
 }
 
+void OVInformationLayer::setCursorLabelEnabled(bool isEn)
+{
+    m_isCursorLabelEnabled = isEn;
+    updateCursorLabel();
+}
+
+void OVInformationLayer::setInformationLabelEnabled(bool isEn)
+{
+    m_isInfoLabelEnabled = isEn;
+    updateInformationLabel();
+}
+
+void OVInformationLayer::setHighlightEnabled(bool isEn)
+{
+    m_isHighlightEnabled = isEn;
+    updateHighlight();
+}
+
 void OVInformationLayer::updateCursorLabel()
 {
+    if (!m_isCursorLabelEnabled) {
+        m_pCursorLabel->hide();
+        return;
+    }
+
     auto cursorPos = mapToScene(mapFromGlobal(QCursor::pos()));
     m_pCursorLabel->setPos(cursorPos + QPointF(15, 15) / getCurrentScale());
     m_pCursorLabel->setDisplayName(m_cursorValuesPresenter(cursorPos));
 }
 
 void OVInformationLayer::updateInformationLabel() {
+    if (!m_isInfoLabelEnabled) {
+        m_pInformationLabel->hide();
+        return;
+    }
+
     auto isGridEnabled = getScene()->getIsGridEnabled();
     auto gridSize = getScene()->getGridSize();
     auto infoText = m_currentInfoFormat.arg(
@@ -110,10 +143,35 @@ void OVInformationLayer::updateInformationLabel() {
     m_pInformationLabel->setText(infoText);
 }
 
+void OVInformationLayer::updateHighlight()
+{
+    if (!m_isHighlightEnabled) {
+        m_highlightItem->hide();
+        return;
+    }
+
+    auto cursorPos = mapFromGlobal(QCursor::pos());
+    auto pObject = getObject(cursorPos);
+    if (pObject != nullptr) {
+        m_highlightItem->setZValue(pObject->zValue());
+        QTransform scaleTr;
+        scaleTr.scale(1.1, 1.1);
+        m_highlightItem->setPath(scaleTr.map(pObject->shape()));
+
+        auto targetPos = m_highlightItem->parentItem()->mapFromScene(pObject->scenePos());
+        targetPos += (pObject->boundingRect().bottomRight() - m_highlightItem->boundingRect().bottomRight()) / 2.0;
+        m_highlightItem->setPos(targetPos);
+        m_highlightItem->show();
+    } else {
+        m_highlightItem->hide();
+    }
+}
+
 void OVInformationLayer::mouseMoveEvent(QMouseEvent *e)
 {
     OVMeasurementLayer::mouseMoveEvent(e);
     updateCursorLabel();
+    updateHighlight();
 }
 
 void OVInformationLayer::enterEvent(QEvent *e)

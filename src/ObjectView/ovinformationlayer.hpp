@@ -30,10 +30,21 @@ public:
 
     void setCursorValuesPresenter(const std::function<QString(const QPointF&)>& pres);
 
+public slots:
+    void setCursorLabelEnabled(bool isEn);
+    void setInformationLabelEnabled(bool isEn);
+    void setHighlightEnabled(bool isEn);
+
 private:
+
+    bool m_isCursorLabelEnabled {true};
     ObjectItems::TextLabel* m_pCursorLabel{
         nullptr};  //! Объект, который показывает информацию у курсора
 
+    bool m_isHighlightEnabled {false};
+    QGraphicsPathItem* m_highlightItem {nullptr};
+
+    bool m_isInfoLabelEnabled {true};
     QLabel* m_pInformationLabel{nullptr};
     QString m_currentToolName;
     QString m_currentInfoFormat {"Масштаб: 1:%0   Сетка: %1\nИнструмент: %2"};
@@ -43,6 +54,7 @@ private:
 private slots:
     void updateCursorLabel();
     void updateInformationLabel();
+    void updateHighlight();
 
 protected:
     void mouseMoveEvent(QMouseEvent* e) override;
