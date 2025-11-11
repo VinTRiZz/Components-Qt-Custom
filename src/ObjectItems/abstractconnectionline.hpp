@@ -20,12 +20,12 @@ enum LineDirectionType : short {
  * @brief The LineAngleType enum Угол между сторонами треугольника стрелки
  */
 enum LineAngleType : short {
-    A_90,
-    A_75,
-    A_60,
-    A_45,
-    A_30,
     A_15,
+    A_30,
+    A_45,
+    A_60,
+    A_75,
+    A_90,
 };
 
 class AbstractConnectionLine : public BasicItem
