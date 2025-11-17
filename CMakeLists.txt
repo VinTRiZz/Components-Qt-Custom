@@ -1,94 +1,12 @@
-# CMake configuration
-cmake_minimum_required(VERSION 3.7)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+COMPONENTS_REQUIRE_QT(5 Core Gui Widgets Charts)
 
-# Library name
-set(LIBRARY_NAME Qt-Custom)
-
-# Check if project is self-hosted
-if (NOT DEFINED PROJECT_NAME)
-    project(
-        ${LIBRARY_NAME}
-        VERSION 1.0.0
-        LANGUAGES C CXX
-    )
-endif()
-
-# Link common function
-function(LINK_LIBRARY LIBRARY_INCLUDE_DIR TARGET_NAME LIBRARY_NAME)
-    if(NOT EXISTS ${LIBRARY_INCLUDE_DIR})
-        message(FATAL_ERROR "Error searching for ${LIBRARY_NAME} (not exist)")
-    endif()
-
-    target_link_libraries(
-        ${TARGET_NAME} PRIVATE
-        ${LIBRARY_NAME}
-    )
-
-    target_include_directories(
-        ${TARGET_NAME} PUBLIC
-        ${LIBRARY_INCLUDE_DIR}
-    )
-    message(STATUS "Linking target " ${TARGET_NAME} " : added lib " ${LIBRARY_NAME})
-endfunction()
-
-# Component add common function
-function(LINK_COMPONENT TARGET_NAME COMPONENT_ROOT_DIR COMPONENT_NAME)
-    if(NOT EXISTS ${COMPONENT_ROOT_DIR}/Components-${COMPONENT_NAME})
-        message(FATAL_ERROR "Error searching for component: ${COMPONENT_NAME} (not exist)")
-    endif()
-
-    LINK_LIBRARY(${COMPONENT_ROOT_DIR}/Components-${COMPONENT_NAME}/include ${TARGET_NAME} ${COMPONENT_NAME})
-endfunction()
-
-# Packages
-find_package(QT NAMES Qt5 REQUIRED COMPONENTS Core Gui Widgets Charts)
-find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets Charts)
-
-# Qt configuration
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-
-set(
-    TARGET_LINKED_LIBS
+COMPONENTS_CONFIGURE_COMPONENT(Qt-Custom
     Qt5::Core
     Qt5::Gui
     Qt5::Widgets
     Qt5::Charts
 )
 
-# Library target
-add_library(${LIBRARY_NAME} SHARED)
-target_link_libraries(${LIBRARY_NAME} PRIVATE ${TARGET_LINKED_LIBS} )
-
-LINK_COMPONENT(${LIBRARY_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/.. Logger)
-LINK_COMPONENT(${LIBRARY_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/.. Maths)
-LINK_COMPONENT(${LIBRARY_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/.. Common)
-
-# Files
-file(GLOB_RECURSE HEADERS "src/*.hpp" "src/*.h" "src/*.tcc")
-file(GLOB_RECURSE SOURCES "src/*.cpp")
-file(GLOB_RECURSE UIFILES "src/*.ui")
-target_sources(${LIBRARY_NAME} PRIVATE ${HEADERS} ${SOURCES} ${UIFILES})
-source_group("Forms" FILES ${UIFILES})
-
-# Suffixes
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_definitions(${LIBRARY_NAME} PRIVATE DEBUG_MODE)
-    target_compile_options(${LIBRARY_NAME} PRIVATE -g)
-    set_target_properties(${LIBRARY_NAME} PROPERTIES SUFFIX ".so.DEBUG")
-elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_compile_definitions(${LIBRARY_NAME} PRIVATE NDEBUG)
-    target_compile_options(${LIBRARY_NAME} PRIVATE -O3)
-    set_target_properties(${LIBRARY_NAME} PROPERTIES SUFFIX ".so")
-endif()
-
-# Self-Includes
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src")
-    message(FATAL_ERROR "Error configuring library! Not found sources dir: " "${CMAKE_CURRENT_SOURCE_DIR}/src")
-endif()
-
-target_include_directories(${LIBRARY_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src" "${CMAKE_CURRENT_SOURCE_DIR}/include")
-message(STATUS "Configured library: " ${LIBRARY_NAME})
+COMPONENTS_LINK_COMPONENT(Qt-Custom Logger)
+COMPONENTS_LINK_COMPONENT(Qt-Custom Maths)
+COMPONENTS_LINK_COMPONENT(Qt-Custom Common)

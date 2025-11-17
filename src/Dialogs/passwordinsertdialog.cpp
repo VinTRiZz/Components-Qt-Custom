@@ -10,7 +10,7 @@ PasswordInsertDialog::PasswordInsertDialog(QWidget* parent)
     ui->password_lineEdit->setEchoMode(QLineEdit::Password);
 
     setWindowTitle("Редактор графов: Окно ввода пароля");
-    setWindowIcon(QIcon(":/common/images/icons/app/grapheditor.svg"));
+    setWindowIcon(QIcon(":/images/icons/app/grapheditor.svg"));
 }
 
 PasswordInsertDialog::~PasswordInsertDialog() {
