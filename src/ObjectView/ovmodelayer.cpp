@@ -72,7 +72,6 @@ void OVModeLayer::contextMenuEvent(QContextMenuEvent *event) {
     } else {
         OVContextMenuLayer::executeContextMenu(event);
     }
-    OVCanvasLayer::contextMenuEvent(event);
 }
 
 } // namespace OVLayers
