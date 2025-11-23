@@ -1,7 +1,6 @@
 #pragma once
 
-#include "ovmeasurementlayer.hpp"
-#include "ovcontextmenulayer.hpp"
+#include "oviteminteractionlayer.hpp"
 
 #include <QLabel>
 
@@ -11,9 +10,7 @@ class TextLabel;
 
 namespace OVLayers {
 
-class OVInformationLayer :
-        public OVMeasurementLayer,
-        public OVContextMenuLayer<OVInformationLayer>
+class OVInformationLayer : public OVItemInteractionLayer
 {
     Q_OBJECT
 public:
@@ -63,8 +60,6 @@ protected:
     void leaveEvent(QEvent* e) override;
 
     void resizeEvent(QResizeEvent* e) override;
-
-    void contextMenuEvent(QContextMenuEvent* e) override;
 };
 
 } // namespace OVLayers

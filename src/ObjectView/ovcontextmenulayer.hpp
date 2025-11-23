@@ -4,6 +4,7 @@
 #include <QGraphicsItem>
 
 #include "ovcontextmenulayer.hpp"
+#include "ovinternalscene.hpp"
 
 #include <QContextMenuEvent>
 
@@ -15,7 +16,7 @@ template <typename BaseView>
 class OVContextMenuLayer
 {
 public:
-    void initContextMenu() {
+    OVContextMenuLayer() {
         auto pGridAction = m_mainContextMenu.addAction("Сетка", [this]() {
             static_cast<BaseView*>(this)->getScene()->setGridEnabled(!static_cast<BaseView*>(this)->getScene()->getIsGridEnabled());
             for (auto* pAction : m_mainContextMenu.actions()) {
