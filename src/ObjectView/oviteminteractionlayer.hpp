@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ovcanvaslayer.hpp"
 #include "ovmodelayer.hpp"
 
 #include <Components/CustomQt/ObjectView/ObjectItems.h>
@@ -39,9 +38,6 @@ protected:
 
     void enterEvent(QEvent* e) override;
     void leaveEvent(QEvent* e) override;
-
-
-
 };
 
 } // namespace ObjectItems
