@@ -32,38 +32,38 @@ void OVModeLayer::setMode(OVMode *pMode) {
 }
 
 void OVModeLayer::mousePressEvent(QMouseEvent *event) {
+    OVCanvasLayer::mousePressEvent(event);
     if (m_currentMode) {
         m_currentMode->process_mousePressEvent(event);
     }
-    OVCanvasLayer::mousePressEvent(event);
 }
 
 void OVModeLayer::mouseReleaseEvent(QMouseEvent *event) {
+    OVCanvasLayer::mouseReleaseEvent(event);
     if (m_currentMode) {
         m_currentMode->process_mouseReleaseEvent(event);
     }
-    OVCanvasLayer::mouseReleaseEvent(event);
 }
 
 void OVModeLayer::mouseMoveEvent(QMouseEvent *event) {
+    OVCanvasLayer::mouseMoveEvent(event);
     if (m_currentMode) {
         m_currentMode->process_mouseMoveEvent(event);
     }
-    OVCanvasLayer::mouseMoveEvent(event);
 }
 
 void OVModeLayer::enterEvent(QEvent *event) {
+    OVCanvasLayer::enterEvent(event);
     if (m_currentMode) {
         m_currentMode->process_enterEvent(event);
     }
-    OVCanvasLayer::enterEvent(event);
 }
 
 void OVModeLayer::leaveEvent(QEvent *event) {
+    OVCanvasLayer::leaveEvent(event);
     if (m_currentMode) {
         m_currentMode->process_leaveEvent(event);
     }
-    OVCanvasLayer::leaveEvent(event);
 }
 
 void OVModeLayer::contextMenuEvent(QContextMenuEvent *event) {
