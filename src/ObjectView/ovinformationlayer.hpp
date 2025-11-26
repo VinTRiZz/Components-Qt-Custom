@@ -32,6 +32,10 @@ public slots:
     void setInformationLabelEnabled(bool isEn);
     void setHighlightEnabled(bool isEn);
 
+    void updateCursorLabel();
+    void updateInformationLabel();
+    void updateHighlight();
+
 private:
 
     bool m_isCursorLabelEnabled {true};
@@ -47,11 +51,6 @@ private:
     QString m_currentInfoFormat {"Масштаб: 1:%0   Сетка: %1\nИнструмент: %2"};
 
     std::function<QString(const QPointF&)> m_cursorValuesPresenter;
-
-private slots:
-    void updateCursorLabel();
-    void updateInformationLabel();
-    void updateHighlight();
 
 protected:
     void mouseMoveEvent(QMouseEvent* e) override;
