@@ -21,6 +21,7 @@ class OVCanvasLayer : public QGraphicsView
     using QGraphicsView::setSceneRect;  // Используйте setCanvasRect
     using QGraphicsView::items;         // Используйте getItems
     using QGraphicsView::itemAt;        // Используйте getTopItem
+    using QGraphicsView::resetTransform;// Используйте resetScale()
 
 public:
     explicit OVCanvasLayer(QWidget* parent = nullptr);
@@ -44,6 +45,7 @@ public:
 public slots:
     void setNavigationEnabled(bool isEn);
 
+    void resetScale();
     void zoomIn();
     void zoomOut();
     void customZoom(double scaleCoeff);

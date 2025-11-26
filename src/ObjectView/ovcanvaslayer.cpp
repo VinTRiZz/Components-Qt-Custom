@@ -163,6 +163,11 @@ void OVCanvasLayer::setNavigationEnabled(bool isEn)
     m_isNavigationEnabled = isEn;
 }
 
+void OVCanvasLayer::resetScale()
+{
+    resetTransform();
+}
+
 
 void OVCanvasLayer::wheelEvent(QWheelEvent* e) {
     QGraphicsView::wheelEvent(e);

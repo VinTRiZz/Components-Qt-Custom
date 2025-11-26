@@ -31,8 +31,8 @@ signals:
     void itemDeselected();
 
     void itemClicked();
-    void itemMoved();
-    void itemMovedOnScene();
+    void itemMoved(const QPointF& newPos);
+    void itemMovedOnScene(const QPointF& newScenePos);
 
 protected:
     // QGraphicsItem interface
@@ -59,6 +59,8 @@ protected:
     void registerSubitem(QGraphicsItem* pItem);
 
     void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent* e) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent* e) override;
 
     void hoverEnterEvent(QGraphicsSceneHoverEvent* e) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent* e) override;
@@ -76,6 +78,12 @@ private:
 
     bool m_isClickedOnMe {false};
     bool m_isHovered {false};
+
+    QPointF m_prevClickScreenPos; // TODO: Придумать получше вариант, маппинг тут геморройный
+    QPointF m_clickOffset;
+    bool    m_isDeltaGot {false};   // Оптимизация
+    double  m_startMoveDelta {2.0}; // Расстояние между точкой нажатия и точкой релиза для начала перемещения
+    void    processMoveEvent(QGraphicsSceneMouseEvent* e);
 
     friend class DebugMaster;
 };

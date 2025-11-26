@@ -47,7 +47,7 @@ public:
 
         m_mainContextMenu.addAction("Вернуться в центр", [this](){
             auto pThis = static_cast<BaseView*>(this);
-            pThis->resetTransform();
+            pThis->resetScale();
             pThis->centerOn(pThis->getCanvas()->boundingRect().center());
         });
     }

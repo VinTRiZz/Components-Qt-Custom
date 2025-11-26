@@ -8,8 +8,6 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneHoverEvent>
 
-#include <QDebug>
-
 namespace ObjectItems
 {
 
@@ -20,6 +18,8 @@ BasicItem::BasicItem(QGraphicsItem *parent) :
 {
     setFlag(ItemSendsScenePositionChanges, true);
     setFlag(ItemHasNoContents, true);
+    setFlag(ItemSendsGeometryChanges, true);
+    setHandlesChildEvents(true);
     setSystemName("Unknown");
 }
 
@@ -57,11 +57,11 @@ QVariant BasicItem::itemChange(GraphicsItemChange change, const QVariant &value)
     switch (change)
     {
     case ItemPositionHasChanged:
-        emit itemMoved();
+        emit itemMoved(pos());
         break;
 
     case ItemScenePositionHasChanged:
-        emit itemMovedOnScene();
+        emit itemMovedOnScene(scenePos());
         break;
 
     case ItemSelectedHasChanged:
@@ -125,8 +125,30 @@ void BasicItem::registerSubitem(QGraphicsItem *pItem)
 
 void BasicItem::mousePressEvent(QGraphicsSceneMouseEvent *e)
 {
-    emit itemClicked();
     QGraphicsItem::mousePressEvent(e);
+    m_prevClickScreenPos = e->screenPos();
+    m_clickOffset = e->scenePos() - scenePos();
+    e->setAccepted(true);
+}
+
+void BasicItem::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
+{
+    QGraphicsItem::mouseMoveEvent(e);
+    if (m_isDeltaGot) {
+        processMoveEvent(e);
+    } else if (QLineF(m_prevClickScreenPos, e->screenPos()).length() > m_startMoveDelta) {
+        processMoveEvent(e);
+        m_isDeltaGot = true;
+    }
+}
+
+void BasicItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *e)
+{
+    QGraphicsItem::mouseReleaseEvent(e);
+    if (!m_isDeltaGot) {
+        emit itemClicked();
+    }
+    m_isDeltaGot = false;
 }
 
 void BasicItem::hoverEnterEvent(QGraphicsSceneHoverEvent *e)
@@ -175,6 +197,15 @@ void BasicItem::processInternalDataChange()
 void BasicItem::processColorChange()
 {
     emit graphicalDataChanged();
+}
+
+void BasicItem::processMoveEvent(QGraphicsSceneMouseEvent *e)
+{
+    auto targetPos = e->scenePos() - m_clickOffset;
+    if (parentItem()) {
+        targetPos = parentItem()->mapFromScene(targetPos);
+    }
+    setPos(targetPos);
 }
 
 }
