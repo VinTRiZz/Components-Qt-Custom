@@ -42,6 +42,27 @@ QRectF BasicItem::boundingRect() const
     return shape().boundingRect();
 }
 
+std::list<QAction *> BasicItem::createContextActions()
+{
+    std::list<QAction *> res;
+
+    auto pOpacityAction = new QAction("Прозрачный");
+    connect(pOpacityAction, &QAction::triggered,
+            this, [this, pOpacityAction]() {
+        if (opacity() < 0.9) {
+            setOpacity(1);
+        } else {
+            setOpacity(0.2);
+        }
+    });
+    pOpacityAction->setCheckable(true);
+    pOpacityAction->setChecked(opacity() < 0.9);
+
+    res.push_back(pOpacityAction);
+
+    return res;
+}
+
 void BasicItem::paint(
         QPainter *painter,
         const QStyleOptionGraphicsItem *option,

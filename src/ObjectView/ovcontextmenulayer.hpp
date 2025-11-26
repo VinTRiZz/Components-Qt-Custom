@@ -34,37 +34,11 @@ public:
         });
         pGridAction->setCheckable(true);
 
-        m_opacityAction = m_mainContextMenu.addAction("Прозрачный", [this]() {
-            auto currentCursorPos = static_cast<BaseView*>(this)->mapFromGlobal(m_mainContextMenu.pos());
-            auto pTargetItem = static_cast<BaseView*>(this)->getTopItem(currentCursorPos);
-            if (pTargetItem == nullptr) {
-                return;
-            }
-            auto currentOpacity = pTargetItem->opacity();
-            if (currentOpacity < 0.9) {
-                pTargetItem->setOpacity(1);
-            } else {
-                pTargetItem->setOpacity(0.2);
-            }
-            m_opacityAction->setChecked(currentOpacity > 0.9);
-        });
-        m_opacityAction->setCheckable(true);
-        m_opacityAction->setEnabled(false);
-
         m_mainContextMenu.addAction("Вернуться в центр", [this](){
             auto pThis = static_cast<BaseView*>(this);
             pThis->resetScale();
             pThis->centerOn(pThis->getCanvas()->boundingRect().center());
         });
-    }
-
-    void addContextMenuAction(const QString& text, const std::function<void(QGraphicsItem*)>& processor) {
-        auto pAction = new QAction(text);
-        connect(pAction, &QAction::triggered,
-                pAction, [this, processor](){
-            processor(m_contextMenuItem);
-        });
-        m_subContextMenu->addAction(pAction);
     }
 
     void addSubmenu(const QString& text, const std::function<bool(QGraphicsItem*)>& activator) {
@@ -74,13 +48,6 @@ public:
 
 private:
     QMenu m_mainContextMenu;  //! Основное контекстное меню
-    QAction* m_opacityAction{
-        nullptr};  //! Для переключения прозрачности объектов
-    QAction* m_contextAction{
-        nullptr};  //! Действие с пометкой "Контекст" в контестном меню
-    QGraphicsItem* m_contextMenuItem{
-        nullptr};  //! Объект, который находился под указателем мыши во время
-                   //! вызова контекстного меню
 
     QMenu* m_subContextMenu; //! Меню с названием "Контекст", которое вызывается для айтемов под курсором
 
@@ -89,24 +56,22 @@ private:
 protected:
     void executeContextMenu(QContextMenuEvent* e) {
         auto pHoverItem = static_cast<BaseView*>(this)->getTopItem(e->pos());
-        if (nullptr != pHoverItem) {
-            m_opacityAction->setEnabled(true);
-            m_opacityAction->setChecked(pHoverItem->opacity() < 0.9);
-        } else {
-            m_opacityAction->setEnabled(false);
+
+        auto pHoverItemObject = dynamic_cast<ObjectItems::BasicItem*>(pHoverItem);
+        m_subContextMenu->setEnabled(pHoverItemObject != nullptr);
+        if (m_subContextMenu->isEnabled()) {
+            m_subContextMenu->clear();
+            for (auto* pAction : pHoverItemObject->createContextActions()) {
+                m_subContextMenu->addAction(pAction);
+            }
         }
-        m_contextMenuItem = pHoverItem;
-        m_subContextMenu->setEnabled(dynamic_cast<ObjectItems::BasicItem*>(m_contextMenuItem) != nullptr);
 
         for (auto& [pMenu, activator] : m_submenus) {
-            pMenu->setEnabled(activator(m_contextMenuItem));
+            pMenu->setEnabled(activator(pHoverItem));
         }
 
         // Подразумевается, что это меню не было определено
         m_mainContextMenu.exec(e->globalPos());
-
-        // Во избежание подвешенных состояний
-        m_contextMenuItem = nullptr;
     }
 };
 
