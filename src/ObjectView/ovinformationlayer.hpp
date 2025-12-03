@@ -1,6 +1,6 @@
 #pragma once
 
-#include "oviteminteractionlayer.hpp"
+#include "ovcanvaslayer.hpp"
 #include "ovcontextmenulayer.hpp"
 
 #include <QLabel>
@@ -16,7 +16,7 @@ class OVInformationLayer;
 using ObjectView = OVInformationLayer;
 
 class OVInformationLayer :
-        public OVItemInteractionLayer,
+        public OVCanvasLayer,
         public OVContextMenuLayer<OVInformationLayer>
 {
     Q_OBJECT

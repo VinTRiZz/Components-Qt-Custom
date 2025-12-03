@@ -10,7 +10,7 @@
 namespace OVLayers {
 
 OVInformationLayer::OVInformationLayer(QWidget *parent) :
-    OVItemInteractionLayer(parent),
+    OVCanvasLayer(parent),
     OVContextMenuLayer<OVInformationLayer>()
 {
     m_pCursorLabel = new ObjectItems::TextLabel;
@@ -168,25 +168,25 @@ void OVInformationLayer::updateHighlight()
 
 void OVInformationLayer::mouseMoveEvent(QMouseEvent *e)
 {
-    OVItemInteractionLayer::mouseMoveEvent(e);
+    OVCanvasLayer::mouseMoveEvent(e);
     updateCursorLabel();
     updateHighlight();
 }
 
 void OVInformationLayer::enterEvent(QEvent *e)
 {
-    OVItemInteractionLayer::enterEvent(e);
+    OVCanvasLayer::enterEvent(e);
     m_pCursorLabel->show();
 }
 
 void OVInformationLayer::leaveEvent(QEvent *e)
 {
-    OVItemInteractionLayer::leaveEvent(e);
+    OVCanvasLayer::leaveEvent(e);
     m_pCursorLabel->hide();
 }
 
 void OVInformationLayer::resizeEvent(QResizeEvent *e) {
-    OVItemInteractionLayer::resizeEvent(e);
+    OVCanvasLayer::resizeEvent(e);
     m_pInformationLabel->move(10, height() - m_pInformationLabel->height());
 }
 
