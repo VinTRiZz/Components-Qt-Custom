@@ -61,9 +61,8 @@ protected:
         m_subContextMenu->setEnabled(pHoverItemObject != nullptr);
         if (m_subContextMenu->isEnabled()) {
             m_subContextMenu->clear();
-            for (auto* pAction : pHoverItemObject->createContextActions()) {
-                m_subContextMenu->addAction(pAction);
-            }
+            auto pMenu = pHoverItemObject->createContextMenu();
+            m_subContextMenu->addMenu(pMenu);
         }
 
         for (auto& [pMenu, activator] : m_submenus) {

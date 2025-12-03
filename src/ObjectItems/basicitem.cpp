@@ -42,9 +42,9 @@ QRectF BasicItem::boundingRect() const
     return shape().boundingRect();
 }
 
-std::list<QAction *> BasicItem::createContextActions()
+QMenu *BasicItem::createContextMenu()
 {
-    std::list<QAction *> res;
+    auto res = new QMenu;
 
     auto pOpacityAction = new QAction("Прозрачный");
     connect(pOpacityAction, &QAction::triggered,
@@ -58,7 +58,7 @@ std::list<QAction *> BasicItem::createContextActions()
     pOpacityAction->setCheckable(true);
     pOpacityAction->setChecked(opacity() < 0.9);
 
-    res.push_back(pOpacityAction);
+    res->addAction(pOpacityAction);
 
     return res;
 }

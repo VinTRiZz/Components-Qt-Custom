@@ -2,6 +2,7 @@
 
 #include <QGraphicsItem>
 #include <QAction>
+#include <QMenu>
 
 #include "basiciteminterface.hpp"
 
@@ -22,7 +23,7 @@ public:
     QPainterPath shape() const override;
     QRectF boundingRect() const override;
 
-    virtual std::list<QAction*> createContextActions();
+    virtual QMenu* createContextMenu();
 
 signals:
     void idChanged();
