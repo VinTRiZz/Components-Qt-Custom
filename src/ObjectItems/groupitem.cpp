@@ -20,26 +20,35 @@ GroupItem::GroupItem(QGraphicsItem* parent)
         m_bPolygon->setPen(getLinePen());
         m_bPolygon->setBrush(getBackgroundBrush());
     });
+
+    connect(this, &BasicItem::itemMoved,
+            this, [this](auto& sceneP){
+        auto deltaPos = m_prevScenePos - sceneP;
+        for (auto* pItem : m_groupItems) {
+            pItem->setPos(mapFromScene(sceneP + deltaPos));
+        }
+        m_prevScenePos = sceneP;
+    });
 }
 
 void GroupItem::setCommentedItems(const QList<BasicItem*>& items)
 {
     QList<BasicItem*> diffItems;
     std::set_difference(items.begin(), items.end(),
-                        m_commentedItems.begin(), m_commentedItems.end(),
+                        m_groupItems.begin(), m_groupItems.end(),
                         std::back_inserter(diffItems));
     for (auto* pItem : diffItems) {
         connect(pItem, &BasicItem::itemMovedOnScene,
                    this, &GroupItem::updateBoundingPolygon);
     }
-    m_commentedItems = items;
+    m_groupItems = items;
     updateBoundingPolygon();
 }
 
 void GroupItem::addCommentedItem(BasicItem* item)
 {
-    if (item && !m_commentedItems.contains(item)) {
-        m_commentedItems.append(item);
+    if (item && !m_groupItems.contains(item)) {
+        m_groupItems.append(item);
         connect(item, &BasicItem::itemMovedOnScene,
                    this, &GroupItem::updateBoundingPolygon);
         updateBoundingPolygon();
@@ -50,13 +59,13 @@ void GroupItem::removeCommentedItem(BasicItem *item)
 {
     disconnect(item, &BasicItem::itemMovedOnScene,
                this, nullptr);
-    m_commentedItems.removeOne(item);
+    m_groupItems.removeOne(item);
 }
 
 void GroupItem::clearCommentedItems()
 {
-    while (m_commentedItems.size()) {
-        removeCommentedItem(m_commentedItems.front());
+    while (m_groupItems.size()) {
+        removeCommentedItem(m_groupItems.front());
     }
     updateBoundingPolygon();
 }
@@ -73,7 +82,7 @@ void GroupItem::updateBoundingPolygon()
     const auto offsetTopLPoint = QPointF(-20, -20);
     const auto offsetButtRPoint = QPointF(20, 20);
     const auto offsetButtLPoint = QPointF(-20, 20);
-    for (auto* pItem : m_commentedItems) {
+    for (auto* pItem : m_groupItems) {
 
         auto itemParent = pItem->parentItem();
 

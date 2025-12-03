@@ -10,7 +10,8 @@
 namespace OVLayers {
 
 OVInformationLayer::OVInformationLayer(QWidget *parent) :
-    OVItemInteractionLayer(parent)
+    OVItemInteractionLayer(parent),
+    OVContextMenuLayer<OVInformationLayer>()
 {
     m_pCursorLabel = new ObjectItems::TextLabel;
     m_pCursorLabel->setFlag(QGraphicsItem::ItemIgnoresTransformations);
@@ -187,6 +188,11 @@ void OVInformationLayer::leaveEvent(QEvent *e)
 void OVInformationLayer::resizeEvent(QResizeEvent *e) {
     OVItemInteractionLayer::resizeEvent(e);
     m_pInformationLabel->move(10, height() - m_pInformationLabel->height());
+}
+
+void OVInformationLayer::contextMenuEvent(QContextMenuEvent *e)
+{
+    executeContextMenu(e);
 }
 
 } // namespace OVLayers

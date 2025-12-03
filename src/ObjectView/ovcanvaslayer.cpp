@@ -148,13 +148,32 @@ double OVCanvasLayer::getCurrentScale() const {
     return transform().m11();
 }
 
-void OVCanvasLayer::addItem(QGraphicsItem *pItem)
+void OVCanvasLayer::addObject(ObjectItems::BasicItem *pItem)
 {
     getScene()->addItem(pItem);
+    if (m_registeredItems.count(pItem->getItemId()) != 0) {
+        LOG_WARNING("OVCanvasLayer: Rewriting object with id:", pItem->getItemId());
+    }
+    m_registeredItems[pItem->getItemId()] = pItem;
 }
 
-void OVCanvasLayer::removeItem(QGraphicsItem *pItem)
+std::unordered_map<ObjectItems::objectId_t, ObjectItems::BasicItem *> OVCanvasLayer::getObjects() const
 {
+    return m_registeredItems;
+}
+
+ObjectItems::BasicItem *OVCanvasLayer::getObject(ObjectItems::objectId_t itemId) const
+{
+    auto targetObject = m_registeredItems.find(itemId);
+    if (targetObject != m_registeredItems.end()) {
+        return targetObject->second;
+    }
+    return nullptr;
+}
+
+void OVCanvasLayer::removeObject(ObjectItems::BasicItem *pItem)
+{
+    m_registeredItems.erase(pItem->getItemId());
     getScene()->removeItem(pItem);
 }
 

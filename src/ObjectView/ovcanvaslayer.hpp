@@ -22,6 +22,7 @@ class OVCanvasLayer : public QGraphicsView
     using QGraphicsView::items;         // Используйте getItems
     using QGraphicsView::itemAt;        // Используйте getTopItem
     using QGraphicsView::resetTransform;// Используйте resetScale()
+    using QGraphicsView::scene;         // Используйте дублирующие сцену методы (например, addObject == addItem)
 
 public:
     explicit OVCanvasLayer(QWidget* parent = nullptr);
@@ -38,9 +39,10 @@ public:
 
     double getCurrentScale() const;
 
-    // Дублирование интерфейса сцены
-    void addItem(QGraphicsItem* pItem);
-    void removeItem(QGraphicsItem* pItem);
+    void addObject(ObjectItems::BasicItem* pItem);
+    std::unordered_map<ObjectItems::objectId_t, ObjectItems::BasicItem*> getObjects() const;
+    ObjectItems::BasicItem* getObject(ObjectItems::objectId_t itemId) const;
+    void removeObject(ObjectItems::BasicItem* pItem);
 
 public slots:
     void setNavigationEnabled(bool isEn);
@@ -67,6 +69,8 @@ protected:
 private:
     OVInternalScene* m_pInternalScene {nullptr};
     QGraphicsRectItem* m_pCanvasItem {nullptr};
+
+    std::unordered_map<ObjectItems::objectId_t, ObjectItems::BasicItem*> m_registeredItems;
 
     bool m_isNavigationEnabled {true}; //! Флаг включения навигации
 

@@ -22,7 +22,9 @@ private:
     void updateBoundingPolygon();
 
     QGraphicsPolygonItem* m_bPolygon {nullptr};
-    QList<BasicItem*> m_commentedItems;
+    QList<BasicItem*> m_groupItems;
+
+    QPointF m_prevScenePos;
 };
 
 } // namespace ObjectItems

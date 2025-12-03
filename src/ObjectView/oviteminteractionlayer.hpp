@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ovmodelayer.hpp"
+#include "ovcanvaslayer.hpp"
 
 #include <Components/CustomQt/ObjectView/ObjectItems.h>
 
@@ -9,7 +9,7 @@ namespace OVLayers {
 /**
  * @brief The OVItemGeometryLayer class Уровень интеракции с объектами
  */
-class OVItemInteractionLayer : public OVModeLayer
+class OVItemInteractionLayer : public OVCanvasLayer
 {
 public:
     explicit OVItemInteractionLayer(QWidget* parent = nullptr);

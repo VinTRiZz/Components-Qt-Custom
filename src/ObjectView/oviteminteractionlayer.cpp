@@ -7,7 +7,7 @@
 namespace OVLayers {
 
 OVItemInteractionLayer::OVItemInteractionLayer(QWidget* parent) :
-    OVModeLayer(parent)
+    OVCanvasLayer(parent)
 {
     m_grabberItem = new ObjectItems::BasicItem(getCanvas());
     m_grabberItem->setZValue(ItemLayers::GrabItemLayer);
