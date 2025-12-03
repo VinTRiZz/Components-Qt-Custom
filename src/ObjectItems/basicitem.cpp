@@ -45,6 +45,7 @@ QRectF BasicItem::boundingRect() const
 QMenu *BasicItem::createContextMenu()
 {
     auto res = new QMenu;
+    res->setTitle(getDisplayName().isEmpty() ? "Объект" : getDisplayName());
 
     auto pOpacityAction = new QAction("Прозрачный");
     connect(pOpacityAction, &QAction::triggered,
