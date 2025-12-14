@@ -7,7 +7,8 @@ namespace ObjectItems {
 ArrowedConnectionLine::ArrowedConnectionLine(QGraphicsItem* parent) :
     AbstractConnectionLine(parent)
 {
-    setSystemName("Arrowed connection line");
+    setSystemName("Arrowed connection");
+    setObjectType(ObjectType::OIT_ArrowedConnectionLine);
 
     createSubitem(m_line);
     m_line->setZValue(1);

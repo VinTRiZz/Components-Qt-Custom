@@ -15,6 +15,7 @@ AnchorItem::AnchorItem(QGraphicsItem* parent)
     : BasicItem(parent)
 {
     setSystemName("Anchor");
+    setObjectType(ObjectType::OIT_AnchorItem);
     setZValue(1'000); // Нужно заменять при создании
 
     setAcceptHoverEvents(true);

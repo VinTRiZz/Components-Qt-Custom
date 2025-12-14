@@ -9,7 +9,8 @@ namespace ObjectItems {
 AbstractConnectionLine::AbstractConnectionLine(QGraphicsItem* parent) :
     BasicItem(parent)
 {
-    setSystemName("Connection line");
+    setSystemName("Connection");
+    setObjectType(ObjectType::OIT_AbstractConnectionLine);
 
     setFlag(QGraphicsItem::ItemClipsChildrenToShape, false);
 }

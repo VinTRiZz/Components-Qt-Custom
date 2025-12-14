@@ -15,9 +15,9 @@ void BasicItemInterface::setSystemId() { setItemId(createSystemId()); }
 
 objectId_t BasicItemInterface::getItemId() const { return m_id; }
 
-void BasicItemInterface::setObjectType(int typ) { m_systemType = typ; processInternalDataChange(); }
+void BasicItemInterface::setObjectType(int typ) { m_itemType = typ; processInternalDataChange(); }
 
-int BasicItemInterface::getObjectType() const { return m_systemType; }
+int BasicItemInterface::getObjectType() const { return m_itemType; }
 
 QString BasicItemInterface::getSystemName() const { return m_systemName; }
 

@@ -8,6 +8,7 @@ CommentItem::CommentItem(QGraphicsItem *parent) :
     GroupItem(parent)
 {
     setSystemName("Commentary");
+    setObjectType(ObjectType::OIT_CommentItem);
 
     createSubitem(m_referencerItem);
     connect(this, &BasicItem::graphicalDataChanged,

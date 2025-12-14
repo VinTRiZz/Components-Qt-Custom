@@ -8,6 +8,8 @@ namespace ObjectItems {
 TextLabel::TextLabel(QGraphicsItem* parent) :
     AbstractText(parent)
 {
+    setObjectType(ObjectType::OIT_TextLabel);
+
     createSubitem(m_contrastRect);
 
     connect(this, &BasicItem::displayNameChanged,

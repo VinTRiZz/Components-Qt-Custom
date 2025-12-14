@@ -8,7 +8,8 @@ namespace ObjectItems {
 GroupItem::GroupItem(QGraphicsItem* parent)
     : BasicItem(parent)
 {
-    setSystemName("Item group");
+    setSystemName("Group");
+    setObjectType(ObjectType::OIT_GroupItem);
 
     setFlag(ItemIsSelectable, false);
     setFlag(ItemIsMovable, false);

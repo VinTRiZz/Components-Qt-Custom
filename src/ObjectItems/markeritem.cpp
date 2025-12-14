@@ -15,6 +15,7 @@ MarkerItem::MarkerItem(QGraphicsItem* parent)
     , m_view(nullptr)
 {
     setSystemName("Marker");
+    setObjectType(ObjectType::OIT_MarkerItem);
 
     setFlag(ItemIsSelectable, false);
     setFlag(ItemIsMovable, false);

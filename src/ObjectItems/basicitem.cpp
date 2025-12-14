@@ -21,6 +21,7 @@ BasicItem::BasicItem(QGraphicsItem *parent) :
     setFlag(ItemSendsGeometryChanges, true);
     setHandlesChildEvents(true);
     setSystemName("Unknown");
+    setObjectType(ObjectType::OIT_BasicItem);
 }
 
 BasicItem::~BasicItem()
@@ -45,7 +46,7 @@ QRectF BasicItem::boundingRect() const
 QMenu *BasicItem::createContextMenu()
 {
     auto res = new QMenu;
-    res->setTitle(getDisplayName().isEmpty() ? "Объект" : getDisplayName());
+    res->setTitle(getDisplayName().isEmpty() ? getSystemName() : getDisplayName());
 
     auto pOpacityAction = new QAction("Прозрачный");
     connect(pOpacityAction, &QAction::triggered,

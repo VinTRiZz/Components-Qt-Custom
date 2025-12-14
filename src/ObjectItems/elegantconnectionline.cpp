@@ -9,7 +9,8 @@ namespace ObjectItems {
 ElegantConnectionLine::ElegantConnectionLine(QGraphicsItem *parent) :
     AbstractConnectionLine(parent)
 {
-    setSystemName("Elegant connection line");
+    setSystemName("Elegant connection");
+    setObjectType(ObjectType::OIT_ElegantConnectionLine);
 
     createSubitem(m_line);
     m_line->setZValue(1);

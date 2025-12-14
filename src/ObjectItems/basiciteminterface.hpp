@@ -10,6 +10,7 @@ namespace ObjectItems {
 // СОГЛАШЕНИЕ:
 // ID НЕ ДОЛЖЕН БЫТЬ ОТРИЦАТЕЛЬНЫМ ДЛЯ ОБЫЧНЫХ ЭЛЕМЕНТОВ
 // ДЛЯ СИСТЕМНЫХ ID ОТРИЦАТЕЛЬНЫЙ
+// ID НЕ ДОЛЖЕН БЫТЬ РАВЕН 0
 using objectId_t = long long;
 const objectId_t NULL_OBJECT_ID { 0 };
 
@@ -25,12 +26,35 @@ enum ObjectDataRole : int {
     OBJECTDATAROLE_USERTYPE,   //! Для пользовательских типов
 };
 
+/**
+ * @brief The ObjectType enum Тип объекта, чтобы не заниматься динамик кастами
+ */
+enum ObjectType : int {
+    OIT_Undefined = -1,
+    OIT_BasicItem,
+
+    OIT_AnchorItem,
+
+    OIT_AbstractConnectionLine,
+    OIT_ArrowedConnectionLine,
+    OIT_ElegantConnectionLine,
+
+    OIT_AbstractText,
+    OIT_TextLabel,
+
+    OIT_GroupItem,
+    OIT_CommentItem,
+    OIT_MarkerItem,
+
+    OIT_UserItemType = 100, // Для пользовательских типов объекта
+};
+
 class BasicItemInterface
 {
 private:
     ObjectItems::objectId_t m_id { NULL_OBJECT_ID };
 
-    int m_systemType {0}; // для наследников и логики
+    int m_itemType {ObjectType::OIT_Undefined};
     QString m_systemName {"Unknown item"};
 
     QString m_displayName;

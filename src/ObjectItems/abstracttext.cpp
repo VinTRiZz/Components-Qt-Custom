@@ -10,6 +10,9 @@ namespace ObjectItems {
 AbstractText::AbstractText(QGraphicsItem* parent) :
     BasicItem(parent)
 {
+    setObjectName("Text");
+    setObjectType(ObjectType::OIT_AbstractText);
+
     createSubitem(m_textItem);
     m_textItem->setZValue(100); // Чтобы не перекрывали в будущем
 
