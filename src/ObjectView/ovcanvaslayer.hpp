@@ -39,6 +39,9 @@ public:
 
     double getCurrentScale() const;
 
+    ObjectItems::objectId_t getFreeSystemId() const;
+    ObjectItems::objectId_t getFreeObjectId() const;
+
     void addObject(ObjectItems::BasicItem* pItem);
     std::unordered_map<ObjectItems::objectId_t, ObjectItems::BasicItem*> getObjects() const;
     ObjectItems::BasicItem* getObject(ObjectItems::objectId_t itemId) const;

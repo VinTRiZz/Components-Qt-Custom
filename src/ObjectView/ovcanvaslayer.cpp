@@ -150,6 +150,31 @@ double OVCanvasLayer::getCurrentScale() const {
     return transform().m11();
 }
 
+ObjectItems::objectId_t OVCanvasLayer::getFreeSystemId() const
+{
+    ObjectItems::objectId_t res {-1};
+    while (m_registeredItems.count(res) != 0) {
+        --res;
+
+        if (res == std::numeric_limits<ObjectItems::objectId_t>::min()) {
+            throw std::runtime_error("OVCanvasLayer: No free system id");
+        }
+    }
+    return res;
+}
+
+ObjectItems::objectId_t OVCanvasLayer::getFreeObjectId() const
+{
+    ObjectItems::objectId_t res {1};
+    while (m_registeredItems.count(res) != 0) {
+        ++res;
+        if (res == std::numeric_limits<ObjectItems::objectId_t>::max()) {
+            throw std::runtime_error("OVCanvasLayer: No free object id");
+        }
+    }
+    return res;
+}
+
 void OVCanvasLayer::addObject(ObjectItems::BasicItem *pItem)
 {
     getScene()->addItem(pItem);
