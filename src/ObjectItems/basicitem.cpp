@@ -8,6 +8,8 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneHoverEvent>
 
+#include "../ObjectView/ovinternalscene.hpp"
+
 namespace ObjectItems
 {
 
@@ -228,6 +230,14 @@ void BasicItem::processMoveEvent(QGraphicsSceneMouseEvent *e)
     if (parentItem()) {
         targetPos = parentItem()->mapFromScene(targetPos);
     }
+
+    auto itemScene = static_cast<OVLayers::OVInternalScene*>(scene());
+    if (nullptr != itemScene && itemScene->getIsGridEnabled()) {
+        auto gridSize = itemScene->getGridSize() / 2;
+        targetPos.setX(static_cast<int>(targetPos.x() + 1) / gridSize * gridSize);
+        targetPos.setY(static_cast<int>(targetPos.y() + 1) / gridSize * gridSize);
+    }
+
     setPos(targetPos);
 }
 
