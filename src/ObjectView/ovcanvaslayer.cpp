@@ -23,6 +23,8 @@ OVCanvasLayer::OVCanvasLayer(QWidget *parent) :
 
     setRenderHint(QPainter::Antialiasing);  // красивые текстуры
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);   // Фикс артефактов Foreground
+    setRubberBandSelectionMode(Qt::ItemSelectionMode::ContainsItemShape);
+    setDragMode(QGraphicsView::DragMode::RubberBandDrag);
 
     // Скрываем скроллбары
     setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
@@ -213,7 +215,7 @@ void OVCanvasLayer::mousePressEvent(QMouseEvent* e) {
         return;
     }
 
-    m_isHoldingMiddleButton = (e->button() == Qt::MiddleButton);
+    m_isHoldingMiddleButton = (e->buttons() & Qt::MiddleButton);
     if (m_isHoldingMiddleButton) {
         setCursor(Qt::SizeAllCursor);
         m_prevPos = mapToScene(e->pos());

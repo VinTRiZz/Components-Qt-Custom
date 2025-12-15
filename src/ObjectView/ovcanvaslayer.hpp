@@ -70,6 +70,9 @@ private:
     OVInternalScene* m_pInternalScene {nullptr};
     QGraphicsRectItem* m_pCanvasItem {nullptr};
 
+    bool m_isSelecting {false};
+    QGraphicsRectItem* m_selectionRectItem {nullptr};
+
     std::unordered_map<ObjectItems::objectId_t, ObjectItems::BasicItem*> m_registeredItems;
 
     bool m_isNavigationEnabled {true}; //! Флаг включения навигации
