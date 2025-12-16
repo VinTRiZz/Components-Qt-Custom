@@ -90,6 +90,21 @@ private:
     void    processMoveEvent(QGraphicsSceneMouseEvent* e);
 
     friend class DebugMaster;
+
+    template<typename, typename>
+    friend struct boost::hana::accessors_impl;
 };
 
 }
+
+OBJECTITEMS_REGISTER_HIERARCHY(ObjectItems::BasicItem, ObjectItems::BasicItemInterface)
+BOOST_HANA_ADAPT_STRUCT(
+    ObjectItems::BasicItem
+
+//    m_linePen                    ,
+//    m_lineHoverPen               ,
+//    m_selectionPen               ,
+//    m_backgroundBrush            ,
+//    m_backgroundHoverBrush       ,
+//    m_backgroundSelectionBrush
+);

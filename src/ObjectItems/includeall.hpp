@@ -1,6 +1,10 @@
 #pragma once
 
+// Util
+#include "itemsavemaster.hpp"
+
 // Basics
+#include "objectitemscommon.hpp"
 #include "basiciteminterface.hpp"
 #include "basicitem.hpp"
 

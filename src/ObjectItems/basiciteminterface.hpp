@@ -5,8 +5,6 @@
 #include <QPen>
 #include <QBrush>
 
-#include "itemsavemaster.hpp"
-
 #include "objectitemscommon.hpp"
 
 namespace ObjectItems {
@@ -67,17 +65,27 @@ public:
     void setBackgroundHoverBrush(const QBrush& brushC);
     QBrush getBackgroundHoverBrush() const;
 
+    void setSystemName(const QString& iText);
 protected:
     virtual void processIdChange() = 0;
     virtual void processDisplayNameChange() = 0;
     virtual void processInternalDataChange() = 0;
     virtual void processColorChange() = 0;
 
-    void setSystemName(const QString& iText);
 
     template<typename, typename>
     friend struct boost::hana::accessors_impl;
 };
+
+// Работа с дочерними типами (используется для корректной сериализации)
+#define OBJECTITEMS_REGISTER_HIERARCHY(Derived, Base) \
+    template<> struct ObjectItems::base_of<Derived> { using type = Base; };
+
+template<typename T>
+struct base_of { using type = void; };
+
+template<typename T>
+using base_of_t = typename base_of<T>::type;
 
 }
 
@@ -89,12 +97,12 @@ BOOST_HANA_ADAPT_STRUCT(
     m_systemName,
 
     m_displayName,
-    m_description,
+    m_description
 
-    m_linePen                    ,
-    m_lineHoverPen               ,
-    m_selectionPen               ,
-    m_backgroundBrush            ,
-    m_backgroundHoverBrush       ,
-    m_backgroundSelectionBrush
+//    m_linePen                    ,
+//    m_lineHoverPen               ,
+//    m_selectionPen               ,
+//    m_backgroundBrush            ,
+//    m_backgroundHoverBrush       ,
+//    m_backgroundSelectionBrush
 );

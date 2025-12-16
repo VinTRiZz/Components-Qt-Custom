@@ -2,6 +2,8 @@
 
 #include <QString>
 
+#include <boost/hana.hpp>
+
 namespace ObjectItems
 {
 

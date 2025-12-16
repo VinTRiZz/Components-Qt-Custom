@@ -14,7 +14,9 @@ public:
 private:
     QGraphicsPathItem* m_referencerItem {nullptr};
     TextLabel* m_commentaryText {nullptr};
+
+    template<typename, typename>
+    friend struct boost::hana::accessors_impl;
 };
 
 } // namespace ObjectItems
-
