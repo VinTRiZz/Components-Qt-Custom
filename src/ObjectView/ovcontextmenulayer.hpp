@@ -33,14 +33,9 @@ protected:
 
         auto pGridAction = m_mainContextMenu.addAction("Сетка", [this]() {
             static_cast<BaseView*>(this)->getScene()->setGridEnabled(!static_cast<BaseView*>(this)->getScene()->getIsGridEnabled());
-            for (auto* pAction : m_mainContextMenu.actions()) {
-                if (pAction->text() == "Сетка") {
-                    pAction->setChecked(static_cast<BaseView*>(this)->getScene()->getIsGridEnabled());
-                    break;
-                }
-            }
         });
         pGridAction->setCheckable(true);
+        pGridAction->setChecked(static_cast<BaseView*>(this)->getScene()->getIsGridEnabled());
 
         m_mainContextMenu.addAction("Вернуться в центр", [this](){
             auto pThis = static_cast<BaseView*>(this);
