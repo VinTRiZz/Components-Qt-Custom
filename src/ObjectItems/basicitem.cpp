@@ -2,11 +2,10 @@
 
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
-
-#include <math.h>
-
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneHoverEvent>
+
+#include <math.h>
 
 #include "../ObjectView/ovinternalscene.hpp"
 
