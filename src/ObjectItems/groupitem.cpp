@@ -43,6 +43,9 @@ void GroupItem::setCommentedItems(const QList<BasicItem*>& items)
                    this, &GroupItem::updateBoundingPolygon);
     }
     m_groupItems = items;
+    for (auto* pItem : items) {
+        m_groupItemIds.insert(pItem->getItemId());
+    }
     updateBoundingPolygon();
 }
 
@@ -50,6 +53,7 @@ void GroupItem::addCommentedItem(BasicItem* item)
 {
     if (item && !m_groupItems.contains(item)) {
         m_groupItems.append(item);
+        m_groupItemIds.insert(item->getItemId());
         connect(item, &BasicItem::itemMovedOnScene,
                    this, &GroupItem::updateBoundingPolygon);
         updateBoundingPolygon();
@@ -61,6 +65,7 @@ void GroupItem::removeCommentedItem(BasicItem *item)
     disconnect(item, &BasicItem::itemMovedOnScene,
                this, nullptr);
     m_groupItems.removeOne(item);
+    m_groupItemIds.remove(item->getItemId());
 }
 
 void GroupItem::clearCommentedItems()
@@ -68,6 +73,7 @@ void GroupItem::clearCommentedItems()
     while (m_groupItems.size()) {
         removeCommentedItem(m_groupItems.front());
     }
+    m_groupItemIds.clear();
     updateBoundingPolygon();
 }
 

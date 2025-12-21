@@ -1,10 +1,22 @@
 #include "basiciteminterface.hpp"
 
+#include "itemsavemaster.hpp"
+
 namespace ObjectItems {
 
 objectId_t BasicItemInterface::createSystemId() {
     static objectId_t currentId{-1};
     return --currentId;
+}
+
+QString BasicItemInterface::toString() const
+{
+    return ObjectSaving::serialize(this);
+}
+
+void BasicItemInterface::fromString(const QString &saveData)
+{
+    ObjectSaving::deserialize(saveData, this);
 }
 
 bool BasicItemInterface::isSystemObject() const { return m_id < 0; }
@@ -33,13 +45,13 @@ void BasicItemInterface::setLinePen(const QPen &penC) { m_linePen = penC; proces
 
 QPen BasicItemInterface::getLinePen() const { return m_linePen; }
 
-void BasicItemInterface::setHoverPen(const QPen &penC) { m_lineHoverPen = penC; processColorChange(); }
+void BasicItemInterface::setLineHoverPen(const QPen &penC) { m_lineHoverPen = penC; processColorChange(); }
 
-QPen BasicItemInterface::getHoverPen() const { return m_lineHoverPen; }
+QPen BasicItemInterface::getLineHoverPen() const { return m_lineHoverPen; }
 
-void BasicItemInterface::setSelectionPen(const QPen &penC) { m_selectionPen = penC; processColorChange(); }
+void BasicItemInterface::setLineSelectionPen(const QPen &penC) { m_selectionPen = penC; processColorChange(); }
 
-QPen BasicItemInterface::getSelectionPen() const { return m_selectionPen; }
+QPen BasicItemInterface::getLineSelectionPen() const { return m_selectionPen; }
 
 void BasicItemInterface::setBackgroundBrush(const QBrush &brushC) { m_backgroundBrush = brushC; processColorChange(); }
 

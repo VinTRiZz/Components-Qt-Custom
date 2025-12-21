@@ -40,7 +40,7 @@ AnchorItem::AnchorItem(QGraphicsItem* parent)
     createSubitem(m_invisibleHoverInterceptor);
     m_invisibleHoverInterceptor->setAcceptHoverEvents(true);
     m_invisibleHoverInterceptor->setOpacity(0.1);
-    m_invisibleHoverInterceptor->setPen(getHoverPen());
+    m_invisibleHoverInterceptor->setPen(getLineHoverPen());
     m_invisibleHoverInterceptor->setBrush(getBackgroundHoverBrush());
     m_invisibleHoverInterceptor->hide();
     m_invisibleHoverInterceptor->setZValue(-1);
@@ -52,12 +52,6 @@ AnchorItem::AnchorItem(QGraphicsItem* parent)
         pLine->setAcceptHoverEvents(true);
         pLine->setDirection(LineDirectionType::Forward);
         pLine->setArrowAngle(LineAngleType::A_90);
-        connect(pLine, &BasicItem::itemClicked,
-                this, [this, dir](){
-            if (m_arrowClickCallback) {
-                m_arrowClickCallback(this, dir);
-            }
-        });
         m_arrowLines.emplace(dir, pLine);
     };
     addLine(ArrowDirection::AI_AD_Up);
@@ -86,7 +80,7 @@ AnchorItem::AnchorItem(QGraphicsItem* parent)
 
     auto lineHoverPen = linePen;
     lineHoverPen.setColor(QColor(130, 190, 100));
-    setHoverPen(lineHoverPen);
+    setLineHoverPen(lineHoverPen);
     updateArrowLines();
 }
 
@@ -169,7 +163,7 @@ void AnchorItem::setArrowDirections(ArrowDirection directions)
 
 void AnchorItem::updateArrowLines()
 {
-    auto drawPen = m_isHovered ? getHoverPen() : (isSelected() ? getSelectionPen() : getLinePen());
+    auto drawPen = m_isHovered ? getLineHoverPen() : (isSelected() ? getLineSelectionPen() : getLinePen());
     auto lineStartOffset = m_centerRadius * 1.2;
 
     for (auto& [arrowDir, arrowLine] : m_arrowLines) {
@@ -227,9 +221,5 @@ void AnchorItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *e)
 }
 
 ArrowDirection AnchorItem::arrowDirections() const { return m_arrowDirections; }
-
-void AnchorItem::setArrowClickCallback(ArrowClickCallback callback) { m_arrowClickCallback = callback; }
-
-AnchorItem::ArrowClickCallback &AnchorItem::arrowClickCallback() { return m_arrowClickCallback; }
 
 } // namespace ObjectItems

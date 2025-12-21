@@ -6,6 +6,7 @@ namespace ObjectItems {
 
 class ElegantConnectionLine : public AbstractConnectionLine
 {
+    OBJECTITEMS_ITEM
 public:
     explicit ElegantConnectionLine(QGraphicsItem* parent = nullptr);
 
@@ -20,3 +21,6 @@ private:
 
 } // namespace ObjectItems
 
+OBJECTITEMS_REGISTER_ITEM(
+        ObjectItems::ElegantConnectionLine,
+        ObjectItems::AbstractConnectionLine);

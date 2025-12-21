@@ -30,6 +30,7 @@ enum LineAngleType : short {
 
 class AbstractConnectionLine : public BasicItem
 {
+    OBJECTITEMS_ITEM
 public:
     explicit AbstractConnectionLine(QGraphicsItem *parent = nullptr);
 
@@ -70,3 +71,10 @@ protected:
 
 } // namespace ObjectItems
 
+OBJECTITEMS_REGISTER_ITEM_WITH_FIELDS(
+        ObjectItems::AbstractConnectionLine,
+        ObjectItems::BasicItem,
+        m_straightLine,
+        m_arrowType,
+        m_arrowAngle,
+        m_arrowSize)

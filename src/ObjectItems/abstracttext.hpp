@@ -6,6 +6,7 @@ namespace ObjectItems {
 
 class AbstractText : public BasicItem
 {
+    OBJECTITEMS_ITEM
 public:
     explicit AbstractText(QGraphicsItem* parent = nullptr);
 
@@ -25,3 +26,6 @@ protected:
 
 } // namespace ObjectItems
 
+OBJECTITEMS_REGISTER_ITEM(
+        ObjectItems::AbstractText,
+        ObjectItems::BasicItem);

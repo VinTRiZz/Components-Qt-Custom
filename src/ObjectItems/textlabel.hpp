@@ -6,6 +6,7 @@ namespace ObjectItems {
 
 class TextLabel : public AbstractText
 {
+    OBJECTITEMS_ITEM
 public:
     explicit TextLabel(QGraphicsItem* parent = nullptr);
 
@@ -16,3 +17,7 @@ private:
 };
 
 } // namespace ObjectItems
+
+OBJECTITEMS_REGISTER_ITEM(
+        ObjectItems::TextLabel,
+        ObjectItems::AbstractText);

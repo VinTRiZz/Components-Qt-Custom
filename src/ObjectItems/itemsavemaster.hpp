@@ -4,61 +4,35 @@
 
 #include <QString>
 #include <QStringList>
+#include <QBuffer>
 
 #include "basicitem.hpp"
-
-#include <QDebug>
 
 namespace ObjectItems::ObjectSaving {
 
 
 // ========================================= //
 template <typename T>
-QString createString(const T& v);
-
-template <>
-inline QString createString(const long long& v) {
-    return QString::number(v);
+QString createString(const T& v) {
+    QByteArray res;
+    QBuffer buf(&res);
+    buf.open(QIODevice::WriteOnly);
+    QDataStream str (&buf);
+    str << v;
+    return res.toHex();
 }
-
-template <>
-inline QString createString(const int& v) {
-    return QString::number(v);
-}
-
-template <>
-inline QString createString(const QString& v) {
-    return v;
-}
-
-inline QString createString(const char* v) {
-    return QString(v);
-}
-
-
-
 
 // ========================================= //
 template <typename T>
-T stringToValue(const QString& iString);
-
-template <>
-inline QString stringToValue(const QString& iString) {
-    return iString;
+T stringToValue(const QString& iString) {
+    QByteArray res = QByteArray::fromHex(iString.toUtf8());
+    QBuffer buf(&res);
+    buf.open(QIODevice::ReadOnly);
+    QDataStream str (&buf);
+    T v;
+    str >> v;
+    return v;
 }
-
-template <>
-inline long long stringToValue(const QString& iString) {
-    return iString.toLongLong();
-}
-
-template <>
-inline int stringToValue(const QString& iString) {
-    return iString.toInt();
-}
-
-
-
 
 
 // ========================================= //
@@ -73,9 +47,9 @@ QString serialize(T* const item) {
         auto& value = boost::hana::at_key(*item, key);
         using memberType = std::remove_reference_t<decltype(value)>;
         if constexpr (std::is_pointer_v<memberType>) {
-            result += serialize(value) + ",";
+            result += serialize(value) + ";";
         } else {
-            result += createString(value).toUtf8().toHex() + ",";
+            result += createString(value) + ";";
         }
     });
     return result;
@@ -84,7 +58,7 @@ QString serialize(T* const item) {
 template <typename T>
 void deserialize(const QString& itemData, T* result, int startIndex = 0) {
     assert(result != nullptr);
-    auto values = itemData.split(",");
+    auto values = itemData.split(";");
     int currentIdx = startIndex;
     if constexpr (!std::is_same_v<ObjectItems::base_of_t<T>, void>) {
         deserialize(itemData, static_cast<ObjectItems::base_of_t<T>* const>(result), startIndex);
@@ -96,11 +70,9 @@ void deserialize(const QString& itemData, T* result, int startIndex = 0) {
         auto& member = boost::hana::at_key(*result, key);
         using memberType = std::remove_reference_t<decltype(member)>;
         if constexpr (std::is_pointer_v<memberType>) {
-            if (!deserialize(values[currentIdx], member)) {
-                throw std::invalid_argument("Invalid member data string");
-            }
+            deserialize(values[currentIdx], member);
         } else {
-            auto v = stringToValue<memberType>(QByteArray::fromHex(values[currentIdx].toUtf8()));
+            auto v = stringToValue<memberType>(values[currentIdx]);
             member = v;
         }
         ++currentIdx;

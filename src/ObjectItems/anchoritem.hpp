@@ -19,9 +19,11 @@ enum ArrowDirection : int {
     AI_AD_All     = AI_AD_Horizontal | AI_AD_Vertical,
 };
 
+// TODO: Вернуть работу с кликом по направлению (стрелки)
 class AnchorItem : public ObjectItems::BasicItem
 {
     Q_OBJECT
+    OBJECTITEMS_ITEM
 public:
     explicit AnchorItem(QGraphicsItem* parent = nullptr);
     ~AnchorItem();
@@ -37,16 +39,10 @@ public:
     void setArrowDirections(ArrowDirection directions);
     ArrowDirection arrowDirections() const;
 
-    // Callback для клика по стрелке
-    using ArrowClickCallback = std::function<void(AnchorItem*, ArrowDirection)>;
-    void setArrowClickCallback(ArrowClickCallback callback);
-    ArrowClickCallback& arrowClickCallback();
-
 private:
     void updateArrowLines();
 
     ArrowDirection m_arrowDirections{ArrowDirection::AI_AD_None};
-    ArrowClickCallback m_arrowClickCallback;
 
     QGraphicsEllipseItem*   m_invisibleHoverInterceptor {nullptr};
     QGraphicsEllipseItem*   m_roundItem {nullptr};
@@ -66,3 +62,9 @@ protected:
 
 } // namespace ObjectItems
 
+OBJECTITEMS_REGISTER_ITEM_WITH_FIELDS(
+        ObjectItems::AnchorItem,
+        ObjectItems::BasicItem,
+        m_arrowDirections,
+        m_centerRadius,
+        m_linesLength);

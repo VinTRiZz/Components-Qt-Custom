@@ -11,6 +11,7 @@ namespace ObjectItems {
 class MarkerItem : public BasicItem
 {
     Q_OBJECT
+    OBJECTITEMS_ITEM
 public:
     explicit MarkerItem(QGraphicsItem* parent = nullptr);
     ~MarkerItem() override = default;
@@ -31,6 +32,8 @@ private:
     QGraphicsPathItem* m_markerVisibleItem {nullptr};
     double m_markerHeight {35};
 
+    objectId_t m_trackedItemId {}; // TODO: Сериализовать иначе?
+
     mutable bool m_isHeightChanged {true};
     mutable QPainterPath m_cachedMarkerPath;
 
@@ -41,3 +44,8 @@ protected:
 
 } // namespace ObjectItems
 
+OBJECTITEMS_REGISTER_ITEM_WITH_FIELDS(
+        ObjectItems::MarkerItem,
+        ObjectItems::BasicItem,
+        m_trackedItemId,
+        m_markerHeight);

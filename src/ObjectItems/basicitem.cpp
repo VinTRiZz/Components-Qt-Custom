@@ -9,6 +9,8 @@
 
 #include "../ObjectView/ovinternalscene.hpp"
 
+#include "itemsavemaster.hpp"
+
 namespace ObjectItems
 {
 
@@ -42,6 +44,16 @@ QPainterPath BasicItem::shape() const
 QRectF BasicItem::boundingRect() const
 {
     return shape().boundingRect();
+}
+
+QString BasicItem::toString() const
+{
+    return ObjectSaving::serialize(this);
+}
+
+void BasicItem::fromString(const QString &saveData)
+{
+    return ObjectSaving::deserialize(saveData, this);
 }
 
 QMenu *BasicItem::createContextMenu()
@@ -194,7 +206,7 @@ bool BasicItem::getIsHovered() const
 
 QPen BasicItem::getCurrentPen() const
 {
-    return getIsHovered() ? getHoverPen() : (isSelected() ? getSelectionPen() : getLinePen());
+    return getIsHovered() ? getLineHoverPen() : (isSelected() ? getLineSelectionPen() : getLinePen());
 }
 
 QBrush BasicItem::getCurrentBrush() const

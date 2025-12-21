@@ -16,12 +16,16 @@ class BasicItem :
         public BasicItemInterface
 {
     Q_OBJECT
+    OBJECTITEMS_ITEM
 public:
     explicit BasicItem(QGraphicsItem* parent = nullptr);
     ~BasicItem();
 
     QPainterPath shape() const override;
     QRectF boundingRect() const override;
+
+    virtual QString toString() const override;
+    virtual void fromString(const QString& saveData) override;
 
     virtual QMenu* createContextMenu();
 
@@ -35,8 +39,8 @@ public:
             QObject::connect(this, &BasicItem::graphicalDataChanged,
                              pItem, [this, pItem](){
                 pItem->setLinePen(getLinePen());
-                pItem->setHoverPen(getHoverPen());
-                pItem->setSelectionPen(getSelectionPen());
+                pItem->setLineHoverPen(getLineHoverPen());
+                pItem->setLineSelectionPen(getLineSelectionPen());
             });
         }
     }
@@ -91,20 +95,8 @@ private:
 
     friend class DebugMaster;
 
-    template<typename, typename>
-    friend struct boost::hana::accessors_impl;
 };
 
 }
 
-OBJECTITEMS_REGISTER_HIERARCHY(ObjectItems::BasicItem, ObjectItems::BasicItemInterface)
-BOOST_HANA_ADAPT_STRUCT(
-    ObjectItems::BasicItem
-
-//    m_linePen                    ,
-//    m_lineHoverPen               ,
-//    m_selectionPen               ,
-//    m_backgroundBrush            ,
-//    m_backgroundHoverBrush       ,
-//    m_backgroundSelectionBrush
-);
+OBJECTITEMS_REGISTER_ITEM(ObjectItems::BasicItem, ObjectItems::BasicItemInterface)

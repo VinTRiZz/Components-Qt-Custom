@@ -9,8 +9,13 @@
 
 namespace ObjectItems {
 
+#define OBJECTITEMS_ITEM \
+    template<typename, typename> \
+    friend struct boost::hana::accessors_impl;
+
 class BasicItemInterface
 {
+    OBJECTITEMS_ITEM
 private:
     ObjectItems::objectId_t m_id { NULL_OBJECT_ID };
 
@@ -30,6 +35,9 @@ private:
     static objectId_t createSystemId();
 
 public:
+    virtual QString toString() const;
+    virtual void fromString(const QString& saveData);
+
     bool isSystemObject() const;
 
     void setItemId(ObjectItems::objectId_t id);
@@ -50,11 +58,11 @@ public:
     void setLinePen(const QPen& penC);
     QPen getLinePen() const;
 
-    void setHoverPen(const QPen& penC);
-    QPen getHoverPen() const;
+    void setLineHoverPen(const QPen& penC);
+    QPen getLineHoverPen() const;
 
-    void setSelectionPen(const QPen& penC);
-    QPen getSelectionPen() const;
+    void setLineSelectionPen(const QPen& penC);
+    QPen getLineSelectionPen() const;
 
     void setBackgroundBrush(const QBrush& brushC);
     QBrush getBackgroundBrush() const;
@@ -65,21 +73,14 @@ public:
     void setBackgroundHoverBrush(const QBrush& brushC);
     QBrush getBackgroundHoverBrush() const;
 
-    void setSystemName(const QString& iText);
 protected:
+    void setSystemName(const QString& iText);
+
     virtual void processIdChange() = 0;
     virtual void processDisplayNameChange() = 0;
     virtual void processInternalDataChange() = 0;
     virtual void processColorChange() = 0;
-
-
-    template<typename, typename>
-    friend struct boost::hana::accessors_impl;
 };
-
-// Работа с дочерними типами (используется для корректной сериализации)
-#define OBJECTITEMS_REGISTER_HIERARCHY(Derived, Base) \
-    template<> struct ObjectItems::base_of<Derived> { using type = Base; };
 
 template<typename T>
 struct base_of { using type = void; };
@@ -89,20 +90,36 @@ using base_of_t = typename base_of<T>::type;
 
 }
 
-BOOST_HANA_ADAPT_STRUCT(
+// Работа с дочерними типами (используется для корректной сериализации)
+#define OBJECTITEMS_REGISTER_ITEM(Derived, Base) \
+    template<> \
+    struct ObjectItems::base_of<Derived> { using type = Base; }; \
+    BOOST_HANA_ADAPT_STRUCT( \
+    Derived);
+
+#define OBJECTITEMS_REGISTER_ITEM_WITH_FIELDS(Derived, Base, ...) \
+    template<> \
+    struct ObjectItems::base_of<Derived> { using type = Base; }; \
+    BOOST_HANA_ADAPT_STRUCT( \
+    Derived, \
+    __VA_ARGS__);
+
+OBJECTITEMS_REGISTER_ITEM_WITH_FIELDS(
     ObjectItems::BasicItemInterface,
+    void,
     m_id,
 
     m_itemType,
     m_systemName,
 
     m_displayName,
-    m_description
+    m_description,
 
-//    m_linePen                    ,
-//    m_lineHoverPen               ,
-//    m_selectionPen               ,
-//    m_backgroundBrush            ,
-//    m_backgroundHoverBrush       ,
-//    m_backgroundSelectionBrush
+    m_linePen                    ,
+    m_lineHoverPen               ,
+    m_selectionPen               ,
+
+    m_backgroundBrush            ,
+    m_backgroundHoverBrush       ,
+    m_backgroundSelectionBrush
 );

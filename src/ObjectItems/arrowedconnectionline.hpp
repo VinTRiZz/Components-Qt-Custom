@@ -6,6 +6,7 @@ namespace ObjectItems {
 
 class ArrowedConnectionLine : public AbstractConnectionLine
 {
+    OBJECTITEMS_ITEM
 public:
     explicit ArrowedConnectionLine(QGraphicsItem *parent = nullptr);
 
@@ -23,3 +24,6 @@ protected:
 
 } // namespace ObjectItems
 
+OBJECTITEMS_REGISTER_ITEM(
+        ObjectItems::ArrowedConnectionLine,
+        ObjectItems::AbstractConnectionLine);
