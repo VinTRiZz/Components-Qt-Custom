@@ -35,8 +35,8 @@ public:
             QObject::connect(this, &BasicItem::graphicalDataChanged,
                              pItem, [this, pItem](){
                 pItem->setLinePen(getLinePen());
-                pItem->setHoverPen(getHoverPen());
-                pItem->setSelectionPen(getSelectionPen());
+                pItem->setLineHoverPen(getLineHoverPen());
+                pItem->setLineSelectionPen(getLineSelectionPen());
             });
         }
     }

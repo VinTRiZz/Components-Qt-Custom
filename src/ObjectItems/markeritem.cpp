@@ -183,7 +183,7 @@ QPainterPath MarkerItem::createMarkerPath() const
 
 void MarkerItem::hoverEnterEvent(QGraphicsSceneHoverEvent *e)
 {
-    m_markerVisibleItem->setPen(getHoverPen());
+    m_markerVisibleItem->setPen(getLineHoverPen());
     m_markerVisibleItem->setBrush(getBackgroundHoverBrush());
     BasicItem::hoverEnterEvent(e);
 }

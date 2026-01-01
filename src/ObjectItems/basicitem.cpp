@@ -195,7 +195,7 @@ bool BasicItem::getIsHovered() const
 
 QPen BasicItem::getCurrentPen() const
 {
-    return getIsHovered() ? getHoverPen() : (isSelected() ? getSelectionPen() : getLinePen());
+    return getIsHovered() ? getLineHoverPen() : (isSelected() ? getLineSelectionPen() : getLinePen());
 }
 
 QBrush BasicItem::getCurrentBrush() const

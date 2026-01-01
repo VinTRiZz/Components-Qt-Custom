@@ -67,7 +67,7 @@ private:
     QBrush m_backgroundHoverBrush       {Qt::transparent};
     QBrush m_backgroundSelectionBrush   {Qt::transparent};
 
-    static objectId_t createSystemId();;
+    static objectId_t createSystemId();
 
 public:
     bool isSystemObject() const;
@@ -90,11 +90,11 @@ public:
     void setLinePen(const QPen& penC);
     QPen getLinePen() const;
 
-    void setHoverPen(const QPen& penC);
-    QPen getHoverPen() const;
+    void setLineHoverPen(const QPen& penC);
+    QPen getLineHoverPen() const;
 
-    void setSelectionPen(const QPen& penC);
-    QPen getSelectionPen() const;
+    void setLineSelectionPen(const QPen& penC);
+    QPen getLineSelectionPen() const;
 
     void setBackgroundBrush(const QBrush& brushC);
     QBrush getBackgroundBrush() const;

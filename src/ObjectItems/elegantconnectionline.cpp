@@ -51,7 +51,7 @@ ElegantConnectionLine::ElegantConnectionLine(QGraphicsItem *parent) :
         m_line->setBrush(getBackgroundBrush());
 
         m_lineSelected->setPath(m_line->path());
-        linePen = getSelectionPen();
+        linePen = getLineSelectionPen();
         m_lineSelected->setPen(linePen);
 
         auto lineDirection = getDirection();
