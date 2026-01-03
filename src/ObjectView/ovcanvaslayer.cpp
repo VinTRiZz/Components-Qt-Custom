@@ -177,6 +177,10 @@ ObjectItems::objectId_t OVCanvasLayer::getFreeObjectId() const
 
 void OVCanvasLayer::addObject(ObjectItems::BasicItem *pItem)
 {
+    if (0 == pItem->getItemId()) {
+        LOG_ERROR("OVCanvasLayer: Can not add item with id 0");
+        return;
+    }
     getScene()->addItem(pItem);
     if (m_registeredItems.count(pItem->getItemId()) != 0) {
         LOG_WARNING("OVCanvasLayer: Rewriting object with id:", pItem->getItemId());
