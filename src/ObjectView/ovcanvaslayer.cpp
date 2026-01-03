@@ -186,6 +186,8 @@ void OVCanvasLayer::addObject(ObjectItems::BasicItem *pItem)
         LOG_WARNING("OVCanvasLayer: Rewriting object with id:", pItem->getItemId());
     }
     m_registeredItems[pItem->getItemId()] = pItem;
+    connect(pItem, &QObject::destroyed,
+            this, [this, pItem](){ m_registeredItems.erase(pItem->getItemId()); });
 }
 
 std::unordered_map<ObjectItems::objectId_t, ObjectItems::BasicItem *> OVCanvasLayer::getObjects() const
