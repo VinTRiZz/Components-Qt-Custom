@@ -159,6 +159,10 @@ void BasicItem::mousePressEvent(QGraphicsSceneMouseEvent *e)
 void BasicItem::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
 {
     QGraphicsItem::mouseMoveEvent(e);
+    if (!(e->buttons() & Qt::LeftButton)) {
+        return;
+    }
+
     if (m_isDeltaGot) {
         processMoveEvent(e);
     } else if (QLineF(m_prevClickScreenPos, e->screenPos()).length() > m_startMoveDelta) {
