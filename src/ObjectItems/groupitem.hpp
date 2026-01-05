@@ -11,15 +11,18 @@ public:
     explicit GroupItem(QGraphicsItem* parent = nullptr);
 
     // Установка комментируемых элементов
-    void setCommentedItems(const QList<BasicItem*>& items);
-    void addCommentedItem(BasicItem* item);
-    void removeCommentedItem(BasicItem* item);
-    void clearCommentedItems();
+    void setGroupItems(const QList<BasicItem*>& items);
+    void addGroupItem(BasicItem* item);
+    void removeGroupItem(BasicItem* item);
+
+    void enableDeleteOnEmpty();
 
     QPolygonF getBoundingPolygon() const;
 
 private:
     void updateBoundingPolygon();
+
+    bool m_deleteOnEmpty {false};
 
     QGraphicsPolygonItem* m_bPolygon {nullptr};
     QList<BasicItem*> m_groupItems;
