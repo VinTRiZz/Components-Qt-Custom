@@ -5,6 +5,8 @@
 #include <QTextOption>
 #include <QTextDocument>
 
+#include <Components/Logger/Logger.h>
+
 namespace ObjectItems {
 
 AbstractText::AbstractText(QGraphicsItem* parent) :
@@ -15,9 +17,14 @@ AbstractText::AbstractText(QGraphicsItem* parent) :
 
     createSubitem(m_textItem);
     m_textItem->setZValue(100); // Чтобы не перекрывали в будущем
+    m_textItem->setFlag(ItemIsFocusable);
+    m_textItem->setFlag(ItemAcceptsInputMethod);
 
     connect(this, &BasicItem::displayNameChanged,
             this, [this](){
+        if (m_isTextEditedByUser) {
+            return;
+        }
         m_textItem->setPlainText(getDisplayName());
     });
 
@@ -35,6 +42,8 @@ AbstractText::AbstractText(QGraphicsItem* parent) :
 
     setLinePen({Qt::black});
     m_textItem->setTextWidth(100);
+
+    setEditableByUser(false);
 }
 
 void AbstractText::setFont(const QFont &f)
@@ -65,6 +74,23 @@ void AbstractText::setTextSizePt(double textSizePt)
     auto font = getFont();
     font.setPointSizeF(textSizePt);
     setFont(font);
+}
+
+void AbstractText::setEditableByUser(bool isEditableByUser)
+{
+    m_isEditableByUser = isEditableByUser;
+    if (m_isEditableByUser) {
+        m_textItem->setTextInteractionFlags(Qt::TextEditorInteraction);
+        connect(m_textItem->document(), &QTextDocument::contentsChanged,
+                this, [this](){
+            m_isTextEditedByUser = true;
+            setDisplayName(m_textItem->toPlainText());
+            m_isTextEditedByUser = false;
+        });
+    } else {
+        disconnect(m_textItem->document(), nullptr, this, nullptr);
+        m_textItem->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    }
 }
 
 QGraphicsTextItem *AbstractText::getTextItem() const

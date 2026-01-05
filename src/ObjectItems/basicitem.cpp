@@ -23,7 +23,6 @@ BasicItem::BasicItem(QGraphicsItem *parent) :
     setFlag(ItemSendsScenePositionChanges, true);
     setFlag(ItemHasNoContents, true);
     setFlag(ItemSendsGeometryChanges, true);
-    setHandlesChildEvents(true);
     setSystemName("Unknown");
     setObjectType(ObjectType::OIT_BasicItem);
 }
@@ -163,6 +162,7 @@ void BasicItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *e)
     QGraphicsItem::mouseReleaseEvent(e);
     if (!m_isDeltaGot) {
         emit itemClicked();
+        LOG_DEBUG("Item clicked");
     }
     m_isDeltaGot = false;
 }

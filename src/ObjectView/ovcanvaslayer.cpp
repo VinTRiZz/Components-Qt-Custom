@@ -22,9 +22,9 @@ OVCanvasLayer::OVCanvasLayer(QWidget *parent) :
     setScene(m_pInternalScene);
 
     setRenderHint(QPainter::Antialiasing);  // красивые текстуры
-    setViewportUpdateMode(QGraphicsView::FullViewportUpdate);   // Фикс артефактов Foreground
-    setRubberBandSelectionMode(Qt::ItemSelectionMode::ContainsItemShape);
-    setDragMode(QGraphicsView::DragMode::RubberBandDrag);
+    setViewportUpdateMode(QGraphicsView::FullViewportUpdate); // Фикс артефактов Foreground
+    setRubberBandSelectionMode(Qt::ItemSelectionMode::ContainsItemShape);   // Область выбора
+    setDragMode(QGraphicsView::DragMode::RubberBandDrag);                   // Область выбора
 
     // Скрываем скроллбары
     setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);

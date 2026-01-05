@@ -36,9 +36,9 @@ CommentItem::CommentItem(QGraphicsItem *parent) :
     });
 
     createSubitem<false>(m_commentaryText);
-    connect(this, &BasicItem::displayNameChanged,
+    connect(m_commentaryText, &BasicItem::displayNameChanged,
             this, [this](){
-        m_commentaryText->setDisplayName(getDisplayName());
+        setDisplayName(m_commentaryText->getDisplayName());
     });
 
     auto defaultCommentColor = QColor(70, 180, 80);
