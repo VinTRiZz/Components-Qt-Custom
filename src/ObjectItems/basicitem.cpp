@@ -81,6 +81,10 @@ QVariant BasicItem::itemChange(GraphicsItemChange change, const QVariant &value)
 
     switch (change)
     {
+    case ItemPositionChange:
+        emit itemAboutToMove(value.value<QPointF>());
+        break;
+
     case ItemPositionHasChanged:
         emit itemMoved(pos());
         break;

@@ -51,7 +51,10 @@ signals:
     void itemDeselected();
 
     void itemClicked();
+
+    void itemAboutToMove(const QPointF& newPos);
     void itemMoved(const QPointF& newPos);
+
     void itemMovedOnScene(const QPointF& newScenePos);
 
 protected:
