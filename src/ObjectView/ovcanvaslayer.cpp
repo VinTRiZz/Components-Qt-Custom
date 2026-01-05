@@ -82,8 +82,8 @@ ObjectItems::BasicItem *OVCanvasLayer::getObject(const QPoint &viewportPos) cons
     if (nullptr == topItem) {
         return nullptr;
     }
-    auto parentObjectItem = topItem->data(ObjectItems::ObjectDataRole::OBJECTDATAROLE_PARENTITEM_ID);
-    if (parentObjectItem.isNull()) {
+    auto parentObjectItem = topItem->data(ObjectItems::ObjectDataRole::OBJECTDATAROLE_PARENTITEM_POINTER);
+    if (nullptr == parentObjectItem.value<ObjectItems::BasicItem*>()) {
         return dynamic_cast<ObjectItems::BasicItem*>(topItem);
     }
     return qvariant_cast<ObjectItems::BasicItem*>(parentObjectItem);
@@ -208,6 +208,7 @@ void OVCanvasLayer::removeObject(ObjectItems::BasicItem *pItem)
 {
     m_registeredItems.erase(pItem->getItemId());
     getScene()->removeItem(pItem);
+    delete pItem;
 }
 
 void OVCanvasLayer::setNavigationEnabled(bool isEn)

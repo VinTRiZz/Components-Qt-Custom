@@ -18,9 +18,9 @@ const objectId_t NULL_OBJECT_ID { 0 };
  * @brief The ObjectDataRole enum Определяет, какие данные могут быть в объекте
  */
 enum ObjectDataRole : int {
-    OBJECTDATAROLE_ID = Qt::UserRole + 1000,   //! Короткое имя объекта для отображения
-    OBJECTDATAROLE_PARENTITEM_ID,  //! Для комплексных объектов
-    OBJECTDATAROLE_COMPLEX_PARENTITEM_ID,  //! Для объектов из комплексных объектов
+    OBJECTDATAROLE_ID = Qt::UserRole + 1000,    //! Короткое имя объекта для отображения
+    OBJECTDATAROLE_PARENTITEM_POINTER,          //! Для комплексных объектов
+    OBJECTDATAROLE_COMPLEX_PARENTITEM_POINTER,  //! Для объектов из комплексных объектов
 
     // СОГЛАШЕНИЕ: Все кастомные типы должны быть после USERTYPE
     OBJECTDATAROLE_USERTYPE,   //! Для пользовательских типов

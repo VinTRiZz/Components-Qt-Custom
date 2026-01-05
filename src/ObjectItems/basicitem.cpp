@@ -10,6 +10,8 @@
 
 #include "../ObjectView/ovinternalscene.hpp"
 
+#include <Components/Logger/Logger.h>
+
 namespace ObjectItems
 {
 
@@ -67,6 +69,11 @@ QMenu *BasicItem::createContextMenu()
     return res;
 }
 
+BasicItem *BasicItem::getParentObject() const
+{
+    return data(ObjectDataRole::OBJECTDATAROLE_PARENTITEM_POINTER).value<BasicItem*>();
+}
+
 void BasicItem::paint(
         QPainter *painter,
         const QStyleOptionGraphicsItem *option,
@@ -101,55 +108,31 @@ QVariant BasicItem::itemChange(GraphicsItemChange change, const QVariant &value)
         }
         break;
 
+    case ItemParentChange:
+        setData(ObjectDataRole::OBJECTDATAROLE_PARENTITEM_POINTER, value);
+        if (nullptr != parentItem()) {
+            setData(ObjectDataRole::OBJECTDATAROLE_COMPLEX_PARENTITEM_POINTER,
+                               parentItem()->data(ObjectDataRole::OBJECTDATAROLE_COMPLEX_PARENTITEM_POINTER));
+        } else {
+            setData(ObjectDataRole::OBJECTDATAROLE_COMPLEX_PARENTITEM_POINTER, {});
+        }
+        break;
+
+    case ItemChildAddedChange:
+    {
+        auto pItem = value.value<QGraphicsItem*>();
+        pItem->setParentItem(this);
+        pItem->setData(ObjectDataRole::OBJECTDATAROLE_PARENTITEM_POINTER, QVariant::fromValue(this));
+        pItem->setData(ObjectDataRole::OBJECTDATAROLE_COMPLEX_PARENTITEM_POINTER,
+                       data(ObjectDataRole::OBJECTDATAROLE_COMPLEX_PARENTITEM_POINTER));
+    }
+        break;
+
     default:
         break;
     }
 
     return res;
-}
-
-void BasicItem::registerSubitem(QGraphicsItem *pItem)
-{
-    pItem->setParentItem(this);
-    pItem->setData(ObjectDataRole::OBJECTDATAROLE_PARENTITEM_ID, QVariant::fromValue(this));
-
-    auto pCon = new QMetaObject::Connection{};
-    *pCon = QObject::connect(this, &BasicItem::idChanged,
-                     this, [this, pItem, pCon](){
-        if (!pItem) {
-            QObject::disconnect(*pCon); // Если тут сегфолт или ещё что, извините
-            delete pCon;
-            return;
-        }
-        auto parentId = QVariant::fromValue(this);
-
-        std::function<void(QGraphicsItem*)> updatePid = [&updatePid, this, parentId](QGraphicsItem* pItem){
-            for (auto* pChild : pItem->childItems()) {
-                if (dynamic_cast<BasicItem*>(pChild) != nullptr) {
-                    continue;
-                }
-                updatePid(pChild);
-            }
-            pItem->setData(ObjectDataRole::OBJECTDATAROLE_PARENTITEM_ID, parentId);
-
-            auto complexParentId = data(ObjectDataRole::OBJECTDATAROLE_COMPLEX_PARENTITEM_ID);
-            if (complexParentId.isNull()) {
-                pItem->setData(ObjectDataRole::OBJECTDATAROLE_PARENTITEM_ID, parentId);
-            }
-        };
-
-        pItem->setData(ObjectDataRole::OBJECTDATAROLE_PARENTITEM_ID, parentId);
-        auto complexParentId = data(ObjectDataRole::OBJECTDATAROLE_COMPLEX_PARENTITEM_ID);
-        if (complexParentId.isNull()) {
-            complexParentId = QVariant::fromValue(this);
-        }
-        pItem->setData(ObjectDataRole::OBJECTDATAROLE_COMPLEX_PARENTITEM_ID, complexParentId);
-
-        // Апдейт дочерних НЕ объектов
-        for (auto* pChild : childItems()) {
-            updatePid(pChild);
-        }
-    });
 }
 
 void BasicItem::mousePressEvent(QGraphicsSceneMouseEvent *e)
