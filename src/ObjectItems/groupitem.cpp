@@ -12,10 +12,6 @@ GroupItem::GroupItem(QGraphicsItem* parent)
     setSystemName("Group");
     setObjectType(ObjectType::OIT_GroupItem);
 
-    setFlag(ItemIsSelectable, false);
-    setFlag(ItemIsMovable, false);
-    setFlag(ItemIsFocusable, false);
-
     createSubitem(m_bPolygon);
     m_bPolygon->setZValue(-1);
     connect(this, &BasicItem::graphicalDataChanged,

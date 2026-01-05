@@ -36,10 +36,18 @@ CommentItem::CommentItem(QGraphicsItem *parent) :
     });
 
     createSubitem<false>(m_commentaryText);
+    connect(this, &BasicItem::displayNameChanged,
+            this, [this](){
+        if (m_isTextEditedByUser) { return; }
+        m_commentaryText->setDisplayName(getDisplayName());
+    });
     connect(m_commentaryText, &BasicItem::displayNameChanged,
             this, [this](){
+        m_isTextEditedByUser = true;
         setDisplayName(m_commentaryText->getDisplayName());
+        m_isTextEditedByUser = false;
     });
+    m_commentaryText->setEditableByUser(true);
 
     auto defaultCommentColor = QColor(70, 180, 80);
     auto linesPen = QPen(defaultCommentColor, 3, Qt::DashDotLine, Qt::RoundCap);

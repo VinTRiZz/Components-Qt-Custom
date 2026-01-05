@@ -14,6 +14,7 @@ public:
 private:
     QGraphicsPathItem* m_referencerItem {nullptr};
     TextLabel* m_commentaryText {nullptr};
+    bool m_isTextEditedByUser {false};
 };
 
 } // namespace ObjectItems

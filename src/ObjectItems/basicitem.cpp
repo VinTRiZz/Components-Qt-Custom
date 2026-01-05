@@ -162,7 +162,6 @@ void BasicItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *e)
     QGraphicsItem::mouseReleaseEvent(e);
     if (!m_isDeltaGot) {
         emit itemClicked();
-        LOG_DEBUG("Item clicked");
     }
     m_isDeltaGot = false;
 }
