@@ -36,7 +36,6 @@ OVInformationLayer::OVInformationLayer(QWidget *parent) :
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
 )");
-    updateInformationLabel();
 
     setCursorValuesPresenter([this](const QPointF& curPoint) -> QString {
         auto pObject = getObject(mapFromScene(curPoint));
@@ -58,6 +57,19 @@ OVInformationLayer::OVInformationLayer(QWidget *parent) :
                     );
     });
 
+    setInfoLabelPresenter([this]() -> QString {
+        auto isGridEnabled = getScene()->getIsGridEnabled();
+        auto gridSize = getScene()->getGridSize();
+
+        return QString("Масштаб: 1:%0   Сетка: %1\nИнструмент: %2").arg(
+                    QString::number(getCurrentScale(), 'f', 3),
+                     isGridEnabled ? QString("%0px").arg(gridSize)
+                                   : QString("Выкл."),
+                     m_currentToolName.isEmpty() ? QString("Нет")
+                                                 : m_currentToolName);
+    });
+
+    updateInformationLabel();
     connect(this, &OVCanvasLayer::scaleChanged,
             this, [this](){
         updateInformationLabel();
@@ -84,9 +96,10 @@ void OVInformationLayer::setCurrentToolname(const QString &toolName)
     updateInformationLabel();
 }
 
-void OVInformationLayer::setInformationFormat(const QString &infoFormat)
+void OVInformationLayer::setInfoLabelPresenter(const std::function<QString ()> &pres)
 {
-    m_currentInfoFormat = infoFormat;
+    m_infoLabelPresenter = pres;
+    updateInformationLabel();
 }
 
 void OVInformationLayer::setCursorValuesPresenter(const std::function<QString (const QPointF &)> &pres)
@@ -129,17 +142,7 @@ void OVInformationLayer::updateInformationLabel() {
         m_pInformationLabel->hide();
         return;
     }
-
-    auto isGridEnabled = getScene()->getIsGridEnabled();
-    auto gridSize = getScene()->getGridSize();
-    auto infoText = m_currentInfoFormat.arg(
-                QString::number(getCurrentScale(), 'f', 3),
-                 isGridEnabled ? QString("%0px").arg(gridSize)
-                               : QString("Выкл."),
-                 m_currentToolName.isEmpty() ? QString("Нет")
-                                             : m_currentToolName);
-
-    m_pInformationLabel->setText(infoText);
+    m_pInformationLabel->setText(m_infoLabelPresenter());
 }
 
 void OVInformationLayer::updateHighlight()
@@ -193,6 +196,11 @@ void OVInformationLayer::resizeEvent(QResizeEvent *e) {
 void OVInformationLayer::contextMenuEvent(QContextMenuEvent *e)
 {
     executeContextMenu(e);
+}
+
+ObjectItems::TextLabel *OVInformationLayer::getCursorLabel()
+{
+    return m_pCursorLabel;
 }
 
 } // namespace OVLayers

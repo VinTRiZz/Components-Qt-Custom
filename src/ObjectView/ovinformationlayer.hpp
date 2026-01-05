@@ -28,9 +28,7 @@ public:
 
     void setCurrentToolname(const QString& toolName);
 
-    // Через аргументы %0..%N отображать информацию
-    // TODO: Задокументировать по окончании разработки
-    void setInformationFormat(const QString& infoFormat);
+    void setInfoLabelPresenter(const std::function<QString()>& pres);
 
     void setCursorValuesPresenter(const std::function<QString(const QPointF&)>& pres);
 
@@ -55,7 +53,7 @@ private:
     bool m_isInfoLabelEnabled {true};
     QLabel* m_pInformationLabel{nullptr};
     QString m_currentToolName;
-    QString m_currentInfoFormat {"Масштаб: 1:%0   Сетка: %1\nИнструмент: %2"};
+    std::function<QString()> m_infoLabelPresenter;
 
     std::function<QString(const QPointF&)> m_cursorValuesPresenter;
 
@@ -68,6 +66,8 @@ protected:
     void resizeEvent(QResizeEvent* e) override;
 
     void contextMenuEvent(QContextMenuEvent* e) override;
+
+    ObjectItems::TextLabel* getCursorLabel();
 };
 
 } // namespace OVLayers
