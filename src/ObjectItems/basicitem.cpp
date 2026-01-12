@@ -145,7 +145,8 @@ void BasicItem::mousePressEvent(QGraphicsSceneMouseEvent *e)
 void BasicItem::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
 {
     QGraphicsItem::mouseMoveEvent(e);
-    if (!(e->buttons() & Qt::LeftButton)) {
+    if (!(e->buttons() & Qt::LeftButton) ||
+        !(flags() & ItemIsMovable)) {
         return;
     }
 

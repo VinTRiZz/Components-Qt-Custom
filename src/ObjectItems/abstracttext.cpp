@@ -12,7 +12,7 @@ namespace ObjectItems {
 AbstractText::AbstractText(QGraphicsItem* parent) :
     BasicItem(parent)
 {
-    setObjectName("Text");
+    setSystemName("Text");
     setObjectType(ObjectType::OIT_AbstractText);
 
     createSubitem(m_textItem);
