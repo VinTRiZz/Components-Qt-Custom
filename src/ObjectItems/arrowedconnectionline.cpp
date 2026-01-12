@@ -52,6 +52,12 @@ void ArrowedConnectionLine::updateLines()
     if (lineDirection & LineDirectionType::Forward) {
         // Arrow
         m_forwardArrow->setPath(arrowPath);
+        if (getIsArrowFilled()) {
+            m_forwardArrow->setBrush(m_forwardArrow->pen().color());
+        } else {
+            m_forwardArrow->setBrush(Qt::transparent);
+        }
+
         m_forwardArrow->setTransformOriginPoint(m_forwardArrow->boundingRect().center());
         m_forwardArrow->setRotation(90 - getLine().angle());
 
@@ -67,6 +73,12 @@ void ArrowedConnectionLine::updateLines()
     if (lineDirection & LineDirectionType::Backward) {
         // Arrow
         m_backwardArrow->setPath(arrowPath);
+        if (getIsArrowFilled()) {
+            m_backwardArrow->setBrush(m_backwardArrow->pen().color());
+        } else {
+            m_backwardArrow->setBrush(Qt::transparent);
+        }
+
         m_backwardArrow->setTransformOriginPoint(m_backwardArrow->boundingRect().center());
         m_backwardArrow->setRotation(270 - getLine().angle());
 

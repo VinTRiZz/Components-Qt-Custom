@@ -58,6 +58,11 @@ ElegantConnectionLine::ElegantConnectionLine(QGraphicsItem *parent) :
         if (lineDirection & LineDirectionType::Forward) {
             // Arrow
             m_forwardArrow->setPath(createArrowPath());
+            if (getIsArrowFilled()) {
+                m_forwardArrow->setBrush(m_forwardArrow->pen().color());
+            } else {
+                m_forwardArrow->setBrush(Qt::transparent);
+            }
             m_forwardArrow->setTransformOriginPoint(m_forwardArrow->boundingRect().center());
 
             // Position
@@ -72,6 +77,11 @@ ElegantConnectionLine::ElegantConnectionLine(QGraphicsItem *parent) :
         if (lineDirection & LineDirectionType::Backward) {
             // Arrow
             m_backwardArrow->setPath(createArrowPath());
+            if (getIsArrowFilled()) {
+                m_backwardArrow->setBrush(m_backwardArrow->pen().color());
+            } else {
+                m_backwardArrow->setBrush(Qt::transparent);
+            }
             m_backwardArrow->setTransformOriginPoint(m_backwardArrow->boundingRect().center());
 
             // Position

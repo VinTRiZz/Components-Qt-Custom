@@ -45,6 +45,9 @@ public:
     void setArrowAngle(LineAngleType lineAngle);
     LineAngleType getArrowAngle() const;
 
+    void setArrowFilled(bool isFilled);
+    bool getIsArrowFilled() const;
+
     void setLine(const QLineF& line);
     void setLine(const QPointF& p1, const QPointF& p2);
     QLineF getLine() const;
@@ -60,6 +63,7 @@ private:
     LineDirectionType   m_arrowType     {LineDirectionType::None};
     LineAngleType       m_arrowAngle    {LineAngleType::A_30};
     QSizeF              m_arrowSize     {10, 10};
+    bool                m_isArrowFilled {true};
 
     mutable bool m_isArrowSizeChanged {true};
     mutable QPainterPath m_cachedArrowpath;

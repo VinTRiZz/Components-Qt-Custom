@@ -80,6 +80,17 @@ LineAngleType AbstractConnectionLine::getArrowAngle() const
     return m_arrowAngle;
 }
 
+void AbstractConnectionLine::setArrowFilled(bool isFilled)
+{
+    m_isArrowFilled = isFilled;
+    emit graphicalDataChanged();
+}
+
+bool AbstractConnectionLine::getIsArrowFilled() const
+{
+    return m_isArrowFilled;
+}
+
 QLineF AbstractConnectionLine::getLine() const
 {
     return m_straightLine;
@@ -121,11 +132,16 @@ QPainterPath AbstractConnectionLine::createArrowPath() const
     if (!m_isArrowSizeChanged) {
         return m_cachedArrowpath;
     }
+    QPolygonF arrowPoly;
+    arrowPoly.push_back({0, 0});
+    arrowPoly.push_back({-m_arrowSize.width(), 0});
+    arrowPoly.push_back({0, -m_arrowSize.height()});
+    arrowPoly.push_back({m_arrowSize.width(), 0});
+    arrowPoly.push_back({0, 0});
+
     QPainterPath p;
-    p.lineTo(-m_arrowSize.width(), 0);
-    p.lineTo(0, -m_arrowSize.height());
-    p.lineTo(m_arrowSize.width(), 0);
-    p.lineTo(0, 0);
+    p.addPolygon(arrowPoly);
+
     m_cachedArrowpath = p;
     m_isArrowSizeChanged = false;
     return p;
