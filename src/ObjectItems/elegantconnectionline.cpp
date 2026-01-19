@@ -97,7 +97,7 @@ ElegantConnectionLine::ElegantConnectionLine(QGraphicsItem *parent) :
 
 QPainterPath ElegantConnectionLine::createLinePath() const
 {
-    auto arrowHeight = getArrowHeight().height();
+    auto arrowHeight = getArrowHeight();
 
     auto pointFrom = getPositionFrom();
     pointFrom.setY(pointFrom.y() + arrowHeight);

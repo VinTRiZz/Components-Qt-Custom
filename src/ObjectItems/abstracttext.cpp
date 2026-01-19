@@ -74,6 +74,7 @@ void AbstractText::setTextSizePt(double textSizePt)
     auto font = getFont();
     font.setPointSizeF(textSizePt);
     setFont(font);
+    emit displayNameChanged();
 }
 
 void AbstractText::setEditableByUser(bool isEditableByUser)
@@ -85,6 +86,7 @@ void AbstractText::setEditableByUser(bool isEditableByUser)
                 this, [this](){
             m_isTextEditedByUser = true;
             setDisplayName(m_textItem->toPlainText());
+            emit displayNameChanged();
             m_isTextEditedByUser = false;
         });
     } else {

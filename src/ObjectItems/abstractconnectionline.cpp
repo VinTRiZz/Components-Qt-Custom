@@ -1,5 +1,7 @@
 #include "abstractconnectionline.hpp"
 
+#include <Components/Logger/Logger.h>
+
 #include <QPainterPath>
 
 #include <math.h>
@@ -35,13 +37,13 @@ void AbstractConnectionLine::unsubscribeForMoves(BasicItem *pItem)
 
 void AbstractConnectionLine::setDirection(LineDirectionType arrType)
 {
-    m_arrowType = arrType;
+    m_directionType = arrType;
     emit graphicalDataChanged();
 }
 
 LineDirectionType AbstractConnectionLine::getDirection() const
 {
-    return m_arrowType;
+    return m_directionType;
 }
 
 void AbstractConnectionLine::setArrowHeight(double arHeight)
@@ -60,19 +62,18 @@ void AbstractConnectionLine::setArrowHeight(double arHeight)
     m_arrowSize.setHeight(arHeight);
     m_arrowSize.setWidth(arHeight / 2.0 * std::sin(arrowAngle));
 
-    m_isArrowSizeChanged = true;
-    emit graphicalDataChanged();
+    resetCachedArrowPath();
 }
 
-QSizeF AbstractConnectionLine::getArrowHeight() const
+double AbstractConnectionLine::getArrowHeight() const
 {
-    return m_arrowSize;
+    return m_arrowSize.height();
 }
 
 void AbstractConnectionLine::setArrowAngle(LineAngleType lineAngle)
 {
     m_arrowAngle = lineAngle;
-    setArrowHeight(getArrowHeight().height());
+    setArrowHeight(getArrowHeight());
 }
 
 LineAngleType AbstractConnectionLine::getArrowAngle() const
@@ -145,6 +146,13 @@ QPainterPath AbstractConnectionLine::createArrowPath() const
     m_cachedArrowpath = p;
     m_isArrowSizeChanged = false;
     return p;
+}
+
+void AbstractConnectionLine::resetCachedArrowPath()
+{
+    m_isArrowSizeChanged = true;
+    createArrowPath();
+    emit graphicalDataChanged();
 }
 
 

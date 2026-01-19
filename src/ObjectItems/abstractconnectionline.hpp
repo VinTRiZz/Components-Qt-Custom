@@ -20,7 +20,7 @@ enum LineDirectionType : short {
  * @brief The LineAngleType enum Угол между сторонами треугольника стрелки
  */
 enum LineAngleType : short {
-    A_15,
+    A_15 = 0,
     A_30,
     A_45,
     A_60,
@@ -40,7 +40,7 @@ public:
     LineDirectionType getDirection() const;
 
     void setArrowHeight(double arHeight);
-    QSizeF getArrowHeight() const;
+    double getArrowHeight() const;
 
     void setArrowAngle(LineAngleType lineAngle);
     LineAngleType getArrowAngle() const;
@@ -58,9 +58,11 @@ public:
     void setPositionTo(const QPointF& posTo);
     QPointF getPositionTo() const;
 
+    void resetCachedArrowPath(); // FIXME: Исправить баг с "нулевым" шейпом иным способом
+
 private:
     QLineF              m_straightLine  {};
-    LineDirectionType   m_arrowType     {LineDirectionType::None};
+    LineDirectionType   m_directionType     {LineDirectionType::None};
     LineAngleType       m_arrowAngle    {LineAngleType::A_30};
     QSizeF              m_arrowSize     {10, 10};
     bool                m_isArrowFilled {true};
