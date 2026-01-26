@@ -38,6 +38,14 @@ public:
                 pItem->setLineSelectionPen(getLineSelectionPen());
             });
         }
+
+        if constexpr (std::is_base_of_v<QAbstractGraphicsShapeItem, ItemTypeT> && requireConnect) {
+            QObject::connect(this, &BasicItem::graphicalDataChanged,
+                             this, [this, pItem](){
+                pItem->setPen(getCurrentPen());
+                pItem->setBrush(getCurrentBrush());
+            });
+        }
     }
 
     BasicItem* getParentObject() const;
