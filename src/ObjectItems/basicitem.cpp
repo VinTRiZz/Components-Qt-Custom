@@ -51,14 +51,18 @@ QMenu *BasicItem::createContextMenu()
     auto res = new QMenu;
     res->setTitle(getDisplayName().isEmpty() ? getSystemName() : getDisplayName());
 
-    auto pOpacityAction = new QAction("Прозрачный");
+    connect(res, &QMenu::aboutToHide,
+            res, &QObject::deleteLater);
+
+    auto pOpacityAction = new QAction("Прозрачный", res);
     connect(pOpacityAction, &QAction::triggered,
-            this, [this, pOpacityAction]() {
+            this, [this, pOpacityAction, res]() {
         if (opacity() < 0.9) {
             setOpacity(1);
         } else {
             setOpacity(0.2);
         }
+        res->deleteLater();
     });
     pOpacityAction->setCheckable(true);
     pOpacityAction->setChecked(opacity() < 0.9);
