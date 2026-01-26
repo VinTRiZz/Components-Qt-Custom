@@ -74,6 +74,11 @@ BasicItem *BasicItem::getParentObject() const
     return data(ObjectDataRole::OBJECTDATAROLE_PARENTITEM_POINTER).value<BasicItem*>();
 }
 
+BasicItem *BasicItem::getParentObjectOfComplex() const
+{
+    return data(ObjectDataRole::OBJECTDATAROLE_COMPLEX_PARENTITEM_POINTER).value<BasicItem*>();
+}
+
 void BasicItem::paint(
         QPainter *painter,
         const QStyleOptionGraphicsItem *option,
@@ -106,6 +111,7 @@ QVariant BasicItem::itemChange(GraphicsItemChange change, const QVariant &value)
         } else {
             emit itemDeselected();
         }
+        emit itemSelectionChanged(value.toBool());
         break;
 
     case ItemParentChange:

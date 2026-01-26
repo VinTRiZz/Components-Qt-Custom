@@ -49,6 +49,7 @@ public:
     }
 
     BasicItem* getParentObject() const;
+    BasicItem* getParentObjectOfComplex() const;
 
 signals:
     void idChanged();
@@ -57,6 +58,7 @@ signals:
     void graphicalDataChanged();
 
     void itemSelected();
+    void itemSelectionChanged(bool isSelected);
     void itemDeselected();
 
     void itemClicked();
