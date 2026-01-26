@@ -39,6 +39,7 @@ public:
 
     double getCurrentScale() const;
 
+    bool isIdFree(ObjectItems::objectId_t id) const;
     ObjectItems::objectId_t getFreeSystemId() const;
     ObjectItems::objectId_t getFreeObjectId() const;
 

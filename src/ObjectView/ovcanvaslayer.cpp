@@ -150,6 +150,11 @@ double OVCanvasLayer::getCurrentScale() const {
     return transform().m11();
 }
 
+bool OVCanvasLayer::isIdFree(ObjectItems::objectId_t id) const
+{
+    return (m_registeredItems.count(id) == 0);
+}
+
 ObjectItems::objectId_t OVCanvasLayer::getFreeSystemId() const
 {
     ObjectItems::objectId_t res {-1};
