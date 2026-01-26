@@ -51,9 +51,6 @@ QMenu *BasicItem::createContextMenu()
     auto res = new QMenu;
     res->setTitle(getDisplayName().isEmpty() ? getSystemName() : getDisplayName());
 
-    connect(res, &QMenu::aboutToHide,
-            res, &QObject::deleteLater);
-
     auto pOpacityAction = new QAction("Прозрачный", res);
     connect(pOpacityAction, &QAction::triggered,
             this, [this, pOpacityAction, res]() {

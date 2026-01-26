@@ -23,12 +23,14 @@ protected:
     void executeContextMenu(QContextMenuEvent* e) {
         m_mainContextMenu.clear();
 
+        QMenu* pSubmenu {nullptr}; // TODO: Придумать, как удалять по-нормальному
+
         auto pHoverItem = static_cast<BaseView*>(this)->getTopItem(e->pos());
 
         auto pHoverItemObject = dynamic_cast<ObjectItems::BasicItem*>(pHoverItem);
         if (pHoverItemObject != nullptr) {
-            auto pMenu = pHoverItemObject->createContextMenu();
-            m_mainContextMenu.addMenu(pMenu);
+            pSubmenu = pHoverItemObject->createContextMenu();
+            m_mainContextMenu.addMenu(pSubmenu);
         }
 
         auto pGridAction = m_mainContextMenu.addAction("Сетка", [this]() {
@@ -45,6 +47,7 @@ protected:
 
         // Подразумевается, что это меню не было определено
         m_mainContextMenu.exec(e->globalPos());
+        delete pSubmenu;
     }
 };
 
