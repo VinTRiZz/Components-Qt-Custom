@@ -1,4 +1,7 @@
-COMPONENTS_REQUIRE_QT(5 Core Gui Widgets Charts)
+# Qt configuration
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
 COMPONENTS_CONFIGURE_COMPONENT(Qt-Custom
     Qt5::Core
