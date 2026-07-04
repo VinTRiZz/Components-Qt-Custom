@@ -17,9 +17,6 @@ namespace {
  */
 struct ItemMetadata
 {
-    ItemMetadata() = default;
-    ItemMetadata(const QPersistentModelIndex& idx) : m_itemRef(idx) {}
-
     TreeGroupingProxyModel::GroupKey_t m_selfKey;
     QPersistentModelIndex m_itemRef;
 };
@@ -210,6 +207,16 @@ bool TreeGroupingProxyModel::setGroupData(GroupKey_t groupKey, int column, const
 
 void TreeGroupingProxyModel::addNode(const QModelIndex &idx)
 {
+    // Setup node
+    auto rowNode = std::make_shared<Node_t::item_type>();
+    ItemMetadata mdata {};
+    mdata.m_itemRef = QPersistentModelIndex(idx);
+    mdata.m_selfKey = getGroup(idx.row());
+    if (!mdata.m_itemRef.isValid()) { // No mergables found
+        return;
+    }
+    rowNode->setData(std::move(mdata));
+
     // Get groups
     auto getBranchGroups = [this](GroupKey_t rowNodeGroup) -> std::vector<GroupKey_t> {
         std::vector<GroupKey_t> branchGroups;
@@ -225,63 +232,32 @@ void TreeGroupingProxyModel::addNode(const QModelIndex &idx)
         }
         return branchGroups;
     };
-    auto rowNodeGroups = getBranchGroups(getGroup(idx.row()));
+    auto rowNodeGroups = getBranchGroups(getParentGroup(rowNode->getData().m_selfKey));
 
-    // Setup node
-    auto rowNode = std::make_shared<Node_t::item_type>();
-    ItemMetadata mdata {};
-    mdata.m_itemRef = QPersistentModelIndex(idx);
-    if (rowNodeGroups.empty()) { // No upper group detected
-        rowNode->setData(mdata);
-        return;
-    }
-    mdata.m_selfKey = rowNodeGroups.front();
-    rowNode->setData(mdata);
-
-    // Search and create group if not exist
-    std::function<Node_t::ptr_type(const Node_t::ptr_type&, const std::vector<GroupKey_t>&, int)>
-        getMergableNode =
-        [this, &getMergableNode](const Node_t::ptr_type& pParentNode,
-               const std::vector<GroupKey_t>& nodeGroups,
-               int compareGroupNo) -> Node_t::ptr_type {
-        if (compareGroupNo == 0) {
-            return pParentNode;
-        }
-
-        // Check subnodes if can merge
-        for (int rootRow = 0; rootRow < pParentNode->getNodeCount(); ++rootRow) {
-            auto pNode = pParentNode->getNode(rootRow);
-            if (!canMergeGroups(
-                    pNode->getData().m_selfKey,
-                    nodeGroups[compareGroupNo])) {
-                continue;
-            }
-            return getMergableNode(pNode, nodeGroups, --compareGroupNo);
-        }
-        return {};
-    };
-    auto pMergableNode = getMergableNode(d->m_invisibleRootNode, rowNodeGroups, rowNodeGroups.size() - 1);
-    if (pMergableNode) {
-        pMergableNode->addNode(rowNode);
-        return;
-    }
-
-    // Create branch
-    auto pCurrentNode = rowNode;
-    Node_t::ptr_type maxNode;
-    rowNodeGroups.erase(rowNodeGroups.begin());
+    // Go down and create branch if need
+    auto pCurrentNode = d->m_invisibleRootNode;
+    std::reverse(rowNodeGroups.data(), rowNodeGroups.data() + rowNodeGroups.size());
     for (auto& gKey : rowNodeGroups) {
-        auto parentNode = std::make_shared<Node_t::item_type>();
+        bool foundMergable {false};
+        for (int r = 0; r < pCurrentNode->getNodeCount(); ++r) {
+            auto pNode = pCurrentNode->getNode(r);
+            foundMergable = canMergeGroups(gKey, pNode->getData().m_selfKey);
+            if (foundMergable) {
+                pCurrentNode = pNode;
+                break;
+            }
+        }
+        if (foundMergable) {
+            continue;
+        }
+        auto pSubnode = std::make_shared<Node_t>();
         ItemMetadata mdata {};
         mdata.m_selfKey = gKey;
-        parentNode->setData(std::move(mdata));
-        pCurrentNode->setParent(parentNode);
-        pCurrentNode = parentNode;
-
-        // To add into root node
-        maxNode = pCurrentNode;
+        pSubnode->setData(std::move(mdata));
+        pSubnode->setParent(pCurrentNode);
+        pCurrentNode = pSubnode;
     }
-    d->m_invisibleRootNode->addNode(maxNode);
+    rowNode->setParent(pCurrentNode);
 }
 
 void TreeGroupingProxyModel::removeNode(const QModelIndex &idx)
