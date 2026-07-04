@@ -4,6 +4,11 @@
 
 #include <memory>
 
+namespace ExtraClasses
+{
+template <typename DataT> class TreeNode;
+}
+
 namespace QtCustom::Models
 {
 
@@ -16,6 +21,9 @@ namespace QtCustom::Models
 class TreeGroupingProxyModel : public QAbstractItemModel
 {
     Q_OBJECT
+
+    struct ItemMetadata;
+    using Node_t = ExtraClasses::TreeNode<ItemMetadata>;
 public:
     explicit TreeGroupingProxyModel(QObject *parent = nullptr);
     ~TreeGroupingProxyModel();
@@ -72,6 +80,8 @@ private:
     // Branch building
     void addNode(const QModelIndex& idx);
     void removeNode(const QModelIndex& idx);
+
+    QModelIndex toModelIndex(const std::shared_ptr<Node_t>& pNode, int column = 0) const;
 };
 
 }
