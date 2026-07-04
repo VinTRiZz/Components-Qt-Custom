@@ -33,6 +33,8 @@ public:
     // Proxy model equ functional
     void setSourceModel(QAbstractItemModel* pModel);
     QAbstractItemModel* sourceModel() const;
+    QModelIndex mapToSource(const QModelIndex& idx) const;
+    QModelIndex mapFromSource(const QModelIndex& idx) const;
 
     // Grouping functionality
     using GroupKey_t = QVariant;

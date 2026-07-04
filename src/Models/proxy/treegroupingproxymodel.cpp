@@ -172,6 +172,39 @@ QAbstractItemModel *TreeGroupingProxyModel::sourceModel() const
     return d->m_sourceModel;
 }
 
+QModelIndex TreeGroupingProxyModel::mapToSource(const QModelIndex &idx) const
+{
+    auto pTargetNode = static_cast<Node_t*>(idx.internalPointer());
+    if (nullptr == pTargetNode ||
+        0 != pTargetNode->getNodeCount()) {
+        return {};
+    }
+    return pTargetNode->getData().m_itemRef;
+}
+
+QModelIndex TreeGroupingProxyModel::mapFromSource(const QModelIndex &idx) const
+{
+    Node_t::ptr_type pTargetNode;
+    d->m_invisibleRootNode->callRecursive([&idx, &pTargetNode](auto pNode) -> bool {
+        if (0 != pNode->getNodeCount()) {
+            return false;
+        }
+        auto isTargetNode = idx == pNode->getData().m_itemRef;
+        if (isTargetNode) {
+            pTargetNode = pNode;
+        }
+        return isTargetNode;
+    });
+    if (pTargetNode) {
+        auto pParent = pTargetNode->getParent();
+        if (!pParent) {
+            return createIndex(d->m_invisibleRootNode->getNodeRow(pTargetNode), 0, pTargetNode.get());
+        }
+        return createIndex(pParent->getNodeRow(pTargetNode), 0, pTargetNode.get());
+    }
+    return {};
+}
+
 TreeGroupingProxyModel::GroupKey_t TreeGroupingProxyModel::getGroup(int sourceModelRow) const
 {
     auto sourceColCount = d->m_sourceModel->columnCount();
