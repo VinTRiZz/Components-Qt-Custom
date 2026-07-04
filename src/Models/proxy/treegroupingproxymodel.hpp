@@ -81,6 +81,7 @@ private:
     void addNode(const QModelIndex& idx);
     void removeNode(const QModelIndex& idx);
 
+    void resetTree();
     QModelIndex toModelIndex(const std::shared_ptr<Node_t>& pNode, int column = 0) const;
 };
 

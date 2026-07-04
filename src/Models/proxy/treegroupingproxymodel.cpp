@@ -12,9 +12,15 @@ namespace QtCustom::Models
 /**
  * @brief The ItemMetadata class Holds metadata of a node to handle tree
  */
-struct TreeGroupingProxyModel::ItemMetadata
+class TreeGroupingProxyModel::ItemMetadata
 {
-    TreeGroupingProxyModel::GroupKey_t m_selfKey;
+public:
+    TreeGroupingProxyModel::GroupKey_t getGroupKey() const {
+        return m_selfKey;
+    }
+    void setGroupKey(const TreeGroupingProxyModel::GroupKey_t& k) {
+        m_selfKey = k;
+    }
 
     bool isSourceIndex() const {
         return std::holds_alternative<QPersistentModelIndex>(m_data);
@@ -55,6 +61,8 @@ private:
     std::vector< std::map<int, QVariant> >& getColumns() {
         return std::get<std::vector< std::map<int, QVariant> > >(m_data);
     }
+
+    TreeGroupingProxyModel::GroupKey_t m_selfKey;
     std::variant<std::vector< std::map<int, QVariant> >, QPersistentModelIndex> m_data;
 };
 
@@ -135,7 +143,7 @@ QVariant TreeGroupingProxyModel::data(const QModelIndex &index, int role) const
         auto idx = d->m_sourceModel->sibling(mappedIndex.row(), index.column(), {});
         return idx.data(role);
     }
-    return getGroupData(pTargetNode->getData().m_selfKey, index.column(), role);
+    return getGroupData(pTargetNode->getData().getGroupKey(), index.column(), role);
 }
 
 bool TreeGroupingProxyModel::setData(const QModelIndex &index, const QVariant &value, int role)
@@ -159,7 +167,7 @@ bool TreeGroupingProxyModel::setData(const QModelIndex &index, const QVariant &v
         }
         return isDataChanged;
     }
-    return setGroupData(pTargetNode->getData().m_selfKey, index.column(), value, role);
+    return setGroupData(pTargetNode->getData().getGroupKey(), index.column(), value, role);
 }
 
 QVariant TreeGroupingProxyModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -190,13 +198,35 @@ Qt::ItemFlags TreeGroupingProxyModel::flags(const QModelIndex &index) const
 void TreeGroupingProxyModel::setSourceModel(QAbstractItemModel *pModel)
 {
     beginResetModel();
-    d->m_sourceModel = pModel;
-    d->m_invisibleRootNode->clearNodes();
     if (d->m_sourceModel) {
-        for (int row = 0; row < d->m_sourceModel->rowCount(); ++row) {
-            addNode(pModel->index(row, 0));
-        }
+        disconnect(d->m_sourceModel, nullptr, this, nullptr);
     }
+    d->m_sourceModel = pModel;
+    resetTree();
+    if (d->m_sourceModel) {
+        connect(pModel, &QAbstractItemModel::modelAboutToBeReset,
+                this, &TreeGroupingProxyModel::resetTree);
+
+        connect(pModel, &QAbstractItemModel::dataChanged,
+                this, [this](const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles){
+            emit dataChanged(mapFromSource(topLeft), mapFromSource(bottomRight), roles);
+        });
+
+        connect(pModel, &QAbstractItemModel::rowsInserted,
+                this, [this](const QModelIndex &parent, int first, int last){
+                    for (int i = first; i < last + 1; ++i) {
+                        addNode(d->m_sourceModel->index(i, 0, parent));
+                    }
+                });
+
+        connect(pModel, &QAbstractItemModel::rowsAboutToBeRemoved,
+                this, [this](const QModelIndex &parent, int first, int last){
+                    for (int i = first; i < last + 1; ++i) {
+                        removeNode(d->m_sourceModel->index(i, 0, parent));
+                    }
+                });
+    }
+
     endResetModel();
 }
 
@@ -261,7 +291,7 @@ QVariant TreeGroupingProxyModel::getGroupData(GroupKey_t groupKey, int column, i
         if (pNode->getData().isSourceIndex()) { // Skip source indexes
             return false;
         }
-        if (groupKey != pNode->getData().m_selfKey) {
+        if (groupKey != pNode->getData().getGroupKey()) {
             return false;
         }
         res = pNode->getData().getIndexData(column, role);
@@ -276,7 +306,7 @@ bool TreeGroupingProxyModel::setGroupData(GroupKey_t groupKey, int column, const
         if (pNode->getData().isSourceIndex()) { // Skip source indexes
             return false;
         }
-        if (groupKey != pNode->getData().m_selfKey) {
+        if (groupKey != pNode->getData().getGroupKey()) {
             return false;
         }
         pNode->getData().setIndexData(value, column, role);
@@ -298,7 +328,7 @@ void TreeGroupingProxyModel::addNode(const QModelIndex &idx)
     auto rowNode = std::make_shared<Node_t::item_type>();
     ItemMetadata nodeData {};
     nodeData.setSourceIndex(idx);
-    nodeData.m_selfKey = getGroup(idx.row());
+    nodeData.setGroupKey(getGroup(idx.row()));
     rowNode->setData(std::move(nodeData));
 
     // Get groups
@@ -316,7 +346,7 @@ void TreeGroupingProxyModel::addNode(const QModelIndex &idx)
         }
         return branchGroups;
     };
-    auto rowNodeGroups = getBranchGroups(getParentGroup(rowNode->getData().m_selfKey));
+    auto rowNodeGroups = getBranchGroups(getParentGroup(rowNode->getData().getGroupKey()));
 
     // Go down and create branch if need
     auto pCurrentNode = d->m_invisibleRootNode;
@@ -325,7 +355,7 @@ void TreeGroupingProxyModel::addNode(const QModelIndex &idx)
         bool foundMergable {false};
         for (int r = 0; r < pCurrentNode->getNodeCount(); ++r) {
             auto pNode = pCurrentNode->getNode(r);
-            foundMergable = canMergeGroups(gKey, pNode->getData().m_selfKey);
+            foundMergable = canMergeGroups(gKey, pNode->getData().getGroupKey());
             if (foundMergable) {
                 pCurrentNode = pNode;
                 break;
@@ -336,7 +366,7 @@ void TreeGroupingProxyModel::addNode(const QModelIndex &idx)
         }
         auto pSubnode = std::make_shared<Node_t>();
         ItemMetadata nodeData {};
-        nodeData.m_selfKey = gKey;
+        nodeData.setGroupKey(gKey);
         pSubnode->setData(std::move(nodeData));
         pSubnode->setParent(pCurrentNode);
         pCurrentNode = pSubnode;
@@ -351,26 +381,41 @@ void TreeGroupingProxyModel::removeNode(const QModelIndex &idx)
             return false;
         }
         auto pParent = pNode->getParent();
-        while ((pParent->getNodeCount() == 1) && pParent->getParent()) {
-            pParent = pParent->getParent();
-        }
-        int nodeRow {};
-        if (pParent->getNodeCount() == 1) {
-            if (pParent->getParent()) {
-                nodeRow = pParent->getParent()->getNodeRow(pParent);
-            } else {
-                nodeRow = d->m_invisibleRootNode->getNodeRow(pParent);
-            }
-            beginRemoveRows(toModelIndex(pParent, 0), nodeRow, nodeRow);
-            pParent->setParent(nullptr); // Removes node actually
-        } else {
-            nodeRow = pNode->getParent()->getNodeRow(pParent);
-            beginRemoveRows(toModelIndex(pNode, 0), nodeRow, nodeRow);
-            pNode->setParent(nullptr); // Removes node actually
-        }
+        beginRemoveRows(toModelIndex(pParent), pParent->getNodeRow(pNode), pParent->getNodeRow(pNode));
+        pNode->setParent(nullptr);
         endRemoveRows();
+
+        auto pAbandonedParent = pParent;
+        while (pAbandonedParent->getNodeCount() == 0) {
+            pParent = pParent->getParent();
+            if (!pParent) {
+                pParent = d->m_invisibleRootNode;
+                beginRemoveRows(toModelIndex(pParent),
+                                pParent->getNodeRow(pAbandonedParent),
+                                pParent->getNodeRow(pAbandonedParent));
+                pAbandonedParent->setParent(nullptr);
+                endRemoveRows();
+                break;
+            }
+            beginRemoveRows(toModelIndex(pParent),
+                            pParent->getNodeRow(pAbandonedParent),
+                            pParent->getNodeRow(pAbandonedParent));
+            pAbandonedParent->setParent(nullptr);
+            endRemoveRows();
+            pAbandonedParent = pParent;
+        }
         return true;
     });
+}
+
+void TreeGroupingProxyModel::resetTree()
+{
+    d->m_invisibleRootNode->clearNodes();
+    if (d->m_sourceModel) {
+        for (int row = 0; row < d->m_sourceModel->rowCount(); ++row) {
+            addNode(d->m_sourceModel->index(row, 0));
+        }
+    }
 }
 
 QModelIndex TreeGroupingProxyModel::toModelIndex(const std::shared_ptr<Node_t> &pNode, int column) const
