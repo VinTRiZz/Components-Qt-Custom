@@ -209,6 +209,9 @@ void TreeGroupingProxyModel::setSourceModel(QAbstractItemModel *pModel)
 
         connect(pModel, &QAbstractItemModel::dataChanged,
                 this, [this](const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles){
+            for (int i = topLeft.row(); i < bottomRight.row() + 1; ++i) {
+                updateNode(d->m_sourceModel->index(i, 0, topLeft.parent()));
+            }
             emit dataChanged(mapFromSource(topLeft), mapFromSource(bottomRight), roles);
         });
 
@@ -331,47 +334,49 @@ void TreeGroupingProxyModel::addNode(const QModelIndex &idx)
     nodeData.setGroupKey(getGroup(idx.row()));
     rowNode->setData(std::move(nodeData));
 
-    // Get groups
-    auto getBranchGroups = [this](GroupKey_t rowNodeGroup) -> std::vector<GroupKey_t> {
-        std::vector<GroupKey_t> branchGroups;
-        uint8_t overflowProtector {};
-        while (rowNodeGroup.isValid()) {
-            ++overflowProtector;
-            if (overflowProtector > 100) {
-                throw std::runtime_error("Group detect infinity recursion"); // According to model using experience
-            }
-
-            branchGroups.push_back(rowNodeGroup);
-            rowNodeGroup = getParentGroup(rowNodeGroup);
-        }
-        return branchGroups;
-    };
-    auto rowNodeGroups = getBranchGroups(getParentGroup(rowNode->getData().getGroupKey()));
-
     // Go down and create branch if need
-    auto pCurrentNode = d->m_invisibleRootNode;
-    std::reverse(rowNodeGroups.data(), rowNodeGroups.data() + rowNodeGroups.size());
-    for (auto& gKey : rowNodeGroups) {
-        bool foundMergable {false};
-        for (int r = 0; r < pCurrentNode->getNodeCount(); ++r) {
-            auto pNode = pCurrentNode->getNode(r);
-            foundMergable = canMergeGroups(gKey, pNode->getData().getGroupKey());
-            if (foundMergable) {
-                pCurrentNode = pNode;
-                break;
-            }
+    auto rowNodeGroups = getBranchGroups(getParentGroup(rowNode->getData().getGroupKey()));
+    rowNode->setParent(setupMergableNode(rowNodeGroups));
+}
+
+void TreeGroupingProxyModel::updateNode(const QModelIndex &idx)
+{
+    // Go down and create branch if need
+    Node_t::ptr_type rowNode;
+    d->m_invisibleRootNode->callRecursive([&idx, &rowNode](auto pNode) -> bool {
+        if (!pNode->getData().isSourceIndex()) {
+            return false;
         }
-        if (foundMergable) {
-            continue;
+        auto isTargetNode = idx == pNode->getData().getSourceIndex();
+        if (isTargetNode) {
+            rowNode = pNode;
         }
-        auto pSubnode = std::make_shared<Node_t>();
-        ItemMetadata nodeData {};
-        nodeData.setGroupKey(gKey);
-        pSubnode->setData(std::move(nodeData));
-        pSubnode->setParent(pCurrentNode);
-        pCurrentNode = pSubnode;
+        return isTargetNode;
+    });
+    if (!rowNode) {
+        return;
     }
-    rowNode->setParent(pCurrentNode);
+
+    // Prepare to emit signal
+    auto prevIndex = toModelIndex(rowNode);
+    auto prevIndexRow = prevIndex.row();
+    auto newGroupKey = getGroup(idx.row());
+    auto rowNodeGroups = getBranchGroups(getParentGroup(newGroupKey));
+    auto pPrevParent = rowNode->getParent();
+
+    // Get new pos
+    auto pMergableNode = setupMergableNode(rowNodeGroups);
+
+    // Update node position
+    beginMoveRows(  prevIndex, prevIndexRow, prevIndexRow,
+                    toModelIndex(pMergableNode), pMergableNode->getNodeCount() - 1);
+    auto& nodeData = rowNode->getData();
+    nodeData.setSourceIndex(idx);
+    nodeData.setGroupKey(newGroupKey);
+    rowNode->setParent(pMergableNode);
+    endMoveRows();
+
+    removeAbandoned(pPrevParent);
 }
 
 void TreeGroupingProxyModel::removeNode(const QModelIndex &idx)
@@ -385,25 +390,7 @@ void TreeGroupingProxyModel::removeNode(const QModelIndex &idx)
         pNode->setParent(nullptr);
         endRemoveRows();
 
-        auto pAbandonedParent = pParent;
-        while (pAbandonedParent->getNodeCount() == 0) {
-            pParent = pParent->getParent();
-            if (!pParent) {
-                pParent = d->m_invisibleRootNode;
-                beginRemoveRows(toModelIndex(pParent),
-                                pParent->getNodeRow(pAbandonedParent),
-                                pParent->getNodeRow(pAbandonedParent));
-                pAbandonedParent->setParent(nullptr);
-                endRemoveRows();
-                break;
-            }
-            beginRemoveRows(toModelIndex(pParent),
-                            pParent->getNodeRow(pAbandonedParent),
-                            pParent->getNodeRow(pAbandonedParent));
-            pAbandonedParent->setParent(nullptr);
-            endRemoveRows();
-            pAbandonedParent = pParent;
-        }
+        removeAbandoned(pParent);
         return true;
     });
 }
@@ -418,10 +405,78 @@ void TreeGroupingProxyModel::resetTree()
     }
 }
 
+void TreeGroupingProxyModel::removeAbandoned(std::shared_ptr<Node_t> pParent)
+{
+    auto pAbandonedParent = pParent;
+    while (pAbandonedParent->getNodeCount() == 0) {
+        pParent = pParent->getParent();
+        if (!pParent) {
+            pParent = d->m_invisibleRootNode;
+            beginRemoveRows(toModelIndex(pParent),
+                            pParent->getNodeRow(pAbandonedParent),
+                            pParent->getNodeRow(pAbandonedParent));
+            pAbandonedParent->setParent(nullptr);
+            endRemoveRows();
+            break;
+        }
+        beginRemoveRows(toModelIndex(pParent),
+                        pParent->getNodeRow(pAbandonedParent),
+                        pParent->getNodeRow(pAbandonedParent));
+        pAbandonedParent->setParent(nullptr);
+        endRemoveRows();
+        pAbandonedParent = pParent;
+    }
+}
+
+std::shared_ptr<TreeGroupingProxyModel::Node_t> TreeGroupingProxyModel::setupMergableNode(std::vector<GroupKey_t> groupBranch)
+{
+    auto pCurrentNode = d->m_invisibleRootNode;
+    std::reverse(groupBranch.data(), groupBranch.data() + groupBranch.size());
+    for (auto& gKey : groupBranch) {
+        bool foundMergable {false};
+        for (int r = 0; r < pCurrentNode->getNodeCount(); ++r) {
+            auto pNode = pCurrentNode->getNode(r);
+            foundMergable = canMergeGroups(gKey, pNode->getData().getGroupKey());
+            if (foundMergable) {
+                pCurrentNode = pNode;
+                break;
+            }
+        }
+        if (foundMergable) {
+            continue;
+        }
+        beginInsertRows(toModelIndex(pCurrentNode), pCurrentNode->getNodeCount() - 1, pCurrentNode->getNodeCount() - 1);
+        auto pSubnode = std::make_shared<Node_t>();
+        ItemMetadata nodeData {};
+        nodeData.setGroupKey(gKey);
+        pSubnode->setData(std::move(nodeData));
+        pSubnode->setParent(pCurrentNode);
+        pCurrentNode = pSubnode;
+        endInsertRows();
+    }
+    return pCurrentNode;
+}
+
 QModelIndex TreeGroupingProxyModel::toModelIndex(const std::shared_ptr<Node_t> &pNode, int column) const
 {
     auto pParent = (pNode->getParent() ? pNode->getParent() : d->m_invisibleRootNode);
     return createIndex(pParent->getNodeRow(pNode), column, pNode.get());
+}
+
+std::vector<TreeGroupingProxyModel::GroupKey_t> TreeGroupingProxyModel::getBranchGroups(GroupKey_t rowNodeGroup) const
+{
+    std::vector<GroupKey_t> branchGroups;
+    uint8_t overflowProtector {};
+    while (rowNodeGroup.isValid()) {
+        ++overflowProtector;
+        if (overflowProtector > 100) {
+            throw std::runtime_error("Group detect infinity recursion"); // According to model using experience
+        }
+
+        branchGroups.push_back(rowNodeGroup);
+        rowNodeGroup = getParentGroup(rowNodeGroup);
+    }
+    return branchGroups;
 }
 
 }

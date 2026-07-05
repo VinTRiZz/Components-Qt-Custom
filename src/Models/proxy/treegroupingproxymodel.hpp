@@ -79,10 +79,14 @@ private:
 
     // Branch building
     void addNode(const QModelIndex& idx);
+    void updateNode(const QModelIndex& idx);
     void removeNode(const QModelIndex& idx);
 
     void resetTree();
+    void removeAbandoned(std::shared_ptr<Node_t> pNode);
+    std::shared_ptr<Node_t> setupMergableNode(std::vector<GroupKey_t> groupBranch);
     QModelIndex toModelIndex(const std::shared_ptr<Node_t>& pNode, int column = 0) const;
+    std::vector<GroupKey_t> getBranchGroups(GroupKey_t rowNodeGroup) const;
 };
 
 }
