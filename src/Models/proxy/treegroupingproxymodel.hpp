@@ -61,6 +61,13 @@ protected:
      */
     virtual GroupKey_t  getParentGroup(GroupKey_t groupKey) const;
 
+    /**
+     * @brief getGroupHash  Used in optimisation cases
+     * @param groupKey      Always is valid key, calculated for first group or upper
+     * @return
+     */
+    virtual uint getGroupHash(const GroupKey_t& groupKey) const;
+
     // Used to get and set data of a group indexes
     virtual bool        setGroupData(GroupKey_t groupKey, int column, const QVariant& value, int role);
     virtual QVariant    getGroupData(GroupKey_t groupKey, int column, int role) const;
@@ -85,6 +92,7 @@ private:
     void resetTree();
     void removeAbandoned(std::shared_ptr<Node_t> pNode);
     std::shared_ptr<Node_t> setupMergableNode(std::vector<GroupKey_t> groupBranch);
+    std::shared_ptr<Node_t> toNode(const QModelIndex& idx) const;
     QModelIndex toModelIndex(const std::shared_ptr<Node_t>& pNode, int column = 0) const;
     std::vector<GroupKey_t> getBranchGroups(GroupKey_t rowNodeGroup) const;
 };
