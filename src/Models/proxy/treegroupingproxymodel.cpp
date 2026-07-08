@@ -346,12 +346,10 @@ void TreeGroupingProxyModel::updateNode(const QModelIndex &idx)
         }
         return isTargetNode;
     });
-    if (!rowNode || !rowNode->getParent()) {
-        return;
-    }
+    if (!rowNode) { return; }
 
     // Prepare to emit signal
-    auto pPrevParent = rowNode->getParent();
+    auto pPrevParent = (rowNode->getParent() ? rowNode->getParent() : d->m_invisibleRootNode);
     auto prevIndex = toModelIndex(pPrevParent);
     auto prevIndexRow = pPrevParent->getNodeRow(rowNode);
     auto newGroupKey = getGroup(idx.row());
@@ -366,7 +364,7 @@ void TreeGroupingProxyModel::updateNode(const QModelIndex &idx)
     d->cache_lowestLayer[getIndexHash(idx)] = rowNode;
 
     // Update node position
-    if (pMergableNode == rowNode->getParent()) {
+    if (pMergableNode == pPrevParent) {
         return;
     }
 
