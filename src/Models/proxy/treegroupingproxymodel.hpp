@@ -58,6 +58,7 @@ protected:
      * @brief getParentGroup    Define every upper than first level of a tree
      * @param groupKey
      * @return                  Must return invalid GroupKey_t if level is highest
+     * @note Called many times, so must be as optimised as available
      */
     virtual GroupKey_t  getParentGroup(GroupKey_t groupKey) const;
 
@@ -91,6 +92,7 @@ private:
     void resetTree();
     void prune(std::shared_ptr<Node_t> pBranchLeaf);
     std::shared_ptr<Node_t> setupMergableNode(std::vector<GroupKey_t> groupBranch);
+    uint getIndexHash(const QModelIndex& sourceIndex) const;
 
     // Util
     std::shared_ptr<Node_t> toNode(const QModelIndex& idx) const;

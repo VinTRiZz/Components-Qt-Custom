@@ -262,7 +262,7 @@ QModelIndex TreeGroupingProxyModel::mapFromSource(const QModelIndex &idx) const
         COMPLOG_WARNING_SYNC("Invalid index for mapFromSource passed into TreeGroupingProxyModel");
         return {};
     }
-    auto targetNodeIt = d->cache_lowestLayer.find(qHash(QPersistentModelIndex(idx), qGlobalQHashSeed()));
+    auto targetNodeIt = d->cache_lowestLayer.find(getIndexHash(idx));
     if (d->cache_lowestLayer.end() == targetNodeIt) {
         return {};
     }
@@ -328,6 +328,7 @@ void TreeGroupingProxyModel::addNode(const QModelIndex &idx)
 
     // Go down and create branch if need
     auto rowNodeGroups = getBranchGroups(getParentGroup(rowNode->getData().getGroupKey()));
+    d->cache_lowestLayer[getIndexHash(idx)] = rowNode;
     rowNode->setParent(setupMergableNode(rowNodeGroups));
 }
 
@@ -356,14 +357,13 @@ void TreeGroupingProxyModel::updateNode(const QModelIndex &idx)
     auto newGroupKey = getGroup(idx.row());
     auto rowNodeGroups = getBranchGroups(getParentGroup(newGroupKey));
 
-    d->cache_lowestLayer.erase(qHash(QPersistentModelIndex(idx), qGlobalQHashSeed()));
-
     // Get new pos
     auto pMergableNode = setupMergableNode(rowNodeGroups);
     auto& nodeData = rowNode->getData();
+    d->cache_lowestLayer.erase(getIndexHash(nodeData.getSourceIndex()));
     nodeData.setSourceIndex(idx);
     nodeData.setGroupKey(newGroupKey);
-    d->cache_lowestLayer[qHash(QPersistentModelIndex(idx), qGlobalQHashSeed())] = rowNode;
+    d->cache_lowestLayer[getIndexHash(idx)] = rowNode;
 
     // Update node position
     if (pMergableNode == rowNode->getParent()) {
@@ -380,7 +380,7 @@ void TreeGroupingProxyModel::updateNode(const QModelIndex &idx)
 
 void TreeGroupingProxyModel::removeNode(const QModelIndex &idx)
 {
-    auto nodeIt = d->cache_lowestLayer.find(qHash(QPersistentModelIndex(idx), qGlobalQHashSeed()));
+    auto nodeIt = d->cache_lowestLayer.find(getIndexHash(idx));
     if (d->cache_lowestLayer.end() == nodeIt) {
         return;
     }
@@ -411,20 +411,24 @@ void TreeGroupingProxyModel::resetTree()
 
 void TreeGroupingProxyModel::prune(std::shared_ptr<Node_t> pBranchLeaf)
 {
-    if (!pBranchLeaf) {
-        return;
-    }
-    auto pParent = pBranchLeaf->getParent();
-    while (pParent && (pParent->getNodeCount() < 2)) {
+    if (!pBranchLeaf) { return; }
+    while (pBranchLeaf->getParent()) {
+        auto pParent = pBranchLeaf->getParent();
+        if (pBranchLeaf->getNodeCount() > 0) {
+            break;
+        }
         auto nodeRow = pParent->getNodeRow(pBranchLeaf);
         beginRemoveRows(toModelIndex(pParent), nodeRow, nodeRow);
         d->cache_nodes.erase(getGroupHash(pBranchLeaf->getData().getGroupKey()));
         pBranchLeaf->setParent(nullptr);
         pBranchLeaf = pParent;
         endRemoveRows();
-        pParent = pBranchLeaf->getParent();
-
     }
+}
+
+uint TreeGroupingProxyModel::getIndexHash(const QModelIndex &sourceIndex) const
+{
+    return qHash(QPersistentModelIndex(sourceIndex), qGlobalQHashSeed());
 }
 
 std::shared_ptr<TreeGroupingProxyModel::Node_t> TreeGroupingProxyModel::toNode(const QModelIndex &idx) const
