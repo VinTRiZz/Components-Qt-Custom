@@ -58,14 +58,14 @@ protected:
      * @brief getParentGroup    Define every upper than first level of a tree
      * @param groupKey
      * @return                  Must return invalid GroupKey_t if level is highest
-     * @note Called many times, so must be as optimised as available
      */
     virtual GroupKey_t  getParentGroup(GroupKey_t groupKey) const;
 
     /**
      * @brief getGroupHash  Used in optimisation cases
-     * @param groupKey      Always is valid key, calculated for first group or upper
+     * @param groupKey      Key, calculated for first group or upper
      * @return
+     * @note                Called many times, so must be as optimised as possible
      */
     virtual uint getGroupHash(const GroupKey_t& groupKey) const;
 
