@@ -35,10 +35,18 @@ public:
     }
 
     void setColumnCount(int colCount) {
+        if (isSourceIndex()) {
+            COMPLOG_WARNING_SYNC("Requested extend column count of invalid node");
+            return;
+        }
         auto& colsData = getColumns();
         colsData.resize(colCount);
     }
     void setIndexData(const QVariant& value, int col, int role) {
+        if (isSourceIndex()) {
+            COMPLOG_WARNING_SYNC("Requested set data of invalid or not group node");
+            return;
+        }
         auto& cols = getColumns();
         if (cols.size() <= col) {
             cols.resize(col + 1);
@@ -46,6 +54,10 @@ public:
         cols[col][role] = value;
     }
     QVariant getIndexData(int col, int role) const {
+        if (isSourceIndex()) {
+            COMPLOG_WARNING_SYNC("Requested get data of not group node");
+            return {};
+        }
         auto& cols = getColumns();
         if (cols.size() <= col) {
             return {};
@@ -56,6 +68,7 @@ public:
         }
         return {};
     }
+
 private:
     const std::vector< std::map<int, QVariant> >& getColumns() const {
         return std::get<std::vector< std::map<int, QVariant> > >(m_data);
@@ -73,7 +86,8 @@ struct TreeGroupingProxyModel::Impl
     Node_t::ptr_type    m_invisibleRootNode;
     QAbstractItemModel* m_sourceModel {nullptr};
 
-    std::unordered_map<uint, Node_t::ptr_type> cache_nodes;
+    std::unordered_map<uint, Node_t::ptr_type> cache_nodes;         // Group hash
+    std::unordered_map<uint, Node_t::ptr_type> cache_lowestLayer;   // Persistent index hash
 };
 
 
@@ -175,10 +189,6 @@ Qt::ItemFlags TreeGroupingProxyModel::flags(const QModelIndex &index) const
     if (!index.isValid()) {
         return {};
     }
-    auto pTargetNode = toNode(index);
-    if (!pTargetNode) {
-        return {};
-    }
     auto mappedIdx = mapToSource(index);
     if (mappedIdx.isValid()) {
         auto targetIdx = mappedIdx.sibling(mappedIdx.row(), index.column());
@@ -235,12 +245,13 @@ QAbstractItemModel *TreeGroupingProxyModel::sourceModel() const
 QModelIndex TreeGroupingProxyModel::mapToSource(const QModelIndex &idx) const
 {
     if (idx.model() != this) {
-        COMPLOG_WARNING("Invalid index for mapToSource passed into TreeGroupingProxyModel");
+        COMPLOG_WARNING_SYNC("Invalid index for mapToSource passed into TreeGroupingProxyModel");
         return {};
     }
-    auto pTargetNode = toNode(idx);
+    auto pTargetNode = toNode(idx.column() == 0 ? idx : idx.siblingAtColumn(0));
     if (pTargetNode && pTargetNode->getData().isSourceIndex()) {
-        return pTargetNode->getData().getSourceIndex().sibling(idx.row(), idx.column());
+        auto sourceIdx = pTargetNode->getData().getSourceIndex();
+        return (idx.column() == 0 ? QModelIndex(sourceIdx) : d->m_sourceModel->sibling(sourceIdx.row(), idx.column(), sourceIdx));
     }
     return {};
 }
@@ -248,14 +259,14 @@ QModelIndex TreeGroupingProxyModel::mapToSource(const QModelIndex &idx) const
 QModelIndex TreeGroupingProxyModel::mapFromSource(const QModelIndex &idx) const
 {
     if (idx.model() != d->m_sourceModel) {
-        COMPLOG_WARNING("Invalid index for mapFromSource passed into TreeGroupingProxyModel");
+        COMPLOG_WARNING_SYNC("Invalid index for mapFromSource passed into TreeGroupingProxyModel");
         return {};
     }
-    auto pTargetNode = d->cache_nodes[getGroupHash(getGroup(idx.row()))];
-    if (pTargetNode) {
-        return toModelIndex(pTargetNode, idx.column());
+    auto targetNodeIt = d->cache_lowestLayer.find(qHash(QPersistentModelIndex(idx), qGlobalQHashSeed()));
+    if (d->cache_lowestLayer.end() == targetNodeIt) {
+        return {};
     }
-    return {};
+    return toModelIndex(targetNodeIt->second, idx.column());
 }
 
 uint TreeGroupingProxyModel::getGroupHash(const GroupKey_t &groupKey) const
@@ -317,7 +328,6 @@ void TreeGroupingProxyModel::addNode(const QModelIndex &idx)
 
     // Go down and create branch if need
     auto rowNodeGroups = getBranchGroups(getParentGroup(rowNode->getData().getGroupKey()));
-    d->cache_nodes[getGroupHash(rowNode->getData().getGroupKey())] = rowNode;
     rowNode->setParent(setupMergableNode(rowNodeGroups));
 }
 
@@ -346,48 +356,51 @@ void TreeGroupingProxyModel::updateNode(const QModelIndex &idx)
     auto newGroupKey = getGroup(idx.row());
     auto rowNodeGroups = getBranchGroups(getParentGroup(newGroupKey));
 
-    d->cache_nodes.erase(getGroupHash(rowNode->getData().getGroupKey()));
-    d->cache_nodes[getGroupHash(newGroupKey)] = rowNode;
+    d->cache_lowestLayer.erase(qHash(QPersistentModelIndex(idx), qGlobalQHashSeed()));
 
     // Get new pos
     auto pMergableNode = setupMergableNode(rowNodeGroups);
-    if (pMergableNode == rowNode->getParent()) {
-        auto& nodeData = rowNode->getData();
-        nodeData.setSourceIndex(idx);
-        nodeData.setGroupKey(newGroupKey);
-        return;
-    }
-
-    // Update node position
-    beginMoveRows(  prevIndex, prevIndexRow, prevIndexRow,
-                    toModelIndex(pMergableNode), pMergableNode->getNodeCount() - 1);
     auto& nodeData = rowNode->getData();
     nodeData.setSourceIndex(idx);
     nodeData.setGroupKey(newGroupKey);
+    d->cache_lowestLayer[qHash(QPersistentModelIndex(idx), qGlobalQHashSeed())] = rowNode;
+
+    // Update node position
+    if (pMergableNode == rowNode->getParent()) {
+        return;
+    }
+
+    beginMoveRows(  prevIndex, prevIndexRow, prevIndexRow,
+                  toModelIndex(pMergableNode), pMergableNode->getNodeCount());
     rowNode->setParent(pMergableNode);
     endMoveRows();
 
-    removeAbandoned(pPrevParent);
+    prune(pPrevParent);
 }
 
 void TreeGroupingProxyModel::removeNode(const QModelIndex &idx)
 {
-    auto pNode = d->cache_nodes[getGroupHash(getGroup(idx.row()))];
-    if (!pNode) {
-        return; // low sense, but for safety
+    auto nodeIt = d->cache_lowestLayer.find(qHash(QPersistentModelIndex(idx), qGlobalQHashSeed()));
+    if (d->cache_lowestLayer.end() == nodeIt) {
+        return;
     }
+    auto pNode = nodeIt->second;
 
     auto pParent = pNode->getParent();
-    beginRemoveRows(toModelIndex(pParent), pParent->getNodeRow(pNode), pParent->getNodeRow(pNode));
+    if (!pParent) { pParent = d->m_invisibleRootNode; }
+    auto nodeRow = pParent->getNodeRow(pNode);
+    beginRemoveRows(toModelIndex(pParent), nodeRow, nodeRow);
+    d->cache_lowestLayer.erase(nodeIt);
     pNode->setParent(nullptr);
     endRemoveRows();
 
-    removeAbandoned(pParent);
+    prune(pParent);
 }
 
 void TreeGroupingProxyModel::resetTree()
 {
     d->cache_nodes.clear();
+    d->cache_lowestLayer.clear();
     d->m_invisibleRootNode->clearNodes();
     if (d->m_sourceModel) {
         for (int row = 0; row < d->m_sourceModel->rowCount(); ++row) {
@@ -396,26 +409,21 @@ void TreeGroupingProxyModel::resetTree()
     }
 }
 
-void TreeGroupingProxyModel::removeAbandoned(std::shared_ptr<Node_t> pParent)
+void TreeGroupingProxyModel::prune(std::shared_ptr<Node_t> pBranchLeaf)
 {
-    auto pAbandonedParent = pParent;
-    while (pAbandonedParent->getNodeCount() == 0) {
-        pParent = pParent->getParent();
-        if (!pParent) {
-            pParent = d->m_invisibleRootNode;
-            beginRemoveRows(toModelIndex(pParent),
-                            pParent->getNodeRow(pAbandonedParent),
-                            pParent->getNodeRow(pAbandonedParent));
-            pAbandonedParent->setParent(nullptr);
-            endRemoveRows();
-            break;
-        }
-        beginRemoveRows(toModelIndex(pParent),
-                        pParent->getNodeRow(pAbandonedParent),
-                        pParent->getNodeRow(pAbandonedParent));
-        pAbandonedParent->setParent(nullptr);
+    if (!pBranchLeaf) {
+        return;
+    }
+    auto pParent = pBranchLeaf->getParent();
+    while (pParent && (pParent->getNodeCount() < 2)) {
+        auto nodeRow = pParent->getNodeRow(pBranchLeaf);
+        beginRemoveRows(toModelIndex(pParent), nodeRow, nodeRow);
+        d->cache_nodes.erase(getGroupHash(pBranchLeaf->getData().getGroupKey()));
+        pBranchLeaf->setParent(nullptr);
+        pBranchLeaf = pParent;
         endRemoveRows();
-        pAbandonedParent = pParent;
+        pParent = pBranchLeaf->getParent();
+
     }
 }
 
@@ -434,7 +442,7 @@ std::shared_ptr<TreeGroupingProxyModel::Node_t> TreeGroupingProxyModel::setupMer
 {
     auto pCurrentNode = d->m_invisibleRootNode;
     std::reverse(groupBranch.data(), groupBranch.data() + groupBranch.size());
-    for (auto& gKey : groupBranch) {
+    for (const auto& gKey : groupBranch) {
         bool foundMergable {false};
         for (int r = 0; r < pCurrentNode->getNodeCount(); ++r) {
             auto pNode = pCurrentNode->getNode(r);
