@@ -312,7 +312,7 @@ bool TreeGroupingProxyModel::setGroupData(GroupKey_t groupKey, int column, const
 
 bool TreeGroupingProxyModel::canMergeGroups(const GroupKey_t &lgk, const GroupKey_t &rgk) const
 {
-    return lgk == rgk;
+    return getGroupHash(lgk) == getGroupHash(rgk);
 }
 
 void TreeGroupingProxyModel::addNode(const QModelIndex &idx)
