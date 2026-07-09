@@ -324,7 +324,7 @@ void TreeGroupingProxyModel::addNode(const QModelIndex &idx)
     auto rowNode = d->m_invisibleRootNode->create(std::move(nodeData));
 
     // Go down and create branch if need
-    auto rowNodeGroups = getBranchGroups(getParentGroup(rowNode->getData().getGroupKey()));
+    auto rowNodeGroups = getBranchGroups(rowNode->getData().getGroupKey());
     d->cache_lowestLayer[getIndexHash(idx)] = rowNode;
     rowNode->setParent(setupMergableNode(rowNodeGroups));
 }
@@ -350,7 +350,7 @@ void TreeGroupingProxyModel::updateNode(const QModelIndex &idx)
     auto prevIndex = toModelIndex(pPrevParent);
     auto prevIndexRow = pPrevParent->getNodeRow(rowNode);
     auto newGroupKey = getGroup(idx.row());
-    auto rowNodeGroups = getBranchGroups(getParentGroup(newGroupKey));
+    auto rowNodeGroups = getBranchGroups(newGroupKey);
 
     // Get new pos
     auto pMergableNode = setupMergableNode(rowNodeGroups);
