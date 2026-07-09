@@ -85,6 +85,7 @@ struct TreeGroupingProxyModel::Impl
 {
     Node_t::ptr_type    m_invisibleRootNode;
     QAbstractItemModel* m_sourceModel {nullptr};
+    int                 m_treeColumn {0};
 
     std::unordered_map<uint, Node_t::ptr_type> cache_nodes;         // Group hash
     std::unordered_map<uint, Node_t::ptr_type> cache_lowestLayer;   // Persistent index hash
@@ -211,24 +212,26 @@ void TreeGroupingProxyModel::setSourceModel(QAbstractItemModel *pModel)
         connect(pModel, &QAbstractItemModel::dataChanged,
                 this, [this](const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles){
             for (int i = topLeft.row(); i < bottomRight.row() + 1; ++i) {
-                auto changedIndex = d->m_sourceModel->index(i, 0, topLeft.parent());
-                auto changedIndexSibling = d->m_sourceModel->index(i, d->m_sourceModel->columnCount(topLeft.parent()) - 1, topLeft.parent());
-                updateNode(changedIndex);
-                emit dataChanged(mapFromSource(changedIndex), mapFromSource(changedIndexSibling), roles);
+                auto changedRowIndex = d->m_sourceModel->index(i, 0, topLeft.parent());
+                auto changedRowIndexSibling = d->m_sourceModel->index(i, d->m_sourceModel->columnCount(topLeft.parent()) - 1, topLeft.parent());
+
+                auto statedIndex = d->m_sourceModel->index(i, d->m_treeColumn, topLeft.parent());
+                updateNode(statedIndex);
+                emit dataChanged(mapFromSource(changedRowIndex), mapFromSource(changedRowIndexSibling), roles);
             }
         });
 
         connect(pModel, &QAbstractItemModel::rowsInserted,
                 this, [this](const QModelIndex &parent, int first, int last){
                     for (int i = first; i < last + 1; ++i) {
-                        addNode(d->m_sourceModel->index(i, 0, parent));
+                        addNode(d->m_sourceModel->index(i, d->m_treeColumn, parent));
                     }
                 });
 
         connect(pModel, &QAbstractItemModel::rowsAboutToBeRemoved,
                 this, [this](const QModelIndex &parent, int first, int last){
                     for (int i = first; i < last + 1; ++i) {
-                        removeNode(d->m_sourceModel->index(i, 0, parent));
+                        removeNode(d->m_sourceModel->index(i, d->m_treeColumn, parent));
                     }
                 });
     }
@@ -245,10 +248,10 @@ QModelIndex TreeGroupingProxyModel::mapToSource(const QModelIndex &idx) const
         COMPLOG_WARNING_SYNC("Invalid index for mapToSource passed into TreeGroupingProxyModel");
         return {};
     }
-    auto pTargetNode = toNode(idx.column() == 0 ? idx : idx.siblingAtColumn(0));
+    auto pTargetNode = toNode(idx.column() == d->m_treeColumn ? idx : idx.siblingAtColumn(d->m_treeColumn));
     if (pTargetNode && pTargetNode->getData().isSourceIndex()) {
         auto sourceIdx = pTargetNode->getData().getSourceIndex();
-        return (idx.column() == 0 ? QModelIndex(sourceIdx) : d->m_sourceModel->sibling(sourceIdx.row(), idx.column(), sourceIdx));
+        return (idx.column() == d->m_treeColumn ? QModelIndex(sourceIdx) : d->m_sourceModel->sibling(sourceIdx.row(), idx.column(), sourceIdx));
     }
     return {};
 }
@@ -264,6 +267,17 @@ QModelIndex TreeGroupingProxyModel::mapFromSource(const QModelIndex &idx) const
         return {};
     }
     return toModelIndex(targetNodeIt->second, idx.column());
+}
+
+void TreeGroupingProxyModel::setTreeColumn(int col)
+{
+    d->m_treeColumn = col;
+    resetTree();
+}
+
+int TreeGroupingProxyModel::treeColumn() const
+{
+    return d->m_treeColumn;
 }
 
 uint TreeGroupingProxyModel::getGroupHash(const GroupKey_t &groupKey) const
@@ -317,6 +331,11 @@ bool TreeGroupingProxyModel::canMergeGroups(const GroupKey_t &lgk, const GroupKe
 
 void TreeGroupingProxyModel::addNode(const QModelIndex &idx)
 {
+    if (!idx.isValid()) {
+        COMPLOG_WARNING("Invalid index to update (is tree column valid?)");
+        return;
+    }
+
     // Setup node
     ItemMetadata nodeData {};
     nodeData.setSourceIndex(idx);
@@ -331,6 +350,11 @@ void TreeGroupingProxyModel::addNode(const QModelIndex &idx)
 
 void TreeGroupingProxyModel::updateNode(const QModelIndex &idx)
 {
+    if (!idx.isValid()) {
+        COMPLOG_WARNING("Invalid index to update (is tree column valid?)");
+        return;
+    }
+
     // Go down and create branch if need
     Node_t::ptr_type rowNode;
     d->m_invisibleRootNode->callRecursive([&idx, &rowNode](auto pNode) -> bool {
@@ -375,6 +399,11 @@ void TreeGroupingProxyModel::updateNode(const QModelIndex &idx)
 
 void TreeGroupingProxyModel::removeNode(const QModelIndex &idx)
 {
+    if (!idx.isValid()) {
+        COMPLOG_WARNING("Invalid index to update (is tree column valid?)");
+        return;
+    }
+
     auto nodeIt = d->cache_lowestLayer.find(getIndexHash(idx));
     if (d->cache_lowestLayer.end() == nodeIt) {
         return;
@@ -400,7 +429,7 @@ void TreeGroupingProxyModel::resetTree()
     d->m_invisibleRootNode->clearNodes();
     if (d->m_sourceModel) {
         for (int row = 0; row < d->m_sourceModel->rowCount(); ++row) {
-            addNode(d->m_sourceModel->index(row, 0));
+            addNode(d->m_sourceModel->index(row, d->m_treeColumn));
         }
     }
     endResetModel();

@@ -43,6 +43,8 @@ public:
     QAbstractItemModel* sourceModel() const;
     QModelIndex mapToSource(const QModelIndex& idx) const;
     QModelIndex mapFromSource(const QModelIndex& idx) const;
+    void setTreeColumn(int col);
+    int treeColumn() const;
 
     // Grouping functionality
     using GroupKey_t = QVariant;
