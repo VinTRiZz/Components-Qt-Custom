@@ -199,7 +199,6 @@ Qt::ItemFlags TreeGroupingProxyModel::flags(const QModelIndex &index) const
 
 void TreeGroupingProxyModel::setSourceModel(QAbstractItemModel *pModel)
 {
-    beginResetModel();
     if (d->m_sourceModel) {
         disconnect(d->m_sourceModel, nullptr, this, nullptr);
     }
@@ -233,8 +232,6 @@ void TreeGroupingProxyModel::setSourceModel(QAbstractItemModel *pModel)
                     }
                 });
     }
-
-    endResetModel();
 }
 
 QAbstractItemModel *TreeGroupingProxyModel::sourceModel() const
@@ -397,6 +394,7 @@ void TreeGroupingProxyModel::removeNode(const QModelIndex &idx)
 
 void TreeGroupingProxyModel::resetTree()
 {
+    beginResetModel();
     d->cache_nodes.clear();
     d->cache_lowestLayer.clear();
     d->m_invisibleRootNode->clearNodes();
@@ -405,6 +403,7 @@ void TreeGroupingProxyModel::resetTree()
             addNode(d->m_sourceModel->index(row, 0));
         }
     }
+    endResetModel();
 }
 
 void TreeGroupingProxyModel::prune(std::shared_ptr<Node_t> pBranchLeaf)
