@@ -81,6 +81,11 @@ protected:
      */
     virtual bool canMergeGroups(const GroupKey_t& lgk, const GroupKey_t& rgk) const;
 
+    /**
+     * @brief resetTree Use in cases, when grouping rules changed radically
+     */
+    void resetTree();
+
 private:
     struct Impl;
     std::unique_ptr<Impl> d;
@@ -89,7 +94,6 @@ private:
     void addNode(const QModelIndex& idx);
     void updateNode(const QModelIndex& idx);
     void removeNode(const QModelIndex& idx);
-    void resetTree();
     void prune(std::shared_ptr<Node_t> pBranchLeaf);
     std::shared_ptr<Node_t> setupMergableNode(std::vector<GroupKey_t> groupBranch);
     uint getIndexHash(const QModelIndex& sourceIndex) const;
