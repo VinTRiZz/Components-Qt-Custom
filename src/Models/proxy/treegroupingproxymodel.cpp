@@ -345,7 +345,10 @@ void TreeGroupingProxyModel::addNode(const QModelIndex &idx)
     // Go down and create branch if need
     auto rowNodeGroups = getBranchGroups(rowNode->getData().getGroupKey());
     d->cache_lowestLayer[getIndexHash(idx)] = rowNode;
-    rowNode->setParent(setupMergableNode(rowNodeGroups));
+    auto pMergableNode = setupMergableNode(rowNodeGroups);
+    beginInsertRows(toModelIndex(pMergableNode), pMergableNode->getNodeCount(), pMergableNode->getNodeCount());
+    rowNode->setParent(pMergableNode);
+    endInsertRows();
 }
 
 void TreeGroupingProxyModel::updateNode(const QModelIndex &idx)
@@ -499,6 +502,7 @@ std::shared_ptr<TreeGroupingProxyModel::Node_t> TreeGroupingProxyModel::setupMer
 
 QModelIndex TreeGroupingProxyModel::toModelIndex(const std::shared_ptr<Node_t> &pNode, int column) const
 {
+    if (pNode == d->m_invisibleRootNode) { return {}; } // Do not remove, breakes zero level node insertions
     auto pParent = (pNode->getParent() ? pNode->getParent() : d->m_invisibleRootNode);
     return createIndex(pParent->getNodeRow(pNode), column, pNode.get());
 }
