@@ -419,6 +419,7 @@ void TreeGroupingProxyModel::removeNode(const QModelIndex &idx)
     beginRemoveRows(toModelIndex(pParent), nodeRow, nodeRow);
     d->cache_lowestLayer.erase(nodeIt);
     pNode->setParent(nullptr);
+    pParent->removeNode(pNode);
     endRemoveRows();
 
     prune(pParent);
@@ -450,6 +451,7 @@ void TreeGroupingProxyModel::prune(std::shared_ptr<Node_t> pBranchLeaf)
         beginRemoveRows(toModelIndex(pParent), nodeRow, nodeRow);
         d->cache_nodes.erase(getGroupHash(pBranchLeaf->getData().getGroupKey()));
         pBranchLeaf->setParent(nullptr);
+        pParent->removeNode(pBranchLeaf);
         pBranchLeaf = pParent;
         endRemoveRows();
     }
