@@ -122,4 +122,80 @@ QNetworkAccessManager &HTTPClientBase::getRequester()
     return m_requester;
 }
 
+void HTTPClientBase::sendSimpleRequestGet(const QString &reqPath) const
+{
+    auto req = createRequest(reqPath);
+    auto resp = m_requester.get(req);
+    connect(resp, &QNetworkReply::finished,
+            this, [this, reqPath, resp](){
+                if (resp->error() != QNetworkReply::NoError) {
+                    ExtraClasses::ErrorBase err;
+                    err.setCode(EC_ProtocolUnknown);
+                    auto detailStr = QString("Request [GET] error: %1 (response text: \"%2\")").arg(
+                        resp->errorString(),
+                        resp->readAll());
+                    err.setDetailText(detailStr.toStdString());
+                    return;
+                }
+                emit sig_simpleResponseGet(reqPath, resp->readAll());
+            });
+}
+
+void HTTPClientBase::sendSimpleRequestPost(const QString &reqPath, const QString &reqData) const
+{
+    auto req = createRequest(reqPath);
+    auto resp = m_requester.post(req, reqData.toUtf8());
+    connect(resp, &QNetworkReply::finished,
+            this, [this, reqPath, resp](){
+                if (resp->error() != QNetworkReply::NoError) {
+                    ExtraClasses::ErrorBase err;
+                    err.setCode(EC_ProtocolUnknown);
+                    auto detailStr = QString("Request [POST] error: %1 (response text: \"%2\")").arg(
+                        resp->errorString(),
+                        resp->readAll());
+                    err.setDetailText(detailStr.toStdString());
+                    return;
+                }
+                emit sig_simpleResponsePost(reqPath, resp->readAll());
+            });
+}
+
+void HTTPClientBase::sendSimpleRequestPut(const QString &reqPath, const QString &reqData) const
+{
+    auto req = createRequest(reqPath);
+    auto resp = m_requester.put(req, reqData.toUtf8());
+    connect(resp, &QNetworkReply::finished,
+            this, [this, reqPath, resp](){
+                if (resp->error() != QNetworkReply::NoError) {
+                    ExtraClasses::ErrorBase err;
+                    err.setCode(EC_ProtocolUnknown);
+                    auto detailStr = QString("Request [PUT] error: %1 (response text: \"%2\")").arg(
+                        resp->errorString(),
+                        resp->readAll());
+                    err.setDetailText(detailStr.toStdString());
+                    return;
+                }
+                emit sig_simpleResponsePut(reqPath, resp->readAll());
+            });
+}
+
+void HTTPClientBase::sendSimpleRequestDelete(const QString &reqPath) const
+{
+    auto req = createRequest(reqPath);
+    auto resp = m_requester.deleteResource(req);
+    connect(resp, &QNetworkReply::finished,
+            this, [this, reqPath, resp](){
+                if (resp->error() != QNetworkReply::NoError) {
+                    ExtraClasses::ErrorBase err;
+                    err.setCode(EC_ProtocolUnknown);
+                    auto detailStr = QString("Request [DELETE] error: %1 (response text: \"%2\")").arg(
+                        resp->errorString(),
+                        resp->readAll());
+                    err.setDetailText(detailStr.toStdString());
+                    return;
+                }
+                emit sig_simpleResponseDelete(reqPath, resp->readAll());
+            });
+}
+
 }

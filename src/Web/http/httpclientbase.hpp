@@ -18,6 +18,7 @@ enum HttpErrorCodes : int
     EC_InvalidAddress   = 201,
     EC_ConnectionError  = 204,
     EC_InvalidArgument = 5,
+    EC_ProtocolUnknown = 100,
 };
 
 /**
@@ -58,9 +59,14 @@ public:
 signals:
     void sig_errorOccurs(const ExtraClasses::ErrorBase& err) const;
 
+    void sig_simpleResponseGet(const QString& reqPath, const QString& respData) const;
+    void sig_simpleResponsePost(const QString& reqPath, const QString& respData) const;
+    void sig_simpleResponsePut(const QString& reqPath, const QString& respData) const;
+    void sig_simpleResponseDelete(const QString& reqPath, const QString& respData) const;
+
 private:
     QString                             m_serverAddress;
-    QNetworkAccessManager               m_requester;
+    mutable QNetworkAccessManager       m_requester; // Class state may not be affected anytime
     std::map<QByteArray, QByteArray>    m_commonHeaders;
 
     bool isServerListening(const QString &host, quint16 port) const;
@@ -82,6 +88,12 @@ protected:
      */
     QNetworkRequest createRequest(const QString& target, const QStringList& args = {}) const;
     QNetworkAccessManager& getRequester();
+
+    // Simple requests
+    void sendSimpleRequestGet(const QString& reqPath) const;
+    void sendSimpleRequestPost(const QString& reqPath, const QString& reqData) const;
+    void sendSimpleRequestPut(const QString& reqPath, const QString& reqData) const;
+    void sendSimpleRequestDelete(const QString& reqPath) const;
 };
 
 }
