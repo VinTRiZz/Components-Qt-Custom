@@ -18,6 +18,16 @@ HTTPClientBase::HTTPClientBase(QObject *parent)
 
 }
 
+bool HTTPClientBase::isServerListening(const QString &host, quint16 port) {
+    QTcpSocket socket;
+    socket.connectToHost(host, port);
+    if (socket.waitForConnected(1000)) {
+        socket.disconnectFromHost();
+        return true;
+    }
+    return false;
+}
+
 bool HTTPClientBase::setServer(const QString &serverAddress)
 {
     m_error.reset();
@@ -89,16 +99,6 @@ QNetworkReply *HTTPClientBase::startFileDownload(const QString &localSavefile, c
         file->close();
     });
     return reply;
-}
-
-bool HTTPClientBase::isServerListening(const QString &host, quint16 port) const {
-    QTcpSocket socket;
-    socket.connectToHost(host, port);
-    if (socket.waitForConnected(1000)) {
-        socket.disconnectFromHost();
-        return true;
-    }
-    return false;
 }
 
 void HTTPClientBase::setCommonHeader(const QString &headerName, const QString &headerData)

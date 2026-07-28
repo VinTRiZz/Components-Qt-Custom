@@ -32,6 +32,14 @@ public:
     explicit HTTPClientBase(QObject *parent = nullptr);
 
     /**
+     * @brief isServerListening Used to check server
+     * @param host              Address of a server
+     * @param port              Port to check
+     * @return                  true if ping succeed
+     */
+    static bool isServerListening(const QString &host, quint16 port);
+
+    /**
      * @brief setServer     Set address of a server to send requests
      * @param serverAddress Already checked, correct server address if format ip:port
      */
@@ -71,13 +79,6 @@ private:
     std::map<QByteArray, QByteArray>    m_commonHeaders;
 
 protected:
-    /**
-     * @brief isServerListening Used to check server
-     * @param host              Address of a server
-     * @param port              Port to check
-     * @return                  true if ping succeed
-     */
-    bool isServerListening(const QString &host, quint16 port) const;
 
     /**
      * @brief setCommonHeader   Adds header for createRequest generator. Does not check value correctness
