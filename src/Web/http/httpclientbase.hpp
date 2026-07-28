@@ -57,6 +57,7 @@ public:
     QNetworkReply* startFileDownload(const QString& localSavefile, const QString& fileTarget);
 
 signals:
+    void sig_validAddressSet();
     void sig_errorOccurs(const ExtraClasses::ErrorBase& err) const;
 
     void sig_simpleResponseGet(const QString& reqPath, const QString& respData) const;

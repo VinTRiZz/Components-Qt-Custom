@@ -42,6 +42,7 @@ bool HTTPClientBase::setServer(const QString &serverAddress)
         return false;
     }
     m_serverAddress = serverAddress;
+    emit sig_validAddressSet();
     return true;
 }
 
