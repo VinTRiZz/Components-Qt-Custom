@@ -69,9 +69,15 @@ private:
     mutable QNetworkAccessManager       m_requester; // Class state may not be affected anytime
     std::map<QByteArray, QByteArray>    m_commonHeaders;
 
+protected:
+    /**
+     * @brief isServerListening Used to check server
+     * @param host              Address of a server
+     * @param port              Port to check
+     * @return                  true if ping succeed
+     */
     bool isServerListening(const QString &host, quint16 port) const;
 
-protected:
     /**
      * @brief setCommonHeader   Adds header for createRequest generator. Does not check value correctness
      * @param headerName        Header name, in UTF-8, must be correct header
