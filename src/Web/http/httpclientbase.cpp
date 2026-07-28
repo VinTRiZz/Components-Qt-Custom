@@ -136,6 +136,7 @@ void HTTPClientBase::sendSimpleRequestGet(const QString &reqPath) const
                         resp->errorString(),
                         resp->readAll());
                     err.setDetailText(detailStr.toStdString());
+                    emit sig_errorOccurs(err);
                     return;
                 }
                 emit sig_simpleResponseGet(reqPath, resp->readAll());
@@ -155,6 +156,7 @@ void HTTPClientBase::sendSimpleRequestPost(const QString &reqPath, const QString
                         resp->errorString(),
                         resp->readAll());
                     err.setDetailText(detailStr.toStdString());
+                    emit sig_errorOccurs(err);
                     return;
                 }
                 emit sig_simpleResponsePost(reqPath, resp->readAll());
@@ -174,6 +176,7 @@ void HTTPClientBase::sendSimpleRequestPut(const QString &reqPath, const QString 
                         resp->errorString(),
                         resp->readAll());
                     err.setDetailText(detailStr.toStdString());
+                    emit sig_errorOccurs(err);
                     return;
                 }
                 emit sig_simpleResponsePut(reqPath, resp->readAll());
@@ -193,6 +196,7 @@ void HTTPClientBase::sendSimpleRequestDelete(const QString &reqPath) const
                         resp->errorString(),
                         resp->readAll());
                     err.setDetailText(detailStr.toStdString());
+                    emit sig_errorOccurs(err);
                     return;
                 }
                 emit sig_simpleResponseDelete(reqPath, resp->readAll());
