@@ -5,6 +5,8 @@
 
 #include <math.h>
 
+#include <Components/Logger/Logger.h>
+
 namespace QtCustom::Widgets {
 
 namespace {
@@ -17,8 +19,9 @@ SidebarWidget::SidebarWidget(QWidget *parent)
     : QWidget{parent}
 {
     // Work with source transparency for better displaying
-    setWindowFlags(Qt::FramelessWindowHint);
-    setAttribute(Qt::WA_TranslucentBackground, true);
+    // setWindowFlags(Qt::FramelessWindowHint);
+    // setAttribute(Qt::WA_TranslucentBackground, true);
+    setStyleSheet("background-color: red");
 
     m_pCurrentAnimation = new QVariantAnimation(this);
     connect(m_pCurrentAnimation, &QVariantAnimation::valueChanged, this,
@@ -30,6 +33,7 @@ SidebarWidget::SidebarWidget(QWidget *parent)
                 if (!m_pWidget) { return; }
                 if (m_widgetHideState & HS_Hidden) {
                     m_pWidget->hide();
+                    setGeometry({});
                 }
                 m_widgetHideState = m_pWidget->isHidden() ? HS_Hidden : HS_Shown;
                 emit sig_toggled();
@@ -89,9 +93,9 @@ void SidebarWidget::setWidgetHeight(int wheight)
     updateVisualState();
 }
 
-void SidebarWidget::setShowDirection(Direction sdir)
+void SidebarWidget::setShowTowardsDirection(Direction sdir)
 {
-    m_showDirection = sdir;
+    m_showTowardsDirection = sdir;
     updateVisualState();
 }
 
@@ -177,22 +181,12 @@ QPoint SidebarWidget::calculateCurrentButtonPosition() const
 
     if (!parentWidget() || !m_pButton || !m_pWidget) { return curpos; }
 
-    // From bottom to top
-    if (m_showDirection & Direction::Top) {
-        curpos.setY(std::max(parentWidget()->height() - m_pButton->height() - 1, 0));
-    }
+    // curpos.setX( (curpos.x() + m_pWidget->width()) * bool(m_showDirection & Direction::Right) +
+    //             (parentWidget()->width() - m_pWidget->width() - m_pButton->width() - curpos.x()) * bool(m_showDirection & Direction::Left)
+    // );
+    // curpos.setY(curpos.y() + m_pWidget->height() - m_pButton->height());
 
-    // From right to left
-    if (m_showDirection & Direction::Left) {
-        curpos.setX(std::max(parentWidget()->width() - m_pButton->width() - 1, 0));
-    }
-
-    // From left to right or from top to bottom
-    if (m_showDirection & (Direction::Right | Direction::Bottom)) {
-        // TODO: Implement
-        curpos.setX(150);
-        curpos.setY(150);
-    }
+    // COMPLOG_DEBUG("CURPOS:", curpos.x(), curpos.y());
 
     return curpos;
 }
@@ -223,6 +217,9 @@ void SidebarWidget::stopWidgetAnimations()
 void SidebarWidget::updateVisualState()
 {
     setAnimationStep(ANIMATION_STEP_COUNT);
+    if (m_widgetHideState & HS_Hidden) {
+        setGeometry({});
+    }
 }
 
 void SidebarWidget::setAnimationStep(int step)
@@ -232,34 +229,32 @@ void SidebarWidget::setAnimationStep(int step)
     QRect widgetRect;
 
     // Size changing
-    bool isVertical = m_showDirection & (Direction::Top | Direction::Bottom);
-    bool isFromBottom = (m_showDirection & Direction::Top);
-    bool isHorizontal = m_showDirection & (Direction::Right | Direction::Left);
-    bool isFromRight = (m_showDirection & Direction::Left);
+    bool isVertical = m_showTowardsDirection & (Direction::Top | Direction::Bottom);
+    bool isToTop = (m_showTowardsDirection & Direction::Top);
+    bool isHorizontal = m_showTowardsDirection & (Direction::Right | Direction::Left);
+    bool isToLeft = (m_showTowardsDirection & Direction::Left);
 
     if (isVertical) {
         int targetH = std::floor(m_widgetTargetHeight * 0.01 * currentStep);
-        widgetRect.setHeight((parentWidget()->height() - targetH) * isFromBottom + targetH * !isFromBottom);
+        widgetRect.setTop((m_widgetTargetHeight - targetH) * isToTop);
+        widgetRect.setBottom(targetH * !isToTop + m_widgetTargetHeight * isToTop);
     } else {
         widgetRect.setHeight(parentWidget()->height());
     }
 
     if (isHorizontal) {
         int targetW = std::floor(m_widgetTargetWidth * 0.01 * currentStep);
-        widgetRect.setWidth((parentWidget()->width() - targetW) * isFromRight + targetW * !isFromRight);
+        widgetRect.setLeft((m_widgetTargetWidth - targetW) * isToLeft);
+        widgetRect.setRight(targetW * !isToLeft + m_widgetTargetWidth * isToLeft);
     } else {
         widgetRect.setWidth(parentWidget()->width());
     }
+    m_pWidget->setGeometry(widgetRect);
 
-    // Required to be displayed
+    widgetRect.moveTo(isToLeft ? parentWidget()->width() - widgetRect.width() : 0,
+                      isToTop ? parentWidget()->height() - widgetRect.height() : 0);
     setGeometry(widgetRect);
 
-    // Margins
-    widgetRect.moveTo(widgetRect.x() + 1, widgetRect.y() + 1);
-    widgetRect.setWidth(widgetRect.width() > 2 ? widgetRect.width() - 2 : 0);
-    widgetRect.setHeight(widgetRect.height() > 2 ? widgetRect.height() - 2 : 0);
-
-    m_pWidget->setGeometry(widgetRect);
     slot_updateButtonPosition();
 }
 

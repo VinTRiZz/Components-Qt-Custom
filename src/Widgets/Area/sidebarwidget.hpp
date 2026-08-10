@@ -53,20 +53,15 @@ public:
         Left        = 0b0010,
         Right       = 0b0100,
         Bottom      = 0b1000,
-
-        LeftTop     = Top       | Left,
-        LeftBottom  = Bottom    | Left,
-        RightTop    = Top       | Right,
-        RightBottom = Bottom    | Right,
     };
 
     /**
-     * @brief setShowDirection Set direction for a widget to be shown
+     * @brief setShowTowardsDirection Set direction for a widget to be shown
      * @param sdir
      * @note Changes logic of using widget's target height and width
      */
-    void setShowDirection(Direction sdir);
-    inline Direction getShowDirection() const { return m_showDirection; }
+    void setShowTowardsDirection(Direction sdir);
+    inline Direction getShowTowardsDirection() const { return m_showTowardsDirection; }
 
     /**
      * @brief setButtonPosition Set position offset of a button referred to a parent widget
@@ -145,7 +140,7 @@ private:
     toggleCallback_t    m_buttonToggleCallback;
 
     // Viewing configuration
-    Direction   m_showDirection {Direction::Right};
+    Direction   m_showTowardsDirection {Direction::Right};
     QPoint      m_buttonOffset  {};
 
     // Utility
