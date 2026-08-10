@@ -1,5 +1,4 @@
-#ifndef SELECTABLEWIDGET_H
-#define SELECTABLEWIDGET_H
+#pragma once
 
 #include <QWidget>
 
@@ -40,5 +39,3 @@ protected:
 };
 
 }  // namespace WidgetGaleryHelper
-
-#endif  // SELECTABLEWIDGET_H

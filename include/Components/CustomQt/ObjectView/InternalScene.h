@@ -1,1 +1,1 @@
-#include "../src/ObjectView/ovinternalscene.hpp"
+#include "../../../../src/GraphicsScene/ObjectView/ovinternalscene.hpp"
