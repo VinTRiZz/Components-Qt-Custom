@@ -92,7 +92,8 @@ public:
      */
     enum class AnimationSpeed : uint8_t
     {
-        UltraFast = 0,
+        NoAnimation = 0,
+        UltraFast,
         Fast,
         Medium,
         Slow,
@@ -139,8 +140,8 @@ private:
     int                 m_widgetTargetHeight    {300};
     QVariantAnimation*  m_pCurrentAnimation     {nullptr};
     HideState           m_widgetHideState {HS_Invalid};
-    AnimationSpeed      m_widgetHideSpeed {AnimationSpeed::UltraSlow};
-    AnimationSpeed      m_widgetShowSpeed {AnimationSpeed::UltraSlow};
+    AnimationSpeed      m_widgetHideSpeed {AnimationSpeed::Medium};
+    AnimationSpeed      m_widgetShowSpeed {AnimationSpeed::Medium};
     toggleCallback_t    m_buttonToggleCallback;
 
     // Viewing configuration

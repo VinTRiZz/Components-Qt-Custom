@@ -5,8 +5,6 @@
 
 #include <math.h>
 
-#include <Components/Logger/Logger.h>
-
 namespace QtCustom::Widgets {
 
 namespace {
@@ -39,9 +37,9 @@ SidebarWidget::SidebarWidget(QWidget *parent)
 
     setToggleCallback([](auto* pButton, auto nextState){
         if (nextState & HS_Hidden) {
-            pButton->setText("SHOW");
+            pButton->setText(">>>");
         } else if (nextState & HS_Shown) {
-            pButton->setText("HIDE");
+            pButton->setText("<<<");
         } else {
             pButton->setText("?");
         }
@@ -151,19 +149,23 @@ double SidebarWidget::calculateAnimationDuration(AnimationSpeed spd) const
     double res {ANIMATION_ZERO_DURATION};
     switch (spd)
     {
-    case AnimationSpeed::UltraFast:
-        res *= 0.01;
+    case AnimationSpeed::NoAnimation:
+        res = 0;
         break;
-    case AnimationSpeed::Fast:
+    case AnimationSpeed::UltraFast:
         res *= 0.1;
         break;
+    case AnimationSpeed::Fast:
+        res *= 0.25;
+        break;
     case AnimationSpeed::Medium:
+        res *= 0.5;
         break;
     case AnimationSpeed::Slow:
-        res *= 1.2;
+        res *= 0.75;
         break;
     case AnimationSpeed::UltraSlow:
-        res *= 1.6;
+        res *= 1.1;
         break;
     }
     return res;
