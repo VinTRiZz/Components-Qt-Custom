@@ -1,9 +1,10 @@
-#ifndef WIDGETGALERY_H
-#define WIDGETGALERY_H
+#pragma once
 
 #include <QScrollArea>
 
 class QGridLayout;
+
+namespace QtCustom::Widgets {
 
 class WidgetGalery : public QScrollArea {
     Q_OBJECT
@@ -43,4 +44,4 @@ protected:
     void updateLayout();
 };
 
-#endif  // WIDGETGALERY_H
+}

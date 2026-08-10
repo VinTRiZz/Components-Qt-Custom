@@ -5,7 +5,7 @@
 #include <QGuiApplication>
 #include <QPropertyAnimation>
 
-namespace ButtonMatrix {
+namespace QtCustom::Widgets {
 
 HeadButton::HeadButton(QWidget* parent) : QPushButton(parent) {
     setupSignals();
@@ -22,7 +22,7 @@ void HeadButton::fixPositions() {
     }
 }
 
-bool HeadButton::addButton(const ButtonConfig& bConfig) {
+bool HeadButton::addButton(const ButtonMatrix::ButtonConfig& bConfig) {
     if (!isValid(bConfig.positionX, bConfig.positionY)) {
         return false;
     }
@@ -38,7 +38,7 @@ bool HeadButton::addButton(const ButtonConfig& bConfig) {
     return true;
 }
 
-std::optional<ButtonConfig> HeadButton::getButtonConfig(int buttonX,
+std::optional<ButtonMatrix::ButtonConfig> HeadButton::getButtonConfig(int buttonX,
                                                         int buttonY) {
     if (!isValid(buttonX, buttonY)) {
         return std::nullopt;
@@ -47,7 +47,7 @@ std::optional<ButtonConfig> HeadButton::getButtonConfig(int buttonX,
     return m_buttonMatrix[mappedPos.first][mappedPos.second].conf;
 }
 
-bool HeadButton::updateButton(const ButtonConfig& bConfig) {
+bool HeadButton::updateButton(const ButtonMatrix::ButtonConfig& bConfig) {
     if (!isValid(bConfig.positionX, bConfig.positionY)) {
         return false;
     }
@@ -143,8 +143,8 @@ QPushButton* HeadButton::getButton(int x, int y) {
     return m_buttonMatrix[targetPos.first][targetPos.second].pButton;
 }
 
-std::list<ButtonConfig> HeadButton::getAllButtons() const {
-    std::list<ButtonConfig> res;
+std::list<ButtonMatrix::ButtonConfig> HeadButton::getAllButtons() const {
+    std::list<ButtonMatrix::ButtonConfig> res;
     for (const auto& row : m_buttonMatrix) {
         for (auto& rButton : row) {
             res.push_back(rButton.conf);
@@ -292,7 +292,7 @@ void HeadButton::moveButton(int xpos, int ypos, bool isAnimated,
 }
 
 void HeadButton::setupButton(QPushButton* pButton,
-                             const ButtonConfig& buttonInfo) {
+                             const ButtonMatrix::ButtonConfig& buttonInfo) {
     pButton->setText(buttonInfo.name);
     pButton->setStyleSheet(buttonInfo.styleSheet);
     pButton->setToolTip(buttonInfo.tooltip);

@@ -1,8 +1,9 @@
-#ifndef BUTTONTOOLBAR_H
-#define BUTTONTOOLBAR_H
+#pragma once
 
 #include <QIcon>
 #include <QPushButton>
+
+namespace QtCustom::Widgets {
 
 namespace ButtonToolbar {
 
@@ -22,6 +23,8 @@ struct ButtonConfig {
     std::function<void(QPushButton*)>
         action;  //! Действие кнопки. Аргумент -- указатель на нажатую кнопку
 };
+
+}
 
 /**
  * @brief The HeadWidget class Форма для отображения тулбара кнопок, слева
@@ -46,14 +49,14 @@ public:
      * @brief addButton Добавить кнопку
      * @param conf      Информация по кнопке для добавления
      */
-    void addButton(const ButtonConfig& conf);
+    void addButton(const ButtonToolbar::ButtonConfig& conf);
 
     /**
      * @brief updateButton  Обновить конфигурацию кнопки. Задайте верно позицию
      * кнопки для работы
      * @param conf          Новая конфигурация
      */
-    void updateButton(const ButtonConfig& conf);
+    void updateButton(const ButtonToolbar::ButtonConfig& conf);
 
     /**
      * @brief setButtonEnabled  Включить или выключить кнопку на позиции
@@ -86,13 +89,13 @@ private:
      * @param pButton       Указатель на кнопку
      * @param buttonInfo    Информация по которой надо настроить кнопку
      */
-    void setupButton(QPushButton* pButton, const ButtonConfig& buttonInfo);
+    void setupButton(QPushButton* pButton, const ButtonToolbar::ButtonConfig& buttonInfo);
 
     /**
      * @brief The ButtonInfo class  Информация по кнопке в массиве
      */
     struct ButtonInfo {
-        ButtonConfig config;
+        ButtonToolbar::ButtonConfig config;
         QPushButton* pButton{nullptr};
     };
     std::list<ButtonInfo> m_buttons;  //! Кнопки
@@ -107,5 +110,3 @@ private:
 };
 
 }  // namespace ButtonToolbar
-
-#endif  // BUTTONTOOLBAR_H

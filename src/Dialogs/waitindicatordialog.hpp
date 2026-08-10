@@ -1,5 +1,4 @@
-#ifndef WAITINDICATORDIALOG_H
-#define WAITINDICATORDIALOG_H
+#pragma once
 
 #include <QDialog>
 #include <QTimer>
@@ -7,6 +6,8 @@
 namespace Ui {
 class WaitIndicatorDialog;
 }
+
+namespace QtCustom::Dialogs {
 
 class WaitIndicatorDialog : public QDialog {
     Q_OBJECT
@@ -45,4 +46,4 @@ private:
     QTimer m_hideTimer;
 };
 
-#endif  // WAITINDICATORDIALOG_H
+}

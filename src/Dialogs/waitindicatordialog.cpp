@@ -2,6 +2,8 @@
 
 #include "ui_waitindicatordialog.h"
 
+namespace QtCustom::Dialogs {
+
 WaitIndicatorDialog::WaitIndicatorDialog(QWidget* parent)
     : QDialog(parent), ui(new Ui::WaitIndicatorDialog) {
     ui->setupUi(this);
@@ -108,4 +110,6 @@ bool WaitIndicatorDialog::getIsProgressBarEnabled() const {
 void WaitIndicatorDialog::setPercent(int perc) {
     ui->progressBar->setValue(perc);
     qApp->processEvents();
+}
+
 }

@@ -3,7 +3,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
-namespace ButtonToolbar {
+namespace QtCustom::Widgets {
 
 HeadWidget::HeadWidget(QWidget* parent) : QWidget(parent) {}
 
@@ -19,7 +19,7 @@ void HeadWidget::setHorizontal() {
     updateLayout();
 }
 
-void HeadWidget::addButton(const ButtonConfig& conf) {
+void HeadWidget::addButton(const ButtonToolbar::ButtonConfig& conf) {
     auto buttonPos = conf.buttonPos;
     if (buttonPos > m_buttons.size()) {
         return;
@@ -35,7 +35,7 @@ void HeadWidget::addButton(const ButtonConfig& conf) {
     updateLayout();
 }
 
-void HeadWidget::updateButton(const ButtonConfig& conf) {
+void HeadWidget::updateButton(const ButtonToolbar::ButtonConfig& conf) {
     auto buttonPos = conf.buttonPos;
     if (buttonPos >= m_buttons.size()) {
         return;
@@ -110,7 +110,7 @@ void HeadWidget::updateLayout() {
 }
 
 void HeadWidget::setupButton(QPushButton* pButton,
-                             const ButtonConfig& buttonInfo) {
+                             const ButtonToolbar::ButtonConfig& buttonInfo) {
     pButton->setText(buttonInfo.name);
     pButton->setStyleSheet(buttonInfo.styleSheet);
     pButton->setToolTip(buttonInfo.tooltip);

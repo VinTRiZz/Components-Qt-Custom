@@ -4,6 +4,8 @@
 
 #include "ui_passwordinsertdialog.h"
 
+namespace QtCustom::Dialogs {
+
 PasswordInsertDialog::PasswordInsertDialog(QWidget* parent)
     : QDialog(parent), ui(new Ui::PasswordInsertDialog) {
     ui->setupUi(this);
@@ -19,4 +21,6 @@ PasswordInsertDialog::~PasswordInsertDialog() {
 
 QString PasswordInsertDialog::getPassword() const {
     return ui->password_lineEdit->text();
+}
+
 }

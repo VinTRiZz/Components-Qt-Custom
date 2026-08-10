@@ -1,9 +1,10 @@
-#ifndef BUTTONMATRIX_H
-#define BUTTONMATRIX_H
+#pragma once
 
 #include <QPushButton>
 #include <boost/multi_array.hpp>
 #include <optional>
+
+namespace QtCustom::Widgets {
 
 namespace ButtonMatrix {
 
@@ -31,6 +32,8 @@ struct ButtonConfig {
         action;  //! Действие кнопки. Аргумент -- указатель на нажатую кнопку
 };
 
+}
+
 /**
  * @brief The HeadButton class "Главная" кнопка, которая обрабатывает все
  * внутренние. Нельзя скрыть (вынужденная мера)
@@ -57,7 +60,7 @@ public:
      * @param bConfig   Конфигурация кнопки
      * @return          false в случае, если координаты заняты или недоступны
      */
-    bool addButton(const ButtonConfig& bConfig);
+    bool addButton(const ButtonMatrix::ButtonConfig& bConfig);
 
     /**
      * @brief getButtonConfig   Получение конфигурации кнопки
@@ -65,14 +68,14 @@ public:
      * @param buttonY           Y кнопки
      * @return                  Конфигурация кнопки
      */
-    std::optional<ButtonConfig> getButtonConfig(int buttonX, int buttonY);
+    std::optional<ButtonMatrix::ButtonConfig> getButtonConfig(int buttonX, int buttonY);
 
     /**
      * @brief updateButton  Обновить кнопку. ID должен быть задан
      * @param bConfig       Конфигурация кнопки
      * @return              false если кнопка не была найдена
      */
-    bool updateButton(const ButtonConfig& bConfig);
+    bool updateButton(const ButtonMatrix::ButtonConfig& bConfig);
 
     /**
      * @brief removeButton  Удаление кнопки
@@ -150,7 +153,7 @@ public:
      * @brief getAllButtons Получить список всех конфигураций кнопок
      * @return              Список кнопок слева направо сверху вниз
      */
-    std::list<ButtonConfig> getAllButtons() const;
+    std::list<ButtonMatrix::ButtonConfig> getAllButtons() const;
 
 public slots:
     /**
@@ -172,7 +175,7 @@ signals:
 
 private:
     struct ButtonConfigProxy {
-        ButtonConfig conf;
+        ButtonMatrix::ButtonConfig conf;
         QPushButton* pButton{nullptr};  //! Кнопка
     };
 
@@ -212,7 +215,7 @@ private:
 
     void moveSelf();
     void moveButton(int xpos, int ypos, bool isAnimated, bool hideOnFinish);
-    void setupButton(QPushButton* pButton, const ButtonConfig& buttonInfo);
+    void setupButton(QPushButton* pButton, const ButtonMatrix::ButtonConfig& buttonInfo);
 
     void showEvent(QShowEvent* e) override;
     void hideEvent(QHideEvent* e) override;
@@ -221,6 +224,4 @@ private:
     void moveEvent(QMoveEvent* event) override;
 };
 
-}  // namespace ButtonMatrix
-
-#endif  // BUTTONMATRIX_H
+}

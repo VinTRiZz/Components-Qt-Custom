@@ -1,11 +1,12 @@
-#ifndef PASSWORDINSERTDIALOG_H
-#define PASSWORDINSERTDIALOG_H
+#pragma once
 
 #include <QDialog>
 
 namespace Ui {
 class PasswordInsertDialog;
 }
+
+namespace QtCustom::Dialogs {
 
 /**
  * @brief The PasswordInsertDialog class Форма ввода пароля
@@ -28,4 +29,4 @@ private:
     Ui::PasswordInsertDialog* ui;
 };
 
-#endif  // PASSWORDINSERTDIALOG_H
+}

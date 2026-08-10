@@ -6,6 +6,8 @@
 
 using ProxyWidget = WidgetGaleryHelper::SelectableWidget;
 
+namespace QtCustom::Widgets {
+
 WidgetGalery::WidgetGalery(QWidget* parent) : QScrollArea(parent) {}
 
 void WidgetGalery::init() {
@@ -155,4 +157,6 @@ void WidgetGalery::updateLayout() {
         pCenterWidgetLayout->addWidget(pWidget, currentRow, currentCol);
         ++currentCol;
     }
+}
+
 }
