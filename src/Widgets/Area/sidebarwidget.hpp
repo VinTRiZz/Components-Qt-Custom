@@ -26,7 +26,7 @@ public:
      * @param pWidget
      */
     void setWidget(QWidget* pWidget);
-    QWidget* getWidget() const;
+    inline QWidget* getWidget() const { return m_pWidget; }
 
     /**
      * @brief setWidgetWidth Set width of a widget to be set after showing
@@ -34,7 +34,7 @@ public:
      * @note works only when direction is right / left
      */
     void setWidgetWidth(int wwidth);
-    int getWidgetWidth() const;
+    inline int getWidgetWidth() const { return m_widgetTargetWidth; }
 
     /**
      * @brief setWidgetHeight Set height of a widget to be set after showing
@@ -42,7 +42,7 @@ public:
      * @note works only when direction is top / bottom
      */
     void setWidgetHeight(int wheight);
-    int getWidgetHeight() const;
+    inline int getWidgetHeight() const { return m_widgetTargetHeight; }
 
     /**
      * @brief The Direction enum Used to work with directions in widget
@@ -51,8 +51,8 @@ public:
     {
         Top         = 0b0001,
         Left        = 0b0010,
-        Right       = 0b0001,
-        Bottom      = 0b0010,
+        Right       = 0b0100,
+        Bottom      = 0b1000,
 
         LeftTop     = Top       | Left,
         LeftBottom  = Bottom    | Left,
@@ -66,14 +66,14 @@ public:
      * @note Changes logic of using widget's target height and width
      */
     void setShowDirection(Direction sdir);
-    Direction getShowDirection() const;
+    inline Direction getShowDirection() const { return m_showDirection; }
 
     /**
      * @brief setButtonPosition Set position offset of a button referred to a parent widget
      * @param offsetP
      */
     void setButtonPosition(const QPoint &offsetP);
-    QPoint getButtonPosition() const;
+    inline QPoint getButtonPosition() const { return m_buttonOffset; }
 
     enum HideState : uint8_t
     {
@@ -84,7 +84,7 @@ public:
         HS_InProcess_hide   = HS_InProcess | HS_Hidden,
         HS_InProcess_show   = HS_InProcess | HS_Shown
     };
-    HideState getWidgetState() const;
+    inline HideState getWidgetState() const { return m_widgetHideState; }
 
     /**
      * @brief The AnimationSpeed enum For simple configuring
@@ -99,15 +99,17 @@ public:
         UltraSlow,
     };
 
-    // Widget show / hide animations. Work only for HIDE --> SHOW and SHOW --> HIDE states
-    void setAnimationSpeed(AnimationSpeed asp, HideState prevState, HideState nextState);
-    AnimationSpeed getShowmode(HideState prevState, HideState nextState) const;
+    inline void setWidgetShowSpeed(AnimationSpeed spd) { m_widgetShowSpeed = spd; }
+    inline AnimationSpeed getWidgetShowSpeed() const { return m_widgetShowSpeed; }
+
+    inline void setWidgetHideSpeed(AnimationSpeed spd) { m_widgetHideSpeed = spd; }
+    inline AnimationSpeed getWidgetHideSpeed() const { return m_widgetHideSpeed; }
 
     // Used to customize button
-    void setButton(QPushButton* pButton);
     using toggleCallback_t = std::function<void(QPushButton*, HideState)>; // Button to toggle and state to toggle in
+    void setButton(QPushButton* pButton);
     void setToggleCallback(toggleCallback_t&& cbk);
-    QPushButton* getButton() const;
+    inline QPushButton* getButton() const { return m_pButton; }
 
 signals:
     void sig_aboutToToggle();
@@ -137,8 +139,8 @@ private:
     int                 m_widgetTargetHeight    {300};
     QVariantAnimation*  m_pCurrentAnimation     {nullptr};
     HideState           m_widgetHideState {HS_Invalid};
-    AnimationSpeed      m_widgetHideSpeed {AnimationSpeed::Medium};
-    AnimationSpeed      m_widgetShowSpeed {AnimationSpeed::Medium};
+    AnimationSpeed      m_widgetHideSpeed {AnimationSpeed::UltraSlow};
+    AnimationSpeed      m_widgetShowSpeed {AnimationSpeed::UltraSlow};
     toggleCallback_t    m_buttonToggleCallback;
 
     // Viewing configuration
@@ -150,11 +152,12 @@ private:
     QPoint calculateCurrentButtonPosition() const;
 
     // Widget animation methods
-    void widget_stopAnimations();
-    void widget_startShow(AnimationSpeed asp);
-    void widget_stopShow();
-    void widget_startHide(AnimationSpeed asp);
-    void widget_stopHide();
+    void pollWidgetAnimation();
+    void stopWidgetAnimations();
+    void updateVisualState();
+    void setAnimationStep(int step);
+    void startShowAnimation(AnimationSpeed asp);
+    void startHideAnimation(AnimationSpeed asp);
 };
 
 }
