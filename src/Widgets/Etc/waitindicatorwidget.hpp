@@ -36,7 +36,8 @@ public:
 
     // Basic interaction
     void start();
-    void pause();
+    void pauseIndicator();
+    void continueIndicator();
     void stop();
 
     /**

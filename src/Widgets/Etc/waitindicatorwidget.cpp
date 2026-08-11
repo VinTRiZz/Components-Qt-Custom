@@ -113,23 +113,35 @@ void WaitIndicatorWidget::start()
     }
     d->m_status = Status::Working;
 
-    show();
-
     if (d->m_isDisablingParent) {
         d->m_pTargetWidget->setEnabled(false);
     }
+
+    show();
+    pollAnimation();
 }
 
-void WaitIndicatorWidget::pause()
+void WaitIndicatorWidget::pauseIndicator()
 {
     if (d->m_status & (Status::Paused | Status::Ready)) {
         return;
     }
     d->m_status = Status::Pausing;
-
-    // TODO: Toggle visible state
+    updateVisualState();
+    pollAnimation();
 
     d->m_status = Status::Paused;
+    updateVisualState();
+}
+
+void WaitIndicatorWidget::continueIndicator()
+{
+    if (d->m_status != Status::Paused) {
+        return;
+    }
+    d->m_status = Status::Working;
+    updateVisualState();
+    pollAnimation();
 }
 
 void WaitIndicatorWidget::stop()
@@ -372,6 +384,9 @@ void WaitIndicatorWidget::paintDescription() const
 
 void WaitIndicatorWidget::paintPercent() const
 {
+    if (d->m_status & Status::Paused) {
+        return;
+    }
     d->m_pPainter->save();
 
     d->m_pPainter->setPen(d->m_primaryPen);
