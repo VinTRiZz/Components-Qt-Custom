@@ -19,9 +19,8 @@ SidebarWidget::SidebarWidget(QWidget *parent)
     : QWidget{parent}
 {
     // Work with source transparency for better displaying
-    // setWindowFlags(Qt::FramelessWindowHint);
-    // setAttribute(Qt::WA_TranslucentBackground, true);
-    setStyleSheet("background-color: red");
+    setWindowFlags(Qt::FramelessWindowHint);
+    setAttribute(Qt::WA_TranslucentBackground, true);
 
     m_pCurrentAnimation = new QVariantAnimation(this);
     connect(m_pCurrentAnimation, &QVariantAnimation::valueChanged, this,
@@ -41,9 +40,9 @@ SidebarWidget::SidebarWidget(QWidget *parent)
 
     setToggleCallback([](auto* pButton, auto nextState){
         if (nextState & HS_Hidden) {
-            pButton->setText(">>>");
+            pButton->setText("=");
         } else if (nextState & HS_Shown) {
-            pButton->setText("<<<");
+            pButton->setText("-");
         } else {
             pButton->setText("?");
         }
@@ -177,18 +176,23 @@ double SidebarWidget::calculateAnimationDuration(AnimationSpeed spd) const
 
 QPoint SidebarWidget::calculateCurrentButtonPosition() const
 {
-    auto curpos = m_buttonOffset;
+    if (!m_pWidget) { return m_buttonOffset; }
 
-    if (!parentWidget() || !m_pButton || !m_pWidget) { return curpos; }
+    auto targetPos = m_buttonOffset;
 
-    // curpos.setX( (curpos.x() + m_pWidget->width()) * bool(m_showDirection & Direction::Right) +
-    //             (parentWidget()->width() - m_pWidget->width() - m_pButton->width() - curpos.x()) * bool(m_showDirection & Direction::Left)
-    // );
-    // curpos.setY(curpos.y() + m_pWidget->height() - m_pButton->height());
+    bool isToLeft = (m_showTowardsDirection & Direction::Left);
+    bool isHorizontal = (m_showTowardsDirection & (Direction::Left | Direction::Right));
+    bool isToTop = (m_showTowardsDirection & Direction::Top);
 
-    // COMPLOG_DEBUG("CURPOS:", curpos.x(), curpos.y());
+    if (isHorizontal) {
+        targetPos.setX(isToLeft * (parentWidget()->width() - m_pWidget->width() - m_pButton->width() - targetPos.x()) +
+                       !isToLeft * (m_pWidget->width() + targetPos.x()));
+    } else {
+        targetPos.setY(isToTop * (parentWidget()->height() - m_pWidget->height() - m_pButton->height() - targetPos.y()) +
+                       !isToTop * (m_pWidget->height() + targetPos.y()));
+    }
 
-    return curpos;
+    return targetPos;
 }
 
 void SidebarWidget::pollWidgetAnimation()
@@ -216,9 +220,12 @@ void SidebarWidget::stopWidgetAnimations()
 
 void SidebarWidget::updateVisualState()
 {
-    setAnimationStep(ANIMATION_STEP_COUNT);
+    // TODO: Figure out, why it check fixes button position artefact
     if (m_widgetHideState & HS_Hidden) {
+        setAnimationStep(0);
         setGeometry({});
+    } else {
+        setAnimationStep(ANIMATION_STEP_COUNT);
     }
 }
 
