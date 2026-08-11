@@ -5,8 +5,6 @@
 
 #include <math.h>
 
-#include <Components/Logger/Logger.h>
-
 namespace QtCustom::Widgets {
 
 namespace {
