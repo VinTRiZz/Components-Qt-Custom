@@ -14,6 +14,7 @@ WaitIndicatorDrawHelper *WaitIndicatorDrawHelper::create(const IndicatorConfigur
     if (dynamic_cast<IndicatorCircleConfiguration*>(cfg.get())) {
         auto pHelper = new CircleDrawHelper(parent);
         pHelper->setConfiguration(cfg);
+        pHelper->init();
         return pHelper;
     }
     return nullptr;
@@ -25,17 +26,17 @@ void WaitIndicatorDrawHelper::setConfiguration(const IndicatorConfigurationBaseP
 
 void CircleDrawHelper::init()
 {
-    m_pPrimaryAnimation = new QVariantAnimation(this);
-    // connect(m_pPrimaryAnimation, &QVariantAnimation::valueChanged,
-    //         this, &WaitIndicatorWidget::slot_switchState);
-    // connect(m_pPrimaryAnimation, &QVariantAnimation::finished,
-    //         this, &WaitIndicatorWidget::slot_finishSwitchChange);
+    m_pRollingAnimation = new QVariantAnimation(this);
+    connect(m_pRollingAnimation, &QVariantAnimation::valueChanged,
+            this, &CircleDrawHelper::slot_processRollingAnimation);
+    connect(m_pRollingAnimation, &QVariantAnimation::finished,
+            this, [this](){
+        m_pRollingAnimation->start();
+    });
 
-    m_pSecondaryAnimation = new QVariantAnimation(this);
-    // connect(m_pSecondaryAnimation, &QVariantAnimation::valueChanged,
-    //         this, &WaitIndicatorWidget::slot_updateSecondary);
-    // connect(m_pSecondaryAnimation, &QVariantAnimation::finished,
-    //         this, &WaitIndicatorWidget::slot_finishSecondary);
+    m_pRollingAnimation->setStartValue(double(0));
+    m_pRollingAnimation->setEndValue(double(360));
+    m_pRollingAnimation->setDuration(720);
 }
 
 void CircleDrawHelper::paint(QPainter *pPainter,
@@ -45,6 +46,8 @@ void CircleDrawHelper::paint(QPainter *pPainter,
 {
     // Move to desired draw location
     pPainter->save();
+
+    m_isCircleHasSpaces = (currentPercent > 0 && currentPercent < 100);
 
     auto convertedRect = getCircleArea(targetWidgetRect);
 
@@ -64,32 +67,39 @@ void CircleDrawHelper::paint(QPainter *pPainter,
 
 void CircleDrawHelper::startAnimation()
 {
-    m_pPrimaryAnimation->start();
+    m_pRollingAnimation->start();
 }
 
 void CircleDrawHelper::pauseAnimation()
 {
-    m_pPrimaryAnimation->pause();
+    m_pRollingAnimation->pause();
 }
 
 void CircleDrawHelper::continueAnimation()
 {
-    m_pPrimaryAnimation->resume();
+    m_pRollingAnimation->resume();
 }
 
 void CircleDrawHelper::stopAnimation()
 {
-    m_pPrimaryAnimation->stop();
-    m_pSecondaryAnimation->stop();
+    m_pRollingAnimation->stop();
 }
 
 void CircleDrawHelper::pollAnimation()
 {
     // Wait for animation to complete
     QEventLoop loop;
-    connect(m_pPrimaryAnimation, &QVariantAnimation::finished,
+    connect(m_pRollingAnimation, &QVariantAnimation::finished,
             &loop, &QEventLoop::quit);
     loop.exec();
+}
+
+void CircleDrawHelper::slot_processRollingAnimation(const QVariant &animationValue)
+{
+    m_animationOffsetPercent = animationValue.toDouble();
+    if (m_isCircleHasSpaces) {
+        qobject_cast<QWidget*>(parent())->update(); // TODO: Add checks?
+    }
 }
 
 QRect CircleDrawHelper::createCircleRect() const
@@ -168,7 +178,7 @@ void CircleDrawHelper::paintIndicatorCircle(QPainter* pPainter, double currentPe
 
     pPainter->setPen(pConfig->m_primaryPen);
     pPainter->drawArc(createCircleRect(),
-                        utilityPieFromDegree(90),
+                        utilityPieFromDegree(90 - m_animationOffsetPercent),
                         -utilityPieFromDegree(3.6f * currentPercent));
 }
 

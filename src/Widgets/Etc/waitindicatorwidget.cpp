@@ -69,7 +69,9 @@ void WaitIndicatorWidget::pauseIndicator()
     }
     m_status = Status::Pausing;
     updateVisualState();
-    pollAnimation();
+    if (m_pHelper) {
+        m_pHelper->pauseAnimation();
+    }
 
     m_status = Status::Paused;
     updateVisualState();
@@ -82,7 +84,9 @@ void WaitIndicatorWidget::continueIndicator()
     }
     m_status = Status::Working;
     updateVisualState();
-    pollAnimation();
+    if (m_pHelper) {
+        m_pHelper->continueAnimation();
+    }
 }
 
 void WaitIndicatorWidget::stop()
@@ -134,6 +138,10 @@ double WaitIndicatorWidget::getCurrentPercent() const
 void WaitIndicatorWidget::updateVisualState()
 {
     if (m_status == Status::Ready) {
+        if (m_pHelper) {
+            m_pHelper->startAnimation();
+            m_pHelper->pauseAnimation();
+        }
         hide();
     } else {
         update();
@@ -160,6 +168,17 @@ void WaitIndicatorWidget::showEvent(QShowEvent *event)
     if (m_pTargetWidget) {
         setGeometry(m_pTargetWidget->geometry());
     }
+    if (m_pHelper) {
+        m_pHelper->continueAnimation();
+    }
+}
+
+void WaitIndicatorWidget::hideEvent(QHideEvent *event)
+{
+    if (m_pHelper) {
+        m_pHelper->pauseAnimation();
+    }
+    QWidget::hideEvent(event);
 }
 
 }

@@ -14,7 +14,6 @@ namespace QtCustom::Widgets {
  */
 class WaitIndicatorDrawHelper : public QObject
 {
-    Q_OBJECT
 public:
     using QObject::QObject;
 
@@ -55,6 +54,7 @@ inline IndicatorConfigurationBasePtr WaitIndicatorDrawHelper::getConfig() const 
  */
 class CircleDrawHelper : public WaitIndicatorDrawHelper
 {
+    Q_OBJECT
 public:
     using WaitIndicatorDrawHelper::WaitIndicatorDrawHelper;
 
@@ -71,12 +71,17 @@ public:
     void stopAnimation() override;
     void pollAnimation() override;
 
+private slots:
+    void slot_processRollingAnimation(const QVariant& animationValue);
+
 private:
     static constexpr auto CIRCLE_RECT_OFFSET {5};
     QRect createCircleRect() const;
 
-    QVariantAnimation* m_pPrimaryAnimation      {nullptr};  // Main action (for example, percent change)
-    QVariantAnimation* m_pSecondaryAnimation    {nullptr};  // Passive actions (for example, particles behind widget)
+    bool   m_isCircleHasSpaces {false};
+    double m_animationOffsetPercent {0};
+
+    QVariantAnimation* m_pRollingAnimation {nullptr};
 
     QRect getCircleArea(QRect targetWidgetRect) const;
 
