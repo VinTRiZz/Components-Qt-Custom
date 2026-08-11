@@ -60,6 +60,13 @@ public:
     void pollAnimation() const;
 
     /**
+     * @brief setAnimationEnabled Toggle all animations of a widget
+     * @param isEn
+     */
+    void setAnimationEnabled(bool isEn);
+    bool isAnimationEnabled() const;
+
+    /**
      * @brief setPercent Set indicator percent
      * @param perc
      */
@@ -78,6 +85,7 @@ public:
      * @param text
      */
     void setTitle(const QString& text);
+    void setTitleSymbolLimit(int maxSymbols);
     QString getTitle() const;
 
     /**
@@ -85,6 +93,7 @@ public:
      * @param text
      */
     void setDescription(const QString& text);
+    void setDescriptionSymbolLimit(int maxSymbols);
     QString getDescription() const;
 
     /**
@@ -101,6 +110,13 @@ public:
      */
     void setShape(Shape itype);
     Shape getShape() const;
+
+    /**
+     * @brief setTextPen Define pen to draw text
+     * @param textPen
+     */
+    void setTextPen(const QPen& textPen);
+    QPen getTextPen() const;
 
     /**
      * @brief setShapePenPrimary Define main pen, used to draw main shapes (such as circle parts)
@@ -120,12 +136,31 @@ private:
     struct Impl;
     std::unique_ptr<Impl> d;
 
-    void updateVisualState();
-    void switchState();
+    // Widget logic updates
+    void  updateVisualState();
+
+    // Painting
+    QRect createWorkingRect() const; // TODO: Think about naming
+    QRect getWorkingRect() const;
+    void  paintTitle() const;
+    void  paintDescription() const;
+    void  paintPercent() const;
+    void  paintCircleIndicator() const;
+
+    // Utility
+    double utilityPieFromDegree(const double degree) const;
+
+private slots:
+    void slot_switchState(const QVariant& animationValue);
+    void slot_finishSwitchChange();
+
+    void slot_updateSecondary(const QVariant& animationValue);
+    void slot_finishSecondary();
 
     // QWidget interface
 protected:
     void paintEvent(QPaintEvent *event) override;
+    void showEvent(QShowEvent *event) override;
 };
 
 }
