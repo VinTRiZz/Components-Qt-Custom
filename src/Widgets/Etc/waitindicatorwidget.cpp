@@ -1,6 +1,8 @@
 #include "waitindicatorwidget.hpp"
 
 #include <QPainter>
+#include <QEvent>
+#include <QResizeEvent>
 
 #include <Components/Logger/Logger.h>
 
@@ -16,7 +18,12 @@ WaitIndicatorWidget::WaitIndicatorWidget(QWidget *parent) :
     setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_TransparentForMouseEvents);
 
-    m_pHelper = WaitIndicatorDrawHelper::create(std::make_shared<IndicatorCircleConfiguration>(), this);
+    m_pHelper = WaitIndicatorDrawHelper::create(new IndicatorCircleConfiguration(this), this);
+
+    if (parent) {
+        parent->installEventFilter(this);
+        this->setGeometry(parent->rect()); // Сразу подгоняем размер
+    }
 }
 
 WaitIndicatorWidget::~WaitIndicatorWidget()
@@ -63,7 +70,7 @@ void WaitIndicatorWidget::start()
     }
     m_status = Status::Working;
 
-    if (m_pHelper && m_pHelper->getConfig()->m_isDisablingParent) {
+    if (m_pHelper && m_pHelper->getConfig()->getIsDisablingParent()) {
         m_pTargetWidget->setEnabled(false);
     }
 
@@ -106,7 +113,7 @@ void WaitIndicatorWidget::stop()
     m_status = Status::Stopping;
 
     pollAnimation();
-    if (m_pHelper && m_pHelper->getConfig()->m_isDisablingParent) {
+    if (m_pHelper && m_pHelper->getConfig()->getIsDisablingParent()) {
         m_pTargetWidget->setEnabled(true);
     }
     m_status = Status::Ready;
@@ -187,6 +194,24 @@ void WaitIndicatorWidget::hideEvent(QHideEvent *event)
         m_pHelper->pauseAnimation();
     }
     QWidget::hideEvent(event);
+}
+
+void WaitIndicatorWidget::changeEvent(QEvent *event) {
+    QWidget::changeEvent(event);
+    if (event->type() == QEvent::ParentChange) {
+        if (auto *p = parentWidget()) {
+            p->installEventFilter(this);
+            this->setGeometry(p->rect());
+        }
+    }
+}
+
+bool WaitIndicatorWidget::eventFilter(QObject *watched, QEvent *event) {
+    if (watched == parent() && event->type() == QEvent::Resize) {
+        auto *resizeEvent = static_cast<QResizeEvent*>(event);
+        this->resize(resizeEvent->size());
+    }
+    return QWidget::eventFilter(watched, event);
 }
 
 }

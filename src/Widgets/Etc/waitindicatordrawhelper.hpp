@@ -9,6 +9,8 @@ class QVariantAnimation;
 
 namespace QtCustom::Widgets {
 
+class WaitIndicatorWidget;
+
 /**
  * @brief The WaitIndicatorDrawHelper class Base for widget draw helpers
  */
@@ -17,13 +19,13 @@ class WaitIndicatorDrawHelper : public QObject
 public:
     using QObject::QObject;
 
-    static WaitIndicatorDrawHelper* create(const IndicatorConfigurationBasePtr& cfg, QObject* parent);
+    static WaitIndicatorDrawHelper* create(const IndicatorConfigurationBasePtr& cfg, WaitIndicatorWidget* parent);
 
     void setConfiguration(const IndicatorConfigurationBasePtr& pConfig);
 
     template <typename ConfigT = IndicatorConfigurationBase>
-    std::shared_ptr<ConfigT> getConfig() const {
-        return std::static_pointer_cast<ConfigT>(m_pConfig);
+    ConfigT* getConfig() const {
+        return static_cast<ConfigT*>(m_pConfig);
     }
 
     virtual void init() = 0;

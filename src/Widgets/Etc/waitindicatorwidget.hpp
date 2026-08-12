@@ -68,6 +68,12 @@ public:
     void setPercent(double perc);
     double getCurrentPercent() const;
 
+public slots:
+    /**
+     * @brief updateVisualState Do the same as QWidget::update, according to this widget logic
+     */
+    void updateVisualState();
+
 private:
     QWidget* m_pTargetWidget {nullptr};
 
@@ -80,14 +86,13 @@ private:
 
     std::unique_ptr<WaitIndicatorDrawHelper> m_currentDrawHelper;
 
-    // Widget logic updates
-    void  updateVisualState();
-
     // QWidget interface
 protected:
     void paintEvent(QPaintEvent *event) override;
     void showEvent(QShowEvent *event) override;
     void hideEvent(QHideEvent *event) override;
+    void changeEvent(QEvent *event) override;
+    bool eventFilter(QObject *watched, QEvent *event);
 };
 
 }

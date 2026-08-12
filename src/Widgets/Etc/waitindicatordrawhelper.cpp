@@ -12,23 +12,21 @@
 
 namespace QtCustom::Widgets {
 
-WaitIndicatorDrawHelper *WaitIndicatorDrawHelper::create(const IndicatorConfigurationBasePtr &cfg, QObject *parent) {
-
-    if (dynamic_cast<IndicatorCircleConfiguration*>(cfg.get())) {
-        auto pHelper = new CircleDrawHelper(parent);
-        pHelper->setConfiguration(cfg);
-        pHelper->init();
-        return pHelper;
+WaitIndicatorDrawHelper *WaitIndicatorDrawHelper::create(const IndicatorConfigurationBasePtr &cfg, WaitIndicatorWidget *parent) {
+    WaitIndicatorDrawHelper* pHelper {nullptr};
+    if (dynamic_cast<IndicatorCircleConfiguration*>(cfg)) {
+        pHelper = new CircleDrawHelper(parent);
+    }
+    else if (dynamic_cast<IndicatorCircleLinedConfiguration*>(cfg)) {
+        pHelper = new CircleLinedDrawHelper(parent);
     }
 
-    if (dynamic_cast<IndicatorCircleLinedConfiguration*>(cfg.get())) {
-        auto pHelper = new CircleLinedDrawHelper(parent);
-        pHelper->setConfiguration(cfg);
-        pHelper->init();
-        return pHelper;
-    }
-
-    return nullptr;
+    pHelper->setConfiguration(cfg);
+    pHelper->init();
+    cfg->setParent(pHelper);
+    connect(cfg, &IndicatorConfigurationBase::visibleDataChanged,
+            parent, &WaitIndicatorWidget::updateVisualState);
+    return pHelper;
 }
 
 void WaitIndicatorDrawHelper::setConfiguration(const IndicatorConfigurationBasePtr &pConfig) {
@@ -123,13 +121,13 @@ void CircleDrawHelper::slot_processRollingAnimation(const QVariant &animationVal
 
 QRect CircleDrawHelper::createCircleRect() const
 {
-    return QRect(CIRCLE_RECT_OFFSET, CIRCLE_RECT_OFFSET, getConfig()->m_size.width(), getConfig()->m_size.height());
+    return QRect(CIRCLE_RECT_OFFSET, CIRCLE_RECT_OFFSET, getConfig()->getSize().width(), getConfig()->getSize().height());
 }
 
 QRect CircleDrawHelper::getCircleArea(QRect targetWidgetRect) const
 {
     auto rectCenter = targetWidgetRect.center();
-    auto workAreaSize = getConfig()->m_size;
+    auto workAreaSize = getConfig()->getSize();
     targetWidgetRect.setWidth(workAreaSize.width() + CIRCLE_RECT_OFFSET * 2);
     targetWidgetRect.setHeight(workAreaSize.height() + CIRCLE_RECT_OFFSET * 2);
     targetWidgetRect.moveCenter(rectCenter);
@@ -140,7 +138,7 @@ void CircleDrawHelper::paintTitle(QPainter* pPainter, const QRect &targetWidgetR
 {
     pPainter->save();
 
-    pPainter->setPen(getConfig()->m_textPen);
+    pPainter->setPen(getConfig()->getTextPen());
     auto fnt = pPainter->font();
     fnt.setBold(true);
     fnt.setPixelSize(14);
@@ -158,7 +156,7 @@ void CircleDrawHelper::paintDescription(QPainter* pPainter, const QRect &targetW
 {
     pPainter->save();
 
-    pPainter->setPen(getConfig()->m_textPen);
+    pPainter->setPen(getConfig()->getTextPen());
     auto fnt = pPainter->font();
     fnt.setItalic(true);
     fnt.setPixelSize(10);
@@ -180,7 +178,7 @@ void CircleDrawHelper::paintPercent(QPainter* pPainter, const QRect &targetWidge
     pPainter->save();
 
     auto pConfig = getConfig<IndicatorCircleConfiguration>();
-    pPainter->setPen(pConfig->m_primaryPen);
+    pPainter->setPen(pConfig->getPrimaryPen());
     pPainter->drawText(createCircleRect(), Qt::AlignCenter, QString("%1%").arg(currentPercent));
 
     pPainter->restore();
@@ -192,10 +190,10 @@ void CircleDrawHelper::paintIndicatorCircle(QPainter* pPainter, double currentPe
 
     auto pConfig = getConfig<IndicatorCircleConfiguration>();
 
-    pPainter->setPen(pConfig->m_secondaryPen);
+    pPainter->setPen(pConfig->getSecondaryPen());
     pPainter->drawEllipse(createCircleRect());
 
-    pPainter->setPen(pConfig->m_primaryPen);
+    pPainter->setPen(pConfig->getPrimaryPen());
     pPainter->drawArc(createCircleRect(),
                       utilityPieFromDegree(90 - m_animationOffsetPercent),
                       -utilityPieFromDegree(3.6f * currentPercent));
@@ -212,11 +210,11 @@ void CircleLinedDrawHelper::init()
     connect(m_pRollingAnimation, &QVariantAnimation::finished,
             m_pRollingAnimation, [this](){
                 m_pRollingAnimation->start();
-                m_pRollingAnimation->setEndValue(getConfig<IndicatorCircleLinedConfiguration>()->m_lineCount - 1);
+                m_pRollingAnimation->setEndValue(getConfig<IndicatorCircleLinedConfiguration>()->getLineCount() - 1);
             });
 
     m_pRollingAnimation->setStartValue(0);
-    m_pRollingAnimation->setEndValue(getConfig<IndicatorCircleLinedConfiguration>()->m_lineCount - 1);
+    m_pRollingAnimation->setEndValue(getConfig<IndicatorCircleLinedConfiguration>()->getLineCount() - 1);
     m_pRollingAnimation->setDuration(360);
 }
 
@@ -228,8 +226,8 @@ void CircleLinedDrawHelper::paint(QPainter *pPainter, const QRect &targetWidgetR
     auto convertedRect = getCircleArea(targetWidgetRect);
 
     auto pConfig = getConfig<IndicatorCircleLinedConfiguration>();
-    m_linePenGradient.setColorAt(0, pConfig->m_secondaryPen.color());
-    m_linePenGradient.setColorAt(pConfig->m_lineOffsetCoefficient, pConfig->m_primaryPen.color());
+    m_linePenGradient.setColorAt(0, pConfig->getSecondaryPen().color());
+    m_linePenGradient.setColorAt(pConfig->getLineOffsetCoefficient(), pConfig->getPrimaryPen().color());
 
     pPainter->setClipRect(convertedRect);
     pPainter->translate(convertedRect.topLeft());
@@ -287,13 +285,13 @@ void CircleLinedDrawHelper::slot_processRollingAnimation(const QVariant &animati
 
 QRect CircleLinedDrawHelper::createCircleRect() const
 {
-    return QRect(CIRCLE_RECT_OFFSET, CIRCLE_RECT_OFFSET, getConfig()->m_size.width(), getConfig()->m_size.height());
+    return QRect(CIRCLE_RECT_OFFSET, CIRCLE_RECT_OFFSET, getConfig()->getSize().width(), getConfig()->getSize().height());
 }
 
 QRect CircleLinedDrawHelper::getCircleArea(QRect targetWidgetRect) const
 {
     auto rectCenter = targetWidgetRect.center();
-    auto workAreaSize = getConfig()->m_size;
+    auto workAreaSize = getConfig()->getSize();
     targetWidgetRect.setWidth(workAreaSize.width() + CIRCLE_RECT_OFFSET * 2);
     targetWidgetRect.setHeight(workAreaSize.height() + CIRCLE_RECT_OFFSET * 2);
     targetWidgetRect.moveCenter(rectCenter);
@@ -304,7 +302,7 @@ void CircleLinedDrawHelper::paintTitle(QPainter *pPainter, const QRect &targetWi
 {
     pPainter->save();
 
-    pPainter->setPen(getConfig()->m_textPen);
+    pPainter->setPen(getConfig()->getTextPen());
     auto fnt = pPainter->font();
     fnt.setBold(true);
     fnt.setPixelSize(14);
@@ -322,7 +320,7 @@ void CircleLinedDrawHelper::paintDescription(QPainter *pPainter, const QRect &ta
 {
     pPainter->save();
 
-    pPainter->setPen(getConfig()->m_textPen);
+    pPainter->setPen(getConfig()->getTextPen());
     auto fnt = pPainter->font();
     fnt.setItalic(true);
     fnt.setPixelSize(10);
@@ -344,7 +342,7 @@ void CircleLinedDrawHelper::paintPercent(QPainter *pPainter, const QRect &target
     pPainter->save();
 
     auto pConfig = getConfig<IndicatorCircleLinedConfiguration>();
-    pPainter->setPen(pConfig->m_primaryPen);
+    pPainter->setPen(pConfig->getPrimaryPen());
     pPainter->drawText(createCircleRect(), Qt::AlignCenter, QString("%1%").arg(currentPercent));
 
     pPainter->restore();
@@ -358,10 +356,10 @@ void CircleLinedDrawHelper::paintIndicatorCircle(QPainter *pPainter, double curr
 
     auto circleRect = createCircleRect();
 
-    auto deltaAngle = 360.0 / double(pConfig->m_lineCount);
+    auto deltaAngle = 360.0 / double(pConfig->getLineCount());
     QLine deltaLine;
-    auto deltaLineLength = pConfig->m_size.width() / 2.0;
-    deltaLine.setP1(QPoint(deltaLineLength * pConfig->m_lineOffsetCoefficient, 0));
+    auto deltaLineLength = pConfig->getSize().width() / 2.0;
+    deltaLine.setP1(QPoint(deltaLineLength * pConfig->getLineOffsetCoefficient(), 0));
     deltaLine.setP2(QPoint(deltaLineLength, 0));
 
     // Get gradient point
@@ -374,11 +372,11 @@ void CircleLinedDrawHelper::paintIndicatorCircle(QPainter *pPainter, double curr
     m_linePenGradient.setStart(mappedLine.p1());
     m_linePenGradient.setFinalStop(mappedLine.p2());
 
-    auto linePen = pConfig->m_secondaryPen;
+    auto linePen = pConfig->getSecondaryPen();
     linePen.setBrush(m_linePenGradient);
     pPainter->setPen(linePen);
 
-    for (uint16_t i = 0; i < pConfig->m_lineCount; ++i) {
+    for (uint16_t i = 0; i < pConfig->getLineCount(); ++i) {
         currentLineTransform.reset();
         currentLineTransform.translate(circleRect.center().x(), circleRect.center().y());
         currentLineTransform.rotate(deltaAngle * i);
