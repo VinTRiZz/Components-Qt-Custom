@@ -45,6 +45,16 @@ public:
     inline int getWidgetHeight() const { return m_widgetTargetHeight; }
 
     /**
+     * @brief hideTargetWidget Used to hide widget manually without animation
+     */
+    void hideTargetWidget();
+
+    /**
+     * @brief showTargetWidget Used to show widget manually without animation
+     */
+    void showTargetWidget();
+
+    /**
      * @brief The Direction enum Used to work with directions in widget
      */
     enum Direction : uint8_t

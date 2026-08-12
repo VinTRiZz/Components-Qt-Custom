@@ -90,6 +90,26 @@ void SidebarWidget::setWidgetHeight(int wheight)
     updateVisualState();
 }
 
+void SidebarWidget::hideTargetWidget()
+{
+    stopWidgetAnimations();
+    if (m_buttonToggleCallback) {
+        m_buttonToggleCallback(m_pButton, HS_Hidden);
+    }
+    m_widgetHideState = HS_Hidden;
+    updateVisualState();
+}
+
+void SidebarWidget::showTargetWidget()
+{
+    stopWidgetAnimations();
+    if (m_buttonToggleCallback) {
+        m_buttonToggleCallback(m_pButton, HS_Shown);
+    }
+    m_widgetHideState = HS_Shown;
+    updateVisualState();
+}
+
 void SidebarWidget::setShowTowardsDirection(Direction sdir)
 {
     m_showTowardsDirection = sdir;
@@ -229,6 +249,7 @@ void SidebarWidget::updateVisualState()
 
 void SidebarWidget::setAnimationStep(int step)
 {
+    if (!m_pWidget) { return; }
     const double currentStep = step;
 
     QRect widgetRect;
