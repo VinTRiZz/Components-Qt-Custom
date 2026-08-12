@@ -1,14 +1,16 @@
 #include "waitindicatordialog.hpp"
 
-#include "ui_waitindicatordialog.h"
+#include <QEventLoop>
+
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QPushButton>
 
 namespace QtCustom::Dialogs {
 
-WaitIndicatorDialog::WaitIndicatorDialog(QWidget* parent)
-    : QDialog(parent), ui(new Ui::WaitIndicatorDialog) {
-    ui->setupUi(this);
-    ui->progressBar->setValue(0);
-
+WaitIndicatorDialog::WaitIndicatorDialog(QWidget* parent) :
+    QDialog(parent)
+{
     connect(&m_deadTimer, &QTimer::timeout, this, [this]() {
         m_deadTimer.stop();
         m_hideTimer.stop();
@@ -20,25 +22,87 @@ WaitIndicatorDialog::WaitIndicatorDialog(QWidget* parent)
         m_hideTimer.stop();
         hide();
     });
+    resize(380, 220);
 
-    setFixedSize(380, 190);
+    m_pWaitIndicator = new QtCustom::Widgets::WaitIndicatorWidget(this);
+
+    auto pSpacerWidget = new QWidget(this);
+    m_pWaitIndicator->setTarget(pSpacerWidget);
+
+    auto pLayout = new QVBoxLayout(this);
+    pLayout->addWidget(pSpacerWidget);
+
+    auto pButtonsLayout = new QHBoxLayout;
+    pLayout->addLayout(pButtonsLayout);
+
+    m_pPauseButton = new QPushButton(this);
+    pButtonsLayout->addWidget(m_pPauseButton);
+    configurePause(true);
+    connect(m_pPauseButton, &QPushButton::clicked,
+            this, &WaitIndicatorDialog::sig_pauseClicked);
+
+    m_pCancelButton = new QPushButton(this);
+    pButtonsLayout->addWidget(m_pCancelButton);
+    configureCancel(true);
+    connect(m_pCancelButton, &QPushButton::clicked,
+            this, [this](){
+        emit sig_pauseClicked();
+        QDialog::reject();
+    });
+
+    auto pConfig = new QtCustom::Widgets::IndicatorCircleLinedConfiguration;
+    pConfig->setIsDisablingParent(false);
+    m_pWaitIndicator->setConfiguration(pConfig);
 }
 
-WaitIndicatorDialog::~WaitIndicatorDialog() {
-    delete ui;
-}
-
-WaitIndicatorDialog& WaitIndicatorDialog::getInstance() {
+WaitIndicatorDialog &WaitIndicatorDialog::getInstance() {
     static WaitIndicatorDialog inst;
     return inst;
 }
 
+QtCustom::Widgets::WaitIndicatorWidget* WaitIndicatorDialog::getIndicatorWidget() const {
+    return m_pWaitIndicator;
+}
+
+void WaitIndicatorDialog::configurePause(bool isEn, bool isVisible, const QString &text)
+{
+    m_pPauseButton->setEnabled(isEn);
+    m_pPauseButton->setVisible(isVisible);
+    m_pPauseButton->setText(text);
+}
+
+QPushButton *WaitIndicatorDialog::getPauseButton() const
+{
+    return m_pPauseButton;
+}
+
+void WaitIndicatorDialog::configureCancel(bool isEn, bool isVisible, const QString &text)
+{
+    m_pCancelButton->setEnabled(isEn);
+    m_pCancelButton->setVisible(isVisible);
+    m_pCancelButton->setText(text);
+}
+
+QPushButton *WaitIndicatorDialog::getCancelButton() const
+{
+    return m_pCancelButton;
+}
+
+void WaitIndicatorDialog::showEvent(QShowEvent *event)
+{
+    m_deadTimer.start(20000);
+    QDialog::showEvent(event);
+    m_pWaitIndicator->start();
+}
+
+void WaitIndicatorDialog::hideEvent(QHideEvent *event)
+{
+    m_pWaitIndicator->stop();
+    QDialog::hideEvent(event);
+}
+
 void WaitIndicatorDialog::requestShow() {
     show();
-    while (isHidden()) {
-        qApp->processEvents();
-    }
-    m_deadTimer.start(20000);
 }
 
 void WaitIndicatorDialog::requestHide(int timeoutMs) {
@@ -49,67 +113,25 @@ void WaitIndicatorDialog::requestHide(int timeoutMs) {
 }
 
 void WaitIndicatorDialog::pollHide() {
-    while (m_hideTimer.isActive()) {
-        qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
-    }
+    if (isHidden()) { return; }
+
+    QEventLoop poller;
+    connect(&m_hideTimer, &QTimer::timeout,
+            &poller, &QEventLoop::quit);
+    poller.exec();
 }
 
-int WaitIndicatorDialog::getCurrentPercent() const {
-    return ui->progressBar->value();
+void WaitIndicatorDialog::setTitle(const QString &text)
+{
+    auto pConfig = m_pWaitIndicator->getConfiguration();
+    pConfig->setTitle(text);
 }
 
-void WaitIndicatorDialog::setTitle(const QString& txt) {
-    auto displayText = QString(
-                           "<html><head/><body><p><span style=\" "
-                           "font-size:16pt;\">%0</span></p></body></html>")
-                           .arg(txt);
-    ui->title_label->setText(displayText);
-    qApp->processEvents();
+void WaitIndicatorDialog::setDescription(const QString &text)
+{
+    auto pConfig = m_pWaitIndicator->getConfiguration();
+    pConfig->setDescription(text);
 }
 
-QString WaitIndicatorDialog::getTitle() const {
-    return ui->title_label->text();
-}
-
-void WaitIndicatorDialog::setDescription(const QString& txt) {
-    auto displayText = QString(
-                           "<html><head/><body><p><span style=\" "
-                           "font-size:12pt;\">%0</span></p></body></html>")
-                           .arg(txt);
-    ui->description_label->setText(displayText);
-    qApp->processEvents();
-}
-
-QString WaitIndicatorDialog::getDescription() const {
-    return ui->description_label->text();
-}
-
-void WaitIndicatorDialog::setDescriptionHidden(bool isHiddn) {
-    ui->description_label->setHidden(isHiddn);
-    qApp->processEvents();
-}
-
-void WaitIndicatorDialog::setButtonsEnabled(bool isButtnsEnabled) {
-    ui->buttons_widget->setHidden(!isButtnsEnabled);
-    qApp->processEvents();
-}
-
-bool WaitIndicatorDialog::getIsButtonsEnabled() const {
-    return !ui->buttons_widget->isHidden();
-}
-
-void WaitIndicatorDialog::setProgressBarEnabled(bool isBarEnabled) {
-    ui->progressBar->setHidden(!isBarEnabled);
-    qApp->processEvents();
-}
-
-bool WaitIndicatorDialog::getIsProgressBarEnabled() const {
-    return !ui->progressBar->isHidden();
-}
-
-void WaitIndicatorDialog::setPercent(int perc) {
-    ui->progressBar->setValue(perc);
-    qApp->processEvents();
-}
 
 }
