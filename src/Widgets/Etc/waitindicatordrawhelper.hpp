@@ -32,6 +32,8 @@ public:
                        double currentPercent,
                        uint8_t indicatorStatus) = 0;
 
+    virtual void processPercentSet(double previousValue, double nextValue) = 0;
+
     virtual void startAnimation() = 0;
     virtual void pauseAnimation() = 0;
     virtual void continueAnimation() = 0;
@@ -64,6 +66,8 @@ public:
                        const QRect &targetWidgetRect,
                        double currentPercent,
                        uint8_t indicatorStatus) override;
+
+    virtual void processPercentSet(double previousValue, double nextValue) override;
 
     void startAnimation() override;
     void pauseAnimation() override;
@@ -108,6 +112,8 @@ public:
                        const QRect &targetWidgetRect,
                        double currentPercent,
                        uint8_t indicatorStatus) override;
+
+    virtual void processPercentSet(double previousValue, double nextValue) override;
 
     void startAnimation() override;
     void pauseAnimation() override;

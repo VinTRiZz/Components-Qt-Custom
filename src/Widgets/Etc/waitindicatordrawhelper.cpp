@@ -79,6 +79,11 @@ void CircleDrawHelper::paint(QPainter *pPainter,
     pPainter->end();
 }
 
+void CircleDrawHelper::processPercentSet([[maybe_unused]] double previousValue, [[maybe_unused]] double nextValue)
+{
+    qobject_cast<QWidget*>(parent())->update();
+}
+
 void CircleDrawHelper::startAnimation()
 {
     m_pRollingAnimation->start();
@@ -160,9 +165,9 @@ void CircleDrawHelper::paintDescription(QPainter* pPainter, const QRect &targetW
     pPainter->setFont(fnt);
 
     auto textRect = getCircleArea(targetWidgetRect);
-    textRect.moveTo(textRect.x() - textRect.width() * 1.5, textRect.y() + textRect.height() * 1.4);
+    textRect.moveTo(textRect.x() - textRect.width() * 1.5, textRect.y() + textRect.height() * 1.5);
     textRect.setWidth(textRect.width() + textRect.width() * 3);
-    pPainter->drawText(textRect, Qt::AlignCenter | Qt::TextWordWrap, getConfig()->getDescription());
+    pPainter->drawText(textRect, Qt::AlignHCenter | Qt::TextWordWrap, getConfig()->getDescription());
 
     pPainter->restore();
 }
@@ -238,6 +243,11 @@ void CircleLinedDrawHelper::paint(QPainter *pPainter, const QRect &targetWidgetR
     paintDescription(pPainter, convertedRect);
 
     pPainter->end();
+}
+
+void CircleLinedDrawHelper::processPercentSet([[maybe_unused]] double previousValue, [[maybe_unused]]double nextValue)
+{
+    // Nothing to do in this context
 }
 
 void CircleLinedDrawHelper::startAnimation()
@@ -321,7 +331,7 @@ void CircleLinedDrawHelper::paintDescription(QPainter *pPainter, const QRect &ta
     auto textRect = getCircleArea(targetWidgetRect);
     textRect.moveTo(textRect.x() - textRect.width() * 1.5, textRect.y() + textRect.height() * 1.4);
     textRect.setWidth(textRect.width() + textRect.width() * 3);
-    pPainter->drawText(textRect, Qt::AlignCenter | Qt::TextWordWrap, getConfig()->getDescription());
+    pPainter->drawText(textRect, Qt::AlignHCenter | Qt::TextWordWrap, getConfig()->getDescription());
 
     pPainter->restore();
 }

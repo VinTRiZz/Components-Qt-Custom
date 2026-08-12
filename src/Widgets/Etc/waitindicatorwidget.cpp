@@ -27,6 +27,10 @@ WaitIndicatorWidget::~WaitIndicatorWidget()
 void WaitIndicatorWidget::setTarget(QWidget *pWidget)
 {
     m_pTargetWidget = pWidget;
+    if (m_pHelper) {
+        m_pHelper->startAnimation();
+        m_pHelper->pauseAnimation();
+    }
     updateVisualState();
 }
 
@@ -39,6 +43,10 @@ void WaitIndicatorWidget::setConfiguration(IndicatorConfigurationBasePtr conf)
 {
     if (m_pHelper) { m_pHelper->deleteLater(); }
     m_pHelper = WaitIndicatorDrawHelper::create(conf, this);
+    if (m_pHelper) {
+        m_pHelper->startAnimation();
+        m_pHelper->pauseAnimation();
+    }
     updateVisualState();
 }
 
@@ -124,8 +132,11 @@ WaitIndicatorWidget::Status WaitIndicatorWidget::getStatus() const
 
 void WaitIndicatorWidget::setPercent(double perc)
 {
+    auto prevValue = m_currentPercent;
     m_currentPercent = perc * 1000;
-    updateVisualState();
+    if (m_pHelper) {
+        m_pHelper->processPercentSet(prevValue, m_currentPercent);
+    }
 }
 
 double WaitIndicatorWidget::getCurrentPercent() const
@@ -139,10 +150,6 @@ double WaitIndicatorWidget::getCurrentPercent() const
 void WaitIndicatorWidget::updateVisualState()
 {
     if (m_status == Status::Ready) {
-        if (m_pHelper) {
-            m_pHelper->startAnimation();
-            m_pHelper->pauseAnimation();
-        }
         hide();
     } else {
         update();
