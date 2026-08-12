@@ -2,6 +2,8 @@
 
 #include <QEventLoop>
 #include <QVariantAnimation>
+#include <QEvent>
+#include <QResizeEvent>
 
 #include <math.h>
 
@@ -16,6 +18,8 @@ constexpr int   ANIMATION_STEP_COUNT    {100};
 SidebarWidget::SidebarWidget(QWidget *parent)
     : QWidget{parent}
 {
+    parent->installEventFilter(this);
+
     // Work with source transparency for better displaying
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground, true);
@@ -203,10 +207,10 @@ QPoint SidebarWidget::calculateCurrentButtonPosition() const
     bool isToTop = (m_showTowardsDirection & Direction::Top);
 
     if (isHorizontal) {
-        targetPos.setX(isToLeft * (parentWidget()->width() - m_pWidget->width() - m_pButton->width() - targetPos.x()) +
+        targetPos.setX(isToLeft * (m_cachedParentSize.width() - m_pWidget->width() - m_pButton->width() - targetPos.x()) +
                        !isToLeft * (m_pWidget->width() + targetPos.x()));
     } else {
-        targetPos.setY(isToTop * (parentWidget()->height() - m_pWidget->height() - m_pButton->height() - targetPos.y()) +
+        targetPos.setY(isToTop * (m_cachedParentSize.height() - m_pWidget->height() - m_pButton->height() - targetPos.y()) +
                        !isToTop * (m_pWidget->height() + targetPos.y()));
     }
 
@@ -265,7 +269,7 @@ void SidebarWidget::setAnimationStep(int step)
         widgetRect.setTop((m_widgetTargetHeight - targetH) * isToTop);
         widgetRect.setBottom(targetH * !isToTop + m_widgetTargetHeight * isToTop);
     } else {
-        widgetRect.setHeight(parentWidget()->height());
+        widgetRect.setHeight(m_cachedParentSize.height());
     }
 
     if (isHorizontal) {
@@ -273,12 +277,12 @@ void SidebarWidget::setAnimationStep(int step)
         widgetRect.setLeft((m_widgetTargetWidth - targetW) * isToLeft);
         widgetRect.setRight(targetW * !isToLeft + m_widgetTargetWidth * isToLeft);
     } else {
-        widgetRect.setWidth(parentWidget()->width());
+        widgetRect.setWidth(m_cachedParentSize.width());
     }
     m_pWidget->setGeometry(widgetRect);
 
-    widgetRect.moveTo(isToLeft ? parentWidget()->width() - widgetRect.width() : 0,
-                      isToTop ? parentWidget()->height() - widgetRect.height() : 0);
+    widgetRect.moveTo(isToLeft ? m_cachedParentSize.width() - widgetRect.width() : 0,
+                      isToTop ? m_cachedParentSize.height() - widgetRect.height() : 0);
     setGeometry(widgetRect);
 
     slot_updateButtonPosition();
@@ -301,6 +305,27 @@ void SidebarWidget::startHideAnimation(AnimationSpeed asp)
     m_pCurrentAnimation->setEndValue(0);
     m_pCurrentAnimation->setDuration(calculateAnimationDuration(asp));
     m_pCurrentAnimation->start();
+}
+
+void SidebarWidget::changeEvent(QEvent *event) {
+    QWidget::changeEvent(event);
+    if (event->type() == QEvent::ParentChange) {
+        if (auto *p = parentWidget()) {
+            p->installEventFilter(this);
+            m_cachedParentSize = parentWidget()->size();
+            updateVisualState();
+        }
+    }
+}
+
+bool SidebarWidget::eventFilter(QObject *watched, QEvent *event) {
+    if (watched == parent() && event->type() == QEvent::Resize) {
+        auto *resizeEvent = static_cast<QResizeEvent*>(event);
+        resizeEvent->size();
+        m_cachedParentSize = parentWidget()->size();
+        updateVisualState();
+    }
+    return QWidget::eventFilter(watched, event);
 }
 
 }

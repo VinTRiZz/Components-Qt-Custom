@@ -140,6 +140,9 @@ private:
     QPushButton*m_pButton   {nullptr};
     QWidget*    m_pWidget   {nullptr};
 
+    // Because of resize events
+    QSize m_cachedParentSize;
+
     // Dynamic state processing
     int                 m_widgetTargetWidth     {300};
     int                 m_widgetTargetHeight    {300};
@@ -164,6 +167,11 @@ private:
     void setAnimationStep(int step);
     void startShowAnimation(AnimationSpeed asp);
     void startHideAnimation(AnimationSpeed asp);
+
+protected:
+    void changeEvent(QEvent *event) override;
+    bool eventFilter(QObject *watched, QEvent *event) override;
+
 };
 
 }
