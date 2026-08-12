@@ -5,18 +5,29 @@
 
 #include <QEventLoop>
 
+#include <Components/Logger/Logger.h>
+
 #include "waitindicatorwidget.hpp"
 #include "waitindicatorutility.hpp"
 
 namespace QtCustom::Widgets {
 
 WaitIndicatorDrawHelper *WaitIndicatorDrawHelper::create(const IndicatorConfigurationBasePtr &cfg, QObject *parent) {
+
     if (dynamic_cast<IndicatorCircleConfiguration*>(cfg.get())) {
         auto pHelper = new CircleDrawHelper(parent);
         pHelper->setConfiguration(cfg);
         pHelper->init();
         return pHelper;
     }
+
+    if (dynamic_cast<IndicatorCircleLinedConfiguration*>(cfg.get())) {
+        auto pHelper = new CircleLinedDrawHelper(parent);
+        pHelper->setConfiguration(cfg);
+        pHelper->init();
+        return pHelper;
+    }
+
     return nullptr;
 }
 
@@ -24,15 +35,18 @@ void WaitIndicatorDrawHelper::setConfiguration(const IndicatorConfigurationBaseP
     m_pConfig = pConfig;
 }
 
+
+
+
 void CircleDrawHelper::init()
 {
     m_pRollingAnimation = new QVariantAnimation(this);
     connect(m_pRollingAnimation, &QVariantAnimation::valueChanged,
             this, &CircleDrawHelper::slot_processRollingAnimation);
     connect(m_pRollingAnimation, &QVariantAnimation::finished,
-            this, [this](){
-        m_pRollingAnimation->start();
-    });
+            m_pRollingAnimation, [this](){
+                m_pRollingAnimation->start();
+            });
 
     m_pRollingAnimation->setStartValue(double(0));
     m_pRollingAnimation->setEndValue(double(360));
@@ -178,8 +192,189 @@ void CircleDrawHelper::paintIndicatorCircle(QPainter* pPainter, double currentPe
 
     pPainter->setPen(pConfig->m_primaryPen);
     pPainter->drawArc(createCircleRect(),
-                        utilityPieFromDegree(90 - m_animationOffsetPercent),
-                        -utilityPieFromDegree(3.6f * currentPercent));
+                      utilityPieFromDegree(90 - m_animationOffsetPercent),
+                      -utilityPieFromDegree(3.6f * currentPercent));
+}
+
+
+
+
+void CircleLinedDrawHelper::init()
+{
+    m_pRollingAnimation = new QVariantAnimation(this);
+    connect(m_pRollingAnimation, &QVariantAnimation::valueChanged,
+            this, &CircleLinedDrawHelper::slot_processRollingAnimation);
+    connect(m_pRollingAnimation, &QVariantAnimation::finished,
+            m_pRollingAnimation, [this](){
+                m_pRollingAnimation->start();
+                m_pRollingAnimation->setEndValue(getConfig<IndicatorCircleLinedConfiguration>()->m_lineCount - 1);
+            });
+
+    m_pRollingAnimation->setStartValue(0);
+    m_pRollingAnimation->setEndValue(getConfig<IndicatorCircleLinedConfiguration>()->m_lineCount - 1);
+    m_pRollingAnimation->setDuration(360);
+}
+
+void CircleLinedDrawHelper::paint(QPainter *pPainter, const QRect &targetWidgetRect, double currentPercent, uint8_t indicatorStatus)
+{
+    // Move to desired draw location
+    pPainter->save();
+
+    auto convertedRect = getCircleArea(targetWidgetRect);
+
+    auto pConfig = getConfig<IndicatorCircleLinedConfiguration>();
+    m_linePenGradient.setColorAt(0, pConfig->m_secondaryPen.color());
+    m_linePenGradient.setColorAt(pConfig->m_lineOffsetCoefficient, pConfig->m_primaryPen.color());
+
+    pPainter->setClipRect(convertedRect);
+    pPainter->translate(convertedRect.topLeft());
+
+    paintIndicatorCircle(pPainter, currentPercent);
+    paintPercent(pPainter, convertedRect, indicatorStatus, currentPercent);
+
+    pPainter->restore();
+
+    paintTitle(pPainter, convertedRect);
+    paintDescription(pPainter, convertedRect);
+
+    pPainter->end();
+}
+
+void CircleLinedDrawHelper::startAnimation()
+{
+    m_pRollingAnimation->start();
+}
+
+void CircleLinedDrawHelper::pauseAnimation()
+{
+    m_pRollingAnimation->pause();
+}
+
+void CircleLinedDrawHelper::continueAnimation()
+{
+    m_pRollingAnimation->resume();
+}
+
+void CircleLinedDrawHelper::stopAnimation()
+{
+    m_pRollingAnimation->stop();
+}
+
+void CircleLinedDrawHelper::pollAnimation()
+{
+    // Wait for animation to complete
+    QEventLoop loop;
+    connect(m_pRollingAnimation, &QVariantAnimation::finished,
+            &loop, &QEventLoop::quit);
+    loop.exec();
+}
+
+void CircleLinedDrawHelper::slot_processRollingAnimation(const QVariant &animationValue)
+{
+    m_currentLineStep = animationValue.toInt();
+    qobject_cast<QWidget*>(parent())->update(); // TODO: Add checks?
+}
+
+QRect CircleLinedDrawHelper::createCircleRect() const
+{
+    return QRect(CIRCLE_RECT_OFFSET, CIRCLE_RECT_OFFSET, getConfig()->m_size.width(), getConfig()->m_size.height());
+}
+
+QRect CircleLinedDrawHelper::getCircleArea(QRect targetWidgetRect) const
+{
+    auto rectCenter = targetWidgetRect.center();
+    auto workAreaSize = getConfig()->m_size;
+    targetWidgetRect.setWidth(workAreaSize.width() + CIRCLE_RECT_OFFSET * 2);
+    targetWidgetRect.setHeight(workAreaSize.height() + CIRCLE_RECT_OFFSET * 2);
+    targetWidgetRect.moveCenter(rectCenter);
+    return targetWidgetRect;
+}
+
+void CircleLinedDrawHelper::paintTitle(QPainter *pPainter, const QRect &targetWidgetRect) const
+{
+    pPainter->save();
+
+    pPainter->setPen(getConfig()->m_textPen);
+    auto fnt = pPainter->font();
+    fnt.setBold(true);
+    fnt.setPixelSize(14);
+    pPainter->setFont(fnt);
+
+    auto textRect = getCircleArea(targetWidgetRect);
+    textRect.moveTo(textRect.x() - textRect.width() * 1.5, textRect.y() + textRect.height() * 0.8);
+    textRect.setWidth(textRect.width() + textRect.width() * 3);
+    pPainter->drawText(textRect, Qt::AlignCenter | Qt::TextWordWrap, getConfig()->getTitle());
+
+    pPainter->restore();
+}
+
+void CircleLinedDrawHelper::paintDescription(QPainter *pPainter, const QRect &targetWidgetRect) const
+{
+    pPainter->save();
+
+    pPainter->setPen(getConfig()->m_textPen);
+    auto fnt = pPainter->font();
+    fnt.setItalic(true);
+    fnt.setPixelSize(10);
+    pPainter->setFont(fnt);
+
+    auto textRect = getCircleArea(targetWidgetRect);
+    textRect.moveTo(textRect.x() - textRect.width() * 1.5, textRect.y() + textRect.height() * 1.4);
+    textRect.setWidth(textRect.width() + textRect.width() * 3);
+    pPainter->drawText(textRect, Qt::AlignCenter | Qt::TextWordWrap, getConfig()->getDescription());
+
+    pPainter->restore();
+}
+
+void CircleLinedDrawHelper::paintPercent(QPainter *pPainter, const QRect &targetWidgetRect, uint8_t indicatorStatus, double currentPercent) const
+{
+    if (indicatorStatus & WaitIndicatorWidget::Status::Paused) {
+        return;
+    }
+    pPainter->save();
+
+    auto pConfig = getConfig<IndicatorCircleLinedConfiguration>();
+    pPainter->setPen(pConfig->m_primaryPen);
+    pPainter->drawText(createCircleRect(), Qt::AlignCenter, QString("%1%").arg(currentPercent));
+
+    pPainter->restore();
+}
+
+void CircleLinedDrawHelper::paintIndicatorCircle(QPainter *pPainter, double currentPercent)
+{
+    pPainter->setBrush(Qt::transparent);
+
+    auto pConfig = getConfig<IndicatorCircleLinedConfiguration>();
+
+    auto circleRect = createCircleRect();
+
+    auto deltaAngle = 360.0 / double(pConfig->m_lineCount);
+    QLine deltaLine;
+    auto deltaLineLength = pConfig->m_size.width() / 2.0;
+    deltaLine.setP1(QPoint(deltaLineLength * pConfig->m_lineOffsetCoefficient, 0));
+    deltaLine.setP2(QPoint(deltaLineLength, 0));
+
+    // Get gradient point
+    QTransform currentLineTransform;
+    currentLineTransform.translate(circleRect.center().x(), circleRect.center().y());
+    currentLineTransform.rotate(deltaAngle * m_currentLineStep);
+    auto deltaLineCopy = deltaLine;
+    deltaLineCopy.setP1({});
+    auto mappedLine = currentLineTransform.map(deltaLineCopy);
+    m_linePenGradient.setStart(mappedLine.p1());
+    m_linePenGradient.setFinalStop(mappedLine.p2());
+
+    auto linePen = pConfig->m_secondaryPen;
+    linePen.setBrush(m_linePenGradient);
+    pPainter->setPen(linePen);
+
+    for (uint16_t i = 0; i < pConfig->m_lineCount; ++i) {
+        currentLineTransform.reset();
+        currentLineTransform.translate(circleRect.center().x(), circleRect.center().y());
+        currentLineTransform.rotate(deltaAngle * i);
+        auto tmpLine = currentLineTransform.map(deltaLine);
+        pPainter->drawLine(tmpLine);
+    }
 }
 
 }

@@ -39,6 +39,7 @@ void WaitIndicatorWidget::setConfiguration(IndicatorConfigurationBasePtr conf)
 {
     if (m_pHelper) { m_pHelper->deleteLater(); }
     m_pHelper = WaitIndicatorDrawHelper::create(conf, this);
+    updateVisualState();
 }
 
 IndicatorConfigurationBasePtr WaitIndicatorWidget::getConfiguration() const

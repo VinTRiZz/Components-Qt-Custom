@@ -50,4 +50,21 @@ public:
     QPen m_secondaryPen  {QPen(QColor(65, 120, 110), 2, Qt::SolidLine, Qt::RoundCap)};
 };
 
+
+/**
+ * @brief The IndicatorCircleLinedConfiguration class Circle, made of lines from center
+ */
+class IndicatorCircleLinedConfiguration : public IndicatorConfigurationBase
+{
+public:
+    bool    m_isPercentVisible  {true};
+    bool    m_isAnimationEnabled {false};
+
+    uint16_t m_lineCount {36};
+    double   m_lineOffsetCoefficient {0.85}; // (invisibleLineLength / lineLength)
+
+    QPen m_primaryPen    {QPen(QColor(45, 210, 170), 4, Qt::SolidLine, Qt::RoundCap)};
+    QPen m_secondaryPen  {QPen(QColor(65, 120, 110), 2, Qt::SolidLine, Qt::RoundCap)};
+};
+
 }
