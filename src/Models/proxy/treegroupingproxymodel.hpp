@@ -99,6 +99,7 @@ private:
     void prune(std::shared_ptr<Node_t> pBranchLeaf);
     std::shared_ptr<Node_t> setupMergableNode(std::vector<GroupKey_t> groupBranch);
     uint getIndexHash(const QModelIndex& sourceIndex) const;
+    void resetTreeNodes(); // internal functionality of resetTree() to use without modelReset()
 
     // Util
     std::shared_ptr<Node_t> toNode(const QModelIndex& idx) const;

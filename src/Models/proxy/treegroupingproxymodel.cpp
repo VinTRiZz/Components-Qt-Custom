@@ -207,7 +207,12 @@ void TreeGroupingProxyModel::setSourceModel(QAbstractItemModel *pModel)
     resetTree();
     if (d->m_sourceModel) {
         connect(pModel, &QAbstractItemModel::modelAboutToBeReset,
-                this, &TreeGroupingProxyModel::resetTree);
+                this, &TreeGroupingProxyModel::beginResetModel);
+        connect(pModel, &QAbstractItemModel::modelReset,
+                this, [this](){
+            resetTreeNodes();
+            endResetModel();
+        });
 
         connect(pModel, &QAbstractItemModel::dataChanged,
                 this, [this](const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles){
@@ -428,14 +433,7 @@ void TreeGroupingProxyModel::removeNode(const QModelIndex &idx)
 void TreeGroupingProxyModel::resetTree()
 {
     beginResetModel();
-    d->cache_nodes.clear();
-    d->cache_lowestLayer.clear();
-    d->m_invisibleRootNode->clearNodes();
-    if (d->m_sourceModel) {
-        for (int row = 0; row < d->m_sourceModel->rowCount(); ++row) {
-            addNode(d->m_sourceModel->index(row, d->m_treeColumn));
-        }
-    }
+    resetTreeNodes();
     endResetModel();
 }
 
@@ -460,6 +458,18 @@ void TreeGroupingProxyModel::prune(std::shared_ptr<Node_t> pBranchLeaf)
 uint TreeGroupingProxyModel::getIndexHash(const QModelIndex &sourceIndex) const
 {
     return qHash(QPersistentModelIndex(sourceIndex), qGlobalQHashSeed());
+}
+
+void TreeGroupingProxyModel::resetTreeNodes()
+{
+    d->cache_nodes.clear();
+    d->cache_lowestLayer.clear();
+    d->m_invisibleRootNode->clearNodes();
+    if (d->m_sourceModel) {
+        for (int row = 0; row < d->m_sourceModel->rowCount(); ++row) {
+            addNode(d->m_sourceModel->index(row, d->m_treeColumn));
+        }
+    }
 }
 
 std::shared_ptr<TreeGroupingProxyModel::Node_t> TreeGroupingProxyModel::toNode(const QModelIndex &idx) const
