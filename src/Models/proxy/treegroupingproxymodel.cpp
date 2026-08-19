@@ -298,7 +298,7 @@ TreeGroupingProxyModel::GroupKey_t TreeGroupingProxyModel::getGroup(int sourceMo
     return qHash(QPersistentModelIndex(rowIndex), qGlobalQHashSeed());
 }
 
-TreeGroupingProxyModel::GroupKey_t TreeGroupingProxyModel::getParentGroup(GroupKey_t groupKey) const
+TreeGroupingProxyModel::GroupKey_t TreeGroupingProxyModel::getParentGroup(const GroupKey_t& groupKey) const
 {
     return {};
 }

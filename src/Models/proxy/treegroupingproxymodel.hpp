@@ -61,7 +61,7 @@ protected:
      * @param groupKey
      * @return                  Must return invalid GroupKey_t if level is highest
      */
-    virtual GroupKey_t  getParentGroup(GroupKey_t groupKey) const;
+    virtual GroupKey_t  getParentGroup(const GroupKey_t& groupKey) const;
 
     /**
      * @brief getGroupHash  Used in optimisation cases
