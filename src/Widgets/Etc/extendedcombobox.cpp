@@ -15,6 +15,7 @@ public:
 
     void setRootIndex(const QModelIndex& idx) {
         m_cboxRootIndex = idx;
+        m_cboxSourceRootIndex = QIdentityProxyModel::mapToSource(idx);
     }
 
     void setNullItemData(int role, const QVariant& val) {
@@ -24,41 +25,63 @@ public:
     // QAbstractItemModel interface
     QModelIndex index(int row, int column, const QModelIndex &parent) const override {
         if (parent == m_cboxRootIndex) {
-            if (row < 1) {
-                return createIndex(row, column, 1);
+            if (row == 0) {
+                return createIndex(0, column, 1);
             }
-            // return QIdentityProxyModel::index(row - 1, column, parent);
+            auto idx = QIdentityProxyModel::index(row - 1, column, parent);
+            return createIndex(row, column, idx.internalPointer());
         }
         return QIdentityProxyModel::index(row, column, parent);
     }
 
-    QModelIndex parent(const QModelIndex &child) const override {
-        if (1 == child.internalId() && child.isValid()) { // must be null index (TODO: Define other method to determine if it's so)
-            return m_cboxRootIndex;
-        }
-        return QIdentityProxyModel::parent(createIndex(child.row() - 1, child.column()));
-    }
-
     int rowCount(const QModelIndex &parent) const override {
-        if (parent != m_cboxRootIndex) {
-            return QIdentityProxyModel::rowCount(parent);
+        if (parent == m_cboxRootIndex) {
+            return QIdentityProxyModel::rowCount(parent) + 1;
         }
-        return QIdentityProxyModel::rowCount(parent) + 1;
+        return QIdentityProxyModel::rowCount(parent);
     }
 
     QVariant data(const QModelIndex &idx, int role) const override {
-        if (idx.row() == 0 &&
-            idx.parent() == m_cboxRootIndex) {
-            if (m_nullItemData.contains(role)) {
-                return m_nullItemData[role];
+        if (idx.parent() == m_cboxRootIndex) {
+            if (idx.row() == 0) {
+                if (m_nullItemData.contains(role)) {
+                    return m_nullItemData[role];
+                }
+                return {};
             }
+            return QIdentityProxyModel::data(createIndex(idx.row() - 1, idx.column(), idx.internalPointer()), role);
         }
         return QIdentityProxyModel::data(idx, role);
+    }
+
+    Qt::ItemFlags flags(const QModelIndex &index) const override {
+        if (index.isValid() && index.internalId() == 1) {
+            return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+        }
+        return QIdentityProxyModel::flags(index);
+    }
+
+    QModelIndex mapToSource(const QModelIndex &proxyIndex) const override {
+        if (proxyIndex.isValid() && proxyIndex.internalId() == 1) {
+            if (proxyIndex.row() == 0) {
+                return {};
+            }
+            // return QIdentityProxyModel::mapToSource(createIndex(proxyIndex.row() - 1, proxyIndex.column(), 1));
+        }
+        return QIdentityProxyModel::mapToSource(proxyIndex);
+    }
+    QModelIndex mapFromSource(const QModelIndex &sourceIndex) const override {
+        if (sourceIndex.isValid() &&
+            sourceIndex.parent() == m_cboxSourceRootIndex) {
+            // return createIndex(sourceIndex.row() + 1, sourceIndex.column());
+        }
+        return QIdentityProxyModel::mapFromSource(sourceIndex);
     }
 
 private:
     QMap<int, QVariant> m_nullItemData;
     QModelIndex m_cboxRootIndex;
+    QModelIndex m_cboxSourceRootIndex;
 };
 
 
