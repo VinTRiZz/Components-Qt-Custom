@@ -1,0 +1,36 @@
+#pragma once
+
+#include <QDialog>
+#include <QAbstractItemModel>
+
+namespace Ui {
+class ExtendedComboBoxDialog;
+}
+
+namespace QtCustom::Widgets {
+
+class SearchProxyModel;
+
+class ExtendedComboBoxDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit ExtendedComboBoxDialog(QWidget *parent = nullptr);
+    ~ExtendedComboBoxDialog();
+
+    void setSourceModel(QAbstractItemModel* pModel);
+
+    void setSelectedIndex(const QModelIndex& idx);
+    QModelIndex getSelectedIndex() const;
+
+    void setDialogModelColumnHidden(int col, bool isColumnHidden = true);
+    void setHeaderHidden(bool isHeaderHidden);
+
+private:
+    Ui::ExtendedComboBoxDialog *ui;
+
+    SearchProxyModel* m_pSearchModel {nullptr};
+};
+
+}
