@@ -6,6 +6,9 @@
 
 #include <Components/Logger/Logger.h>
 
+#include <QPainter>
+#include <QImage>
+
 namespace QtCustom::Widgets {
 
 class NullItemProxyModel : public QIdentityProxyModel
@@ -66,16 +69,8 @@ public:
             if (proxyIndex.row() == 0) {
                 return {};
             }
-            // return QIdentityProxyModel::mapToSource(createIndex(proxyIndex.row() - 1, proxyIndex.column(), 1));
         }
         return QIdentityProxyModel::mapToSource(proxyIndex);
-    }
-    QModelIndex mapFromSource(const QModelIndex &sourceIndex) const override {
-        if (sourceIndex.isValid() &&
-            sourceIndex.parent() == m_cboxSourceRootIndex) {
-            // return createIndex(sourceIndex.row() + 1, sourceIndex.column());
-        }
-        return QIdentityProxyModel::mapFromSource(sourceIndex);
     }
 
 private:
@@ -90,6 +85,20 @@ ExtendedComboBox::ExtendedComboBox(QWidget *parent) :
     ui{new Ui::ExtendedComboBox}
 {
     ui->setupUi(this);
+
+    // TODO: Make a normal fix
+    // It's really bad thing, but after UI modify it does not show anything
+    // So, this crutch is workaround
+    QImage searchIcon (35, 35, QImage::Format_RGBA64);
+    QPainter p(&searchIcon);
+    p.setPen(QPen(QColor(17, 4, 22), 4, Qt::SolidLine, Qt::RoundCap));
+    p.setBrush(Qt::transparent);
+    p.fillRect(QRect(0, 0, 35, 35), Qt::transparent);
+    auto ellipseRect = QRect(5, 5, 16, 16);
+    p.drawEllipse(ellipseRect);
+    p.drawLine(QLine(ellipseRect.bottomRight(), QPoint(30, 30)));
+    ui->toolButtonSearch->setIcon(QPixmap::fromImage(searchIcon)); // omg
+
 
     m_pDialog = new ExtendedComboBoxDialog(this);
     connect(ui->toolButtonSearch, &QToolButton::clicked,
@@ -145,6 +154,11 @@ void ExtendedComboBox::setNullIndexData(const QMap<int, QVariant> &idxData)
     for (auto key : idxData.keys()) {
         m_pComboBoxModel->setNullItemData(key, idxData.value(key));
     }
+}
+
+int ExtendedComboBox::getSelectedIndex() const
+{
+    return ui->comboBox->currentIndex() - 1;
 }
 
 void ExtendedComboBox::setDialogModelColumnHidden(int col, bool isColumnHidden)

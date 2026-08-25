@@ -1,6 +1,7 @@
 #include "extendedcomboboxdialog.hpp"
 #include "ui_extendedcomboboxdialog.h"
 
+#include <Components/CustomQt/Models/SearchProxyModel.h>
 
 namespace QtCustom::Widgets {
 
@@ -9,6 +10,9 @@ ExtendedComboBoxDialog::ExtendedComboBoxDialog(QWidget *parent)
     , ui(new Ui::ExtendedComboBoxDialog)
 {
     ui->setupUi(this);
+
+    m_pSearchModel = new QtCustom::Models::SearchProxyModel(this);
+    ui->tableView->setModel(m_pSearchModel);
 
     connect(ui->tableView, &QTableView::doubleClicked,
             this, &QDialog::accept);
@@ -24,20 +28,17 @@ ExtendedComboBoxDialog::~ExtendedComboBoxDialog()
 
 void ExtendedComboBoxDialog::setSourceModel(QAbstractItemModel *pModel)
 {
-    // TODO: search -> setSourceModel
-    ui->tableView->setModel(pModel);
+    m_pSearchModel->setSourceModel(pModel);
 }
 
 void ExtendedComboBoxDialog::setSelectedIndex(const QModelIndex &idx)
 {
-    // TODO: search -> mapFromSource
-    ui->tableView->setCurrentIndex(idx);
+    ui->tableView->setCurrentIndex(m_pSearchModel->mapFromSource(idx));
 }
 
 QModelIndex ExtendedComboBoxDialog::getSelectedIndex() const
 {
-    // TODO: search -> mapToSource
-    return ui->tableView->currentIndex();
+    return m_pSearchModel->mapFromSource(ui->tableView->currentIndex());
 }
 
 void ExtendedComboBoxDialog::setDialogModelColumnHidden(int col, bool isColumnHidden)

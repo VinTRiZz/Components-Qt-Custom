@@ -29,6 +29,8 @@ public:
     void setNullIndexText(const QString& text);
     void setNullIndexData(const QMap<int, QVariant>& idxData);
 
+    int getSelectedIndex() const;
+
     // For some cases
     void setDialogModelColumnHidden(int col, bool isColumnHidden = true);
     void setHeaderHidden(bool isHeaderHidden);

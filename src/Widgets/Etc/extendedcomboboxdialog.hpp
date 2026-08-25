@@ -7,9 +7,11 @@ namespace Ui {
 class ExtendedComboBoxDialog;
 }
 
-namespace QtCustom::Widgets {
-
+namespace QtCustom::Models {
 class SearchProxyModel;
+}
+
+namespace QtCustom::Widgets {
 
 class ExtendedComboBoxDialog : public QDialog
 {
@@ -30,7 +32,7 @@ public:
 private:
     Ui::ExtendedComboBoxDialog *ui;
 
-    SearchProxyModel* m_pSearchModel {nullptr};
+    QtCustom::Models::SearchProxyModel* m_pSearchModel {nullptr};
 };
 
 }
