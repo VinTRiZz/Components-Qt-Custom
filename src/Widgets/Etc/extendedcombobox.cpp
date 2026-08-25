@@ -99,7 +99,6 @@ ExtendedComboBox::ExtendedComboBox(QWidget *parent) :
     p.drawLine(QLine(ellipseRect.bottomRight(), QPoint(30, 30)));
     ui->toolButtonSearch->setIcon(QPixmap::fromImage(searchIcon)); // omg
 
-
     m_pDialog = new ExtendedComboBoxDialog(this);
     connect(ui->toolButtonSearch, &QToolButton::clicked,
             this, [this](){
@@ -115,7 +114,7 @@ ExtendedComboBox::ExtendedComboBox(QWidget *parent) :
         if (QDialog::Accepted == dialogExecResult) {
             sourceSelectedIndex = m_pDialog->getSelectedIndex();
             selectedIndex = m_pComboBoxModel->mapFromSource(sourceSelectedIndex);
-            ui->comboBox->setCurrentIndex(selectedIndex.row());
+            ui->comboBox->setCurrentIndex(selectedIndex.row() + 1);
         }
     });
 
