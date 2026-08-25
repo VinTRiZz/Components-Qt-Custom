@@ -155,7 +155,12 @@ void ExtendedComboBox::setNullIndexData(const QMap<int, QVariant> &idxData)
     }
 }
 
-int ExtendedComboBox::getSelectedIndex() const
+void ExtendedComboBox::setCurrentIndex(int indexRow)
+{
+    ui->comboBox->setCurrentIndex(indexRow + 1);
+}
+
+int ExtendedComboBox::getCurrentIndex() const
 {
     return ui->comboBox->currentIndex() - 1;
 }
@@ -168,6 +173,11 @@ void ExtendedComboBox::setDialogModelColumnHidden(int col, bool isColumnHidden)
 void ExtendedComboBox::setHeaderHidden(bool isHeaderHidden)
 {
     m_pDialog->setHeaderHidden(isHeaderHidden);
+}
+
+void ExtendedComboBox::setButtonHidden(bool isButtonHidden)
+{
+    ui->toolButtonSearch->setHidden(isButtonHidden);
 }
 
 } // namespace QtCustom::Widgets

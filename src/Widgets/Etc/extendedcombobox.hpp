@@ -29,11 +29,13 @@ public:
     void setNullIndexText(const QString& text);
     void setNullIndexData(const QMap<int, QVariant>& idxData);
 
-    int getSelectedIndex() const;
+    void setCurrentIndex(int indexRow);
+    int  getCurrentIndex() const;
 
     // For some cases
     void setDialogModelColumnHidden(int col, bool isColumnHidden = true);
     void setHeaderHidden(bool isHeaderHidden);
+    void setButtonHidden(bool isButtonHidden);
 
 private:
     Ui::ExtendedComboBox* ui {nullptr};
