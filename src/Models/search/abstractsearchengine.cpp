@@ -74,8 +74,8 @@ double TextSearchEngine::getSamePercent(const std::vector<QString> &targetTrigra
         auto& sourceTrig = sourceTrigram[targetIdx];
 
         samePercent += (targetTrig[0] == sourceTrig[0]) * deltaSamePercent;
-        samePercent += (targetTrig[1] == sourceTrig[1]) * deltaSamePercent;
-        samePercent += (targetTrig[2] == sourceTrig[2]) * deltaSamePercent;
+        samePercent += (targetTrig[1] == ' ' || targetTrig[1] == sourceTrig[1]) * deltaSamePercent;
+        samePercent += (targetTrig[2] == ' ' || targetTrig[2] == sourceTrig[2]) * deltaSamePercent;
     }
 
     return samePercent;

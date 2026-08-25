@@ -48,7 +48,7 @@ QModelIndex SearchProxyModel::getNextInclusion(const QModelIndex &offsetIndex) c
     }
     auto nextIndex = getNextIndex(offsetIndex);
     while (nextIndex.isValid() && !isIndexWanted(nextIndex)) {
-        nextIndex = getNextIndex(offsetIndex);
+        nextIndex = getNextIndex(nextIndex);
     }
     return nextIndex;
 }
@@ -60,7 +60,7 @@ QModelIndex SearchProxyModel::getPrevInclusion(const QModelIndex &offsetIndex) c
     }
     auto prevIndex = getPrevIndex(offsetIndex);
     while (prevIndex.isValid() && !isIndexWanted(prevIndex)) {
-        prevIndex = getPrevIndex(offsetIndex);
+        prevIndex = getPrevIndex(prevIndex);
     }
     return prevIndex;
 }
@@ -92,7 +92,7 @@ void SearchProxyModel::resetSearch()
         beginResetModel();
         endResetModel();
     } else {
-        // TODO: Correctly update recursively
+        // TODO: Correctly update recursively?
         emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1), { Qt::BackgroundRole });
     }
 }
