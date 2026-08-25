@@ -9,6 +9,7 @@ namespace QtCustom::Models {
 
 /**
  * @brief The AbstractSearchEngine class Search engine base for SearchModel
+ * @note In every inherited class must emit filter changed signal to ask model for update
  */
 class AbstractSearchEngine : public QObject
 {
