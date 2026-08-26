@@ -35,6 +35,8 @@ public:
     TableItemMaster(const QSqlDatabase& db, QObject *parent = nullptr);
     ~TableItemMaster();
 
+    QSqlDatabase getDatabase() const;
+
     using selector_t = std::function<bool(const ItemHandler&)>;
 
     virtual bool createTable();

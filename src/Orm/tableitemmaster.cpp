@@ -38,6 +38,11 @@ TableItemMaster::~TableItemMaster()
     d->m_dummyRowHandler.invalidate();
 }
 
+QSqlDatabase TableItemMaster::getDatabase() const
+{
+    return d->m_db;
+}
+
 bool TableItemMaster::createTable()
 {
     // Must be implemented in inheritors
