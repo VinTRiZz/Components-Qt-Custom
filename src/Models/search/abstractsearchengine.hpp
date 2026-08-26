@@ -4,6 +4,7 @@
 #include <QString>
 
 #include <vector>
+#include <set>
 
 namespace QtCustom::Models {
 
@@ -35,6 +36,7 @@ signals:
  */
 class TextSearchEngine : public AbstractSearchEngine
 {
+    using trigram_t = std::set<QChar>;
 public:
     using AbstractSearchEngine::AbstractSearchEngine;
 
@@ -44,18 +46,19 @@ public:
     virtual bool isWanted(const QModelIndex& sourceIndex) const;
 
 private:
-    std::vector<QString> m_targetTrigrams;
+    std::vector<trigram_t> m_targetTrigrams;
     double m_searchThreshold {0.8};
 
     double m_indexDeltaPercent {0};
 
 protected:
-    std::vector<QString> createTrigrams(const QString &text) const;
+    std::vector<trigram_t> createTrigrams(const QString &text) const;
 
-    double getSamePercent(const std::vector<QString>& targetTrigram,
-                          const std::vector<QString>& sourceTrigram) const;
+    double getSamePercent(const std::vector<trigram_t>& targetTrigram,
+                          const std::vector<trigram_t>& sourceTrigram,
+                          double threshold) const;
 
-    bool containTarget(const std::vector<QString>& targetText, const QString& sampleText, double threshold) const;
+    bool containTarget(const std::vector<trigram_t>& targetTrigrams, const QString& sampleText, double threshold) const;
 };
 
 } // namespace QtCustom::Search

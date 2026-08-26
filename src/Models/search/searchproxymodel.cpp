@@ -1,5 +1,7 @@
 #include "searchproxymodel.hpp"
 
+#include <Components/Logger/Logger.h>
+
 #include <QColor>
 
 namespace QtCustom::Models {

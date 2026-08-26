@@ -18,7 +18,7 @@ bool AbstractSearchEngine::isWanted([[maybe_unused]] const QModelIndex &sourceIn
 void TextSearchEngine::setTarget(const QString &value)
 {
     m_targetTrigrams = createTrigrams(value);
-    m_indexDeltaPercent = double(value.size()) / 3.0;
+    m_indexDeltaPercent = 1.0 / double(m_targetTrigrams.size()) / 3.0;
     emit sig_filterChanged();
 }
 
@@ -33,58 +33,58 @@ bool TextSearchEngine::isWanted(const QModelIndex &sourceIndex) const
     return containTarget(m_targetTrigrams, sourceIndex.data(Qt::DisplayRole).toString(), m_searchThreshold);
 }
 
-std::vector<QString> TextSearchEngine::createTrigrams(const QString &text) const {
+std::vector<TextSearchEngine::trigram_t> TextSearchEngine::createTrigrams(const QString &text) const {
     if (text.isEmpty())
         return {};
 
-    std::vector<QString> trigrams;
+    std::vector<trigram_t> trigrams;
     trigrams.reserve(text.size() / 3);
 
-    QString currentTrigram;
+    trigram_t currentTrigram;
     for (const auto& ch : text) {
         if (currentTrigram.size() < 3) {
-            currentTrigram.push_back(ch);
+            currentTrigram.insert(ch);
             continue;
         }
-        std::sort(currentTrigram.begin(), currentTrigram.end());
         trigrams.emplace_back(std::move(currentTrigram));
-        currentTrigram.reserve(3);
-        currentTrigram.push_back(ch);
+        currentTrigram.insert(ch);
     }
 
-    if (!currentTrigram.isEmpty()) {
-        std::sort(currentTrigram.begin(), currentTrigram.end());
-        std::fill_n(std::back_inserter(currentTrigram), 3 - currentTrigram.size(), ' ');
+    if (!currentTrigram.empty()) {
+        if (currentTrigram.size() < 3) {
+            currentTrigram.insert(' ');
+        }
         trigrams.emplace_back(std::move(currentTrigram));
     }
     return trigrams;
 }
 
-double TextSearchEngine::getSamePercent(const std::vector<QString> &targetTrigram, const std::vector<QString> &sourceTrigram) const {
+double TextSearchEngine::getSamePercent(const std::vector<trigram_t> &targetTrigram,
+                                        const std::vector<trigram_t> &sourceTrigram,
+                                        double threshold) const {
     double samePercent {};
-
-    auto targetSize = targetTrigram.size();
-    double deltaSamePercent = 1.0 / double(targetSize) / 3.0;
-
-    auto sourceSize = sourceTrigram.size();
-
     std::size_t targetIdx {};
-    for (; targetIdx < targetSize && targetIdx < sourceSize; ++targetIdx) {
-        auto& targetTrig = targetTrigram[targetIdx];
-        auto& sourceTrig = sourceTrigram[targetIdx];
-
-        samePercent += (targetTrig[0] == sourceTrig[0]) * deltaSamePercent;
-        samePercent += (targetTrig[1] == ' ' || targetTrig[1] == sourceTrig[1]) * deltaSamePercent;
-        samePercent += (targetTrig[2] == ' ' || targetTrig[2] == sourceTrig[2]) * deltaSamePercent;
+    for (const auto& trig : targetTrigram) {
+        if (sourceTrigram.size() <= targetIdx) { break; }
+        const auto& sourceTrig = sourceTrigram[targetIdx];
+        for (const auto& ch : trig) {
+            samePercent += ((ch == ' ') | (sourceTrig.count(ch) != 0)) * m_indexDeltaPercent;
+        }
+        if (trig.size() == 2 && trig.count(' ')) { // Corner case
+            samePercent += m_indexDeltaPercent;
+        }
+        if (samePercent > threshold) {
+            break;
+        }
+        ++targetIdx;
     }
-
     return samePercent;
 }
 
-bool TextSearchEngine::containTarget(const std::vector<QString> &targetTrigrams, const QString &sampleText, double threshold) const {
+bool TextSearchEngine::containTarget(const std::vector<trigram_t> &targetTrigrams, const QString &sampleText, double threshold) const {
     double maxPercent {};
     for (const auto& tok : sampleText.split(' ')) {
-        auto samePercent = getSamePercent(targetTrigrams, createTrigrams(tok));
+        auto samePercent = getSamePercent(targetTrigrams, createTrigrams(tok), threshold);
         maxPercent = std::max(maxPercent, samePercent);
         if (maxPercent > threshold) {
             break;
