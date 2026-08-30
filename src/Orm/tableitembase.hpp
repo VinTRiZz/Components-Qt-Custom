@@ -24,6 +24,7 @@ class TableItemBase : public QObject, public ExtraClasses::ErrorUserBase<ExtraCl
     Q_OBJECT
 public:
     explicit TableItemBase(TableItemMaster *pTableMaster = nullptr);
+    QString getTableName() const;
 
     void setId(const QVariant &id);
     QVariant getId() const;

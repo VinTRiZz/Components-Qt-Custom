@@ -110,6 +110,18 @@ ItemHandler TableSourceModel::getItem(const QModelIndex &idx) const
     return m_pTable->getItemByRow(idx.row());
 }
 
+QModelIndex TableSourceModel::getIndex(const ItemHandler &hdl) const
+{
+    if (!m_pTable || !hdl || (hdl->getTableName() != m_pTable->getTable())) { return {}; }
+    return createIndex(m_pTable->getItemRow(hdl), 0, nullptr);
+}
+
+QModelIndex TableSourceModel::getIndexFromId(const QVariant &hdlId) const
+{
+    if (!m_pTable) { return {}; }
+    return getIndex(m_pTable->getItem(hdlId));
+}
+
 QVariant TableSourceModel::getItemData(const ItemHandler &item, int column, int role) const
 {
     if (role == Qt::DisplayRole || role == Qt::EditRole) {

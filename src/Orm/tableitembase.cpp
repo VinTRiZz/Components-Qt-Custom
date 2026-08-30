@@ -13,6 +13,11 @@ TableItemBase::TableItemBase(TableItemMaster *pTableMaster)
 
 }
 
+QString TableItemBase::getTableName() const
+{
+    return m_tableName;
+}
+
 void TableItemBase::setId(const QVariant &id)
 {
     setField("id", id);

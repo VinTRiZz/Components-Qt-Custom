@@ -42,6 +42,8 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
     ItemHandler getItem(const QModelIndex& idx) const;
+    QModelIndex getIndex(const ItemHandler& hdl) const;
+    QModelIndex getIndexFromId(const QVariant& hdlId) const;
 
 private:
     TableItemMaster* m_pTable {nullptr};
