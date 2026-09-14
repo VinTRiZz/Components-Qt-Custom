@@ -63,7 +63,7 @@ bool TableItemMaster::loadRecords()
     emit sig_recordsLoadStarted();
     resetRows();
     if (d->m_tableName.isEmpty()) {
-        m_error.setCode(ExtraClasses::ErrorCode_UNKNOWN_ERROR);
+        m_error.setCode(ExtraClasses::ErrorCode::DatabaseInvalidTable);
         m_error.setDetailText("Table name not set");
         COMPLOG_ERROR("TableItemMaster (", getTable().toStdString(), ") : failed to load records:", QString(getError().what()).toStdString());
         emit sig_recordsLoaded();
@@ -136,7 +136,7 @@ ItemHandler TableItemMaster::createTemporaryItem()
 bool TableItemMaster::insertItem(ItemHandler hdl)
 {
     if (!hdl || hdl->getId().isValid()) {
-        m_error.setCode(ExtraClasses::ErrorCode_UNKNOWN_ERROR);
+        m_error.setCode(ExtraClasses::ErrorCode::LogicalInvalidValue);
         m_error.setDetailText("invalid handle of item to save");
         return false;
     }
@@ -169,7 +169,7 @@ bool TableItemMaster::insertItem(ItemHandler hdl)
 bool TableItemMaster::updateItem(const ItemHandler& hdl)
 {
     if (!hdl) {
-        m_error.setCode(ExtraClasses::ErrorCode_UNKNOWN_ERROR);
+        m_error.setCode(ExtraClasses::ErrorCode::LogicalInvalidValue);
         m_error.setDetailText("invalid handle of item to update");
         return false;
     }
@@ -195,7 +195,7 @@ bool TableItemMaster::updateItem(const ItemHandler& hdl)
 bool TableItemMaster::removeItem(ItemHandler hdl)
 {
     if (!hdl) {
-        m_error.setCode(ExtraClasses::ErrorCode_UNKNOWN_ERROR);
+        m_error.setCode(ExtraClasses::ErrorCode::LogicalInvalidValue);
         m_error.setDetailText("invalid handle of item to remove");
         return false;
     }
@@ -364,7 +364,7 @@ bool TableItemMaster::executeQuery(QSqlQuery &q, const QString &txt) const
 {
     m_error.reset();
     if (!q.exec(txt)) {
-        m_error.setCode(ExtraClasses::ErrorCode_UNKNOWN_ERROR);
+        m_error.setCode(ExtraClasses::ErrorCode::DatabaseQueryExecutionFailed);
         m_error.setDetailText(q.lastError().text().toStdString());
         COMPLOG_ERROR("TableItemMaster (", getTable().toStdString(), ") : query failed:\n\t",
                       QString(getError().what()).toStdString());
