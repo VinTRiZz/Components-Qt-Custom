@@ -126,6 +126,7 @@ QNetworkAccessManager &HTTPClientBase::getRequester()
 void HTTPClientBase::sendSimpleRequestGet(const QString &reqPath) const
 {
     auto req = createRequest(reqPath);
+    // COMPLOG_DEBUG("HTTPClientBase: REQUESTING GET", reqPath.toStdString());
     auto resp = m_requester.get(req);
     connect(resp, &QNetworkReply::finished,
             this, [this, reqPath, resp](){
@@ -146,6 +147,7 @@ void HTTPClientBase::sendSimpleRequestGet(const QString &reqPath) const
 void HTTPClientBase::sendSimpleRequestPost(const QString &reqPath, const QString &reqData) const
 {
     auto req = createRequest(reqPath);
+    // COMPLOG_DEBUG("HTTPClientBase: REQUESTING POST", reqPath.toStdString(), reqData.toStdString());
     auto resp = m_requester.post(req, reqData.toUtf8());
     connect(resp, &QNetworkReply::finished,
             this, [this, reqPath, resp](){
@@ -166,6 +168,7 @@ void HTTPClientBase::sendSimpleRequestPost(const QString &reqPath, const QString
 void HTTPClientBase::sendSimpleRequestPut(const QString &reqPath, const QString &reqData) const
 {
     auto req = createRequest(reqPath);
+    // COMPLOG_DEBUG("HTTPClientBase: REQUESTING PUT", reqPath.toStdString(), reqData.toStdString());
     auto resp = m_requester.put(req, reqData.toUtf8());
     connect(resp, &QNetworkReply::finished,
             this, [this, reqPath, resp](){
@@ -186,6 +189,7 @@ void HTTPClientBase::sendSimpleRequestPut(const QString &reqPath, const QString 
 void HTTPClientBase::sendSimpleRequestDelete(const QString &reqPath) const
 {
     auto req = createRequest(reqPath);
+    // COMPLOG_DEBUG("HTTPClientBase: REQUESTING DELETE", reqPath.toStdString());
     auto resp = m_requester.deleteResource(req);
     connect(resp, &QNetworkReply::finished,
             this, [this, reqPath, resp](){
