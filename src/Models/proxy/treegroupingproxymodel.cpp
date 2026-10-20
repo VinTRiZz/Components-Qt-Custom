@@ -36,7 +36,7 @@ public:
 
     void setColumnCount(int colCount) {
         if (isSourceIndex()) {
-            COMPLOG_WARNING_SYNC("Requested extend column count of invalid node");
+            COMPLOG_SYNC_WARNING("Requested extend column count of invalid node");
             return;
         }
         auto& colsData = getColumns();
@@ -44,7 +44,7 @@ public:
     }
     void setIndexData(const QVariant& value, int col, int role) {
         if (isSourceIndex()) {
-            COMPLOG_WARNING_SYNC("Requested set data of invalid or not group node");
+            COMPLOG_SYNC_WARNING("Requested set data of invalid or not group node");
             return;
         }
         auto& cols = getColumns();
@@ -55,7 +55,7 @@ public:
     }
     QVariant getIndexData(int col, int role) const {
         if (isSourceIndex()) {
-            COMPLOG_WARNING_SYNC("Requested get data of not group node");
+            COMPLOG_SYNC_WARNING("Requested get data of not group node");
             return {};
         }
         auto& cols = getColumns();
@@ -250,7 +250,7 @@ QAbstractItemModel *TreeGroupingProxyModel::sourceModel() const
 QModelIndex TreeGroupingProxyModel::mapToSource(const QModelIndex &idx) const
 {
     if (idx.model() != this) {
-        COMPLOG_WARNING_SYNC("Invalid index for mapToSource passed into TreeGroupingProxyModel");
+        COMPLOG_SYNC_WARNING("Invalid index for mapToSource passed into TreeGroupingProxyModel");
         return {};
     }
     auto pTargetNode = toNode(idx.column() == d->m_treeColumn ? idx : idx.siblingAtColumn(d->m_treeColumn));
@@ -264,7 +264,7 @@ QModelIndex TreeGroupingProxyModel::mapToSource(const QModelIndex &idx) const
 QModelIndex TreeGroupingProxyModel::mapFromSource(const QModelIndex &idx) const
 {
     if (idx.model() != d->m_sourceModel) {
-        COMPLOG_WARNING_SYNC("Invalid index for mapFromSource passed into TreeGroupingProxyModel");
+        COMPLOG_SYNC_WARNING("Invalid index for mapFromSource passed into TreeGroupingProxyModel");
         return {};
     }
     auto targetNodeIt = d->cache_lowestLayer.find(getIndexHash(idx));
