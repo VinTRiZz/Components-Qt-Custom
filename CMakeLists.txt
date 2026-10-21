@@ -11,6 +11,10 @@ if (COMPONENTS_SW_qt_charts)
     target_link_libraries(Components-Qt-Custom PRIVATE Qt5::Charts)
 else()
     COMPONENTS_REMOVE_SOURCES(Components-Qt-Custom
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Widgets/QtCharts/*"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/Widgets/QtCharts/callout.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/Widgets/QtCharts/callout.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/Widgets/QtCharts/chartwidget.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/Widgets/QtCharts/chartwidget.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/Widgets/QtCharts/chartwidget.ui"
     )
 endif()
