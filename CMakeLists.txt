@@ -11,6 +11,6 @@ if (COMPONENTS_SW_qt_charts)
     target_link_libraries(Components-Qt-Custom PRIVATE Qt5::Charts)
 else()
     COMPONENTS_REMOVE_SOURCES(Components-Qt-Custom
-        "src/Widgets/QtCharts/*"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/Widgets/QtCharts/*"
     )
 endif()
