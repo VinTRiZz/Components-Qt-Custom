@@ -1,4 +1,3 @@
-COMPONENTS_CCR_ADD_QT(5 Gui Network Sql Widgets)
 COMPONENTS_CONFIGURE_COMPONENT(Qt-Custom "1.0.0")
 option(COMPONENTS_SW_qtcustom_models "" ON)
 option(COMPONENTS_SW_qtcustom_qt_charts "" OFF)
@@ -40,7 +39,40 @@ if (COMPONENTS_SW_qtcustom_graphicscene)
     COMPONENTS_LINK_COMPONENT(Components-Qt-Custom Maths)
 else()
     COMPONENTS_REMOVE_SOURCES(Components-Qt-Custom
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicScene"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/abstractconnectionline.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/abstractconnectionline.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/abstracttext.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/abstracttext.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/anchoritem.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/anchoritem.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/arrowedconnectionline.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/arrowedconnectionline.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/basicitem.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/basicitem.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/basiciteminterface.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/basiciteminterface.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/commentaryitem.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/commentaryitem.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/debugmaster.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/debugmaster.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/elegantconnectionline.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/elegantconnectionline.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/groupitem.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/groupitem.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/includeall.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/markeritem.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/markeritem.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/textlabel.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectItems/textlabel.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectView/ovcanvaslayer.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectView/ovcanvaslayer.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectView/ovconstants.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectView/ovconstants.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectView/ovcontextmenulayer.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectView/ovinformationlayer.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectView/ovinformationlayer.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectView/ovinternalscene.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/GraphicsScene/ObjectView/ovinternalscene.hpp"
     )
 endif()
 if (COMPONENTS_SW_qtcustom_web)
