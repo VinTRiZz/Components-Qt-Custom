@@ -28,7 +28,7 @@ using RowsHandler = ExtraClasses::Handler<const ItemContainer>;
  * @brief The TableItemMaster class Handle for a table, providing objects, according to Active Record pattern
  */
 class TableItemMaster : public QObject,
-                        public ExtraClasses::ErrorUserBase<ExtraClasses::ErrorBase>
+                        public ExtraClasses::ErrorUserBase<ExtraClasses::ErrorObject>
 {
     Q_OBJECT
 public:

@@ -19,7 +19,7 @@ using RowValues = std::unordered_map<QString, QVariant>;
  * @brief The TableItemBase class Base of a row from database, according to Active Record pattern
  * @note deleted item object = removed row from db
  */
-class TableItemBase : public QObject, public ExtraClasses::ErrorUserBase<ExtraClasses::ErrorBase>
+class TableItemBase : public QObject, public ExtraClasses::ErrorUserBase<ExtraClasses::ErrorObject>
 {
     Q_OBJECT
 public:
