@@ -1,10 +1,11 @@
-COMPONENTS_CCR_ADD_QT(5 Gui Widgets Network Sql)
+COMPONENTS_CCR_ADD_QT(5 Gui Network Sql Widgets TextToSpeech) # Not generated (manually added)
 COMPONENTS_CONFIGURE_COMPONENT(Qt-Custom "1.0.0")
 option(COMPONENTS_SW_qtcustom_models "" ON)
 option(COMPONENTS_SW_qtcustom_qt_charts "" OFF)
 option(COMPONENTS_SW_qtcustom_graphicscene "" OFF)
 option(COMPONENTS_SW_qtcustom_web "" OFF)
 option(COMPONENTS_SW_qtcustom_orm "" OFF)
+option(COMPONENTS_SW_qtcustom_multimedia "" OFF)
 COMPONENTS_LINK_COMPONENT(Components-Qt-Custom Logger)
 target_link_libraries(Components-Qt-Custom PRIVATE Qt5::Gui Qt5::Network Qt5::Sql Qt5::Widgets)
 if (COMPONENTS_SW_qtcustom_models)
@@ -21,7 +22,6 @@ else()
     )
 endif()
 if (COMPONENTS_SW_qtcustom_qt_charts)
-    COMPONENTS_CCR_ADD_QT(5 Charts)
     target_compile_definitions(Components-Qt-Custom PRIVATE COMPONENTS_SW_qtcustom_qt_charts)
     target_link_libraries(Components-Qt-Custom PRIVATE Qt5::Charts)
 else()
@@ -96,5 +96,14 @@ else()
         "${CMAKE_CURRENT_SOURCE_DIR}/src/Orm/tableitemmaster.hpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/Orm/tablesourcemodel.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/Orm/tablesourcemodel.hpp"
+    )
+endif()
+if (COMPONENTS_SW_qtcustom_multimedia)
+    target_compile_definitions(Components-Qt-Custom PRIVATE COMPONENTS_SW_qtcustom_multimedia)
+    target_link_libraries(Components-Qt-Custom PRIVATE Qt5::TextToSpeech)
+else()
+    COMPONENTS_REMOVE_SOURCES(Components-Qt-Custom
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/Multimedia/texttospeech.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/Multimedia/texttospeech.hpp"
     )
 endif()
