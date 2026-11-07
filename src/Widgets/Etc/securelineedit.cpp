@@ -1,38 +1,38 @@
-#include "securepasswordedit.hpp"
+#include "securelineedit.hpp"
 
 #include <QFocusEvent>
 #include <QKeyEvent>
 
 namespace QtCustom::Etc {
 
-SecurePasswordEdit::SecurePasswordEdit(QWidget *parent)
+SecureLineEdit::SecureLineEdit(QWidget *parent)
     : QLineEdit(parent) {
     setEchoMode(QLineEdit::Normal);
     setMaxLength(256);
 
     m_hideTimer.setSingleShot(true);
-    connect(&m_hideTimer, &QTimer::timeout, this, &SecurePasswordEdit::hidePassword);
+    connect(&m_hideTimer, &QTimer::timeout, this, &SecureLineEdit::hidePassword);
 }
 
-void SecurePasswordEdit::setPassword(const Encryption::SafeString &pass)
+void SecureLineEdit::setPassword(const Encryption::SafeString &pass)
 {
     hidePassword();
     m_password = pass;
     updateDisplay();
 }
 
-const Encryption::SafeString &SecurePasswordEdit::getPassword() const {
+const Encryption::SafeString &SecureLineEdit::getPassword() const {
     return m_password;
 }
 
-void SecurePasswordEdit::clearPassword() {
+void SecureLineEdit::clearPassword() {
     m_hideTimer.stop();
     m_isRevealed = false;
     m_password.secureClear();
     QLineEdit::clear();
 }
 
-void SecurePasswordEdit::revealPassword(int msec) {
+void SecureLineEdit::revealPassword(int msec) {
     if (m_password->empty()) {
         return;
     }
@@ -42,7 +42,7 @@ void SecurePasswordEdit::revealPassword(int msec) {
     m_hideTimer.start(msec);
 }
 
-void SecurePasswordEdit::hidePassword() {
+void SecureLineEdit::hidePassword() {
     m_hideTimer.stop();
     if (!m_isRevealed) {
         return;
@@ -51,7 +51,7 @@ void SecurePasswordEdit::hidePassword() {
     updateDisplay();
 }
 
-void SecurePasswordEdit::keyPressEvent(QKeyEvent *event) {
+void SecureLineEdit::keyPressEvent(QKeyEvent *event) {
     const int key = event->key();
 
     if (key == Qt::Key_Backspace) {
@@ -88,12 +88,12 @@ void SecurePasswordEdit::keyPressEvent(QKeyEvent *event) {
     QLineEdit::keyPressEvent(event);
 }
 
-void SecurePasswordEdit::focusOutEvent(QFocusEvent *event) {
+void SecureLineEdit::focusOutEvent(QFocusEvent *event) {
     hidePassword();
     QLineEdit::focusOutEvent(event);
 }
 
-void SecurePasswordEdit::updateDisplay() {
+void SecureLineEdit::updateDisplay() {
     const int len = static_cast<int>(m_password->size());
     QString text = m_isRevealed
         ? QString::fromUtf8(m_password->data(), len)

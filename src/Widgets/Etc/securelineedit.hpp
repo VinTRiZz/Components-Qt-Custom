@@ -7,10 +7,17 @@
 
 namespace QtCustom::Etc {
 
-class SecurePasswordEdit : public QLineEdit {
+class SecureLineEdit : public QLineEdit {
     Q_OBJECT
 public:
-    explicit SecurePasswordEdit(QWidget* parent = nullptr);
+    explicit SecureLineEdit(QWidget* parent = nullptr);
+
+    /**
+     * @brief isPartlyShown Used for password source showing
+     * @return
+     */
+    bool isPartlyShown() const;
+    void setPartlyShown(bool isEnabled);
 
     void setPassword(const Encryption::SafeString& pass);
     const Encryption::SafeString& getPassword() const;

@@ -113,7 +113,7 @@ if (COMPONENTS_SW_qtcustom_secure)
     COMPONENTS_LINK_COMPONENT(Components-Qt-Custom Encryption)
 else()
     COMPONENTS_REMOVE_SOURCES(Components-Qt-Custom
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Widgets/Etc/securepasswordedit.hpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Widgets/Etc/securepasswordedit.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/Widgets/Etc/securelineedit.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/Widgets/Etc/securelineedit.cpp"
     )
 endif()
