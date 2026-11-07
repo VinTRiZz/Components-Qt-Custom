@@ -14,6 +14,17 @@ SecureLineEdit::SecureLineEdit(QWidget *parent)
     connect(&m_hideTimer, &QTimer::timeout, this, &SecureLineEdit::hidePassword);
 }
 
+bool SecureLineEdit::isPartlyShown() const
+{
+    return m_isPartlyShown;
+}
+
+void SecureLineEdit::setPartlyShown(bool isEnabled)
+{
+    m_isPartlyShown = isEnabled;
+    updateDisplay();
+}
+
 void SecureLineEdit::setPassword(const Encryption::SafeString &pass)
 {
     hidePassword();
@@ -32,7 +43,7 @@ void SecureLineEdit::clearPassword() {
     QLineEdit::clear();
 }
 
-void SecureLineEdit::revealPassword(int msec) {
+void SecureLineEdit::revealPassword(uint msec) {
     if (m_password->empty()) {
         return;
     }
@@ -94,17 +105,25 @@ void SecureLineEdit::focusOutEvent(QFocusEvent *event) {
 }
 
 void SecureLineEdit::updateDisplay() {
-    const int len = static_cast<int>(m_password->size());
-    QString text = m_isRevealed
-        ? QString::fromUtf8(m_password->data(), len)
-        : QString(len, QChar('*'));
+    auto text = getCurrentText();
 
     QLineEdit::setText(text);
-    setCursorPosition(len);
+    setCursorPosition(text.length());
 
     if (m_isRevealed) {
         text.fill(QChar('\0'));
     }
+}
+
+QString SecureLineEdit::getCurrentText() const
+{
+    const int len = static_cast<int>(m_password->size());
+    if (m_isRevealed) {
+        return QString::fromUtf8(m_password->data(), len);
+    } else if (m_isPartlyShown) {
+        return QString::fromStdString(Encryption::hideSymbols(m_password.value()));
+    }
+    return QString(len, QChar('*'));
 }
 
 }

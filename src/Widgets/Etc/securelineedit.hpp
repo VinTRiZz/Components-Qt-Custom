@@ -28,7 +28,7 @@ public slots:
     /// Shows the actual password for msec milliseconds (default 5 s) and then masks it again.
     /// @note Displaying the password necessarily materializes it in Qt's text buffer,
     ///       so this is a best-effort reveal and the cleartext is wiped from our copy afterwards.
-    void revealPassword(int msec = 5000);
+    void revealPassword(uint msec = 5000);
 
     /// Masks the password again and cancels a pending reveal.
     void hidePassword();
@@ -39,10 +39,12 @@ protected:
 
 private:
     void updateDisplay();
+    QString getCurrentText() const;
 
     Encryption::SafeString m_password;
     QTimer m_hideTimer;
     bool m_isRevealed {false};
+    bool m_isPartlyShown {false};
 };
 
 }
