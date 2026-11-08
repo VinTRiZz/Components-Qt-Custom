@@ -97,9 +97,13 @@ private:
     void updateNode(const QModelIndex& idx);
     void removeNode(const QModelIndex& idx);
     void prune(std::shared_ptr<Node_t> pBranchLeaf);
-    std::shared_ptr<Node_t> setupMergableNode(std::vector<GroupKey_t> groupBranch);
+    std::shared_ptr<Node_t> setupMergableNode(std::vector<GroupKey_t> groupBranch, int sourceRow);
     uint getIndexHash(const QModelIndex& sourceIndex) const;
     void resetTreeNodes(); // internal functionality of resetTree() to use without modelReset()
+
+    // Ordering helpers
+    int firstSourceRow(const std::shared_ptr<Node_t>& pNode) const;
+    std::size_t childInsertPosition(const std::shared_ptr<Node_t>& pParent, int sourceRow) const;
 
     // Util
     std::shared_ptr<Node_t> toNode(const QModelIndex& idx) const;
